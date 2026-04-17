@@ -17,11 +17,11 @@ export function ProjectSwitcher() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button className="flex items-center justify-between w-full px-3 py-1.5 rounded-md text-left text-sm hover:bg-secondary transition-colors">
+      <DropdownMenuTrigger className="w-full outline-none">
+        <div className="flex items-center justify-between w-full px-3 py-1.5 rounded-md text-left text-sm hover:bg-secondary transition-colors">
           <span className="truncate text-sm">{currentProject?.name || "Select project"}</span>
           <ChevronsUpDown className="ml-2 h-4 w-4 text-muted-foreground" />
-        </button>
+        </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="start">
         {projects?.map((project) => (
