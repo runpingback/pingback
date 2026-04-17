@@ -19,7 +19,7 @@ interface PingbackUserConfig {
 
 const DEFAULTS = {
   platformUrl: 'https://api.pingback.dev',
-  routePath: '/api/__pingback',
+  routePath: '/api/pingback',
   functionsDir: 'lib/pingback/**/*.{ts,js}',
 };
 

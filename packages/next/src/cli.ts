@@ -103,11 +103,11 @@ export default withPingback({});
 }
 
 function createRouteHandler() {
-  const routeDir = join(cwd, 'app', 'api', '__pingback');
+  const routeDir = join(cwd, 'app', 'api', 'pingback');
   const routeFile = join(routeDir, 'route.ts');
 
   if (existsSync(routeFile)) {
-    skip('app/api/__pingback/route.ts already exists');
+    skip('app/api/pingback/route.ts already exists');
     return;
   }
 
@@ -122,7 +122,7 @@ import "@/lib/pingback/example";
 export const POST = createRouteHandler();
 `,
   );
-  success('Created app/api/__pingback/route.ts');
+  success('Created app/api/pingback/route.ts');
 }
 
 function createExampleFunction() {
@@ -167,7 +167,7 @@ function main() {
   console.log('');
   console.log('  2. Edit lib/pingback/example.ts with your actual cron job');
   console.log('');
-  console.log('  3. Add imports for each function file in app/api/__pingback/route.ts');
+  console.log('  3. Add imports for each function file in app/api/pingback/route.ts');
   console.log('');
   console.log('  4. Run next build to register your functions\n');
 }
