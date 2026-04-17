@@ -10,7 +10,7 @@ import { QueueService } from './queue.service';
       provide: 'PG_BOSS_INSTANCE',
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => {
-        const boss = new PgBoss(config.get<string>('database.url'));
+        const boss = new PgBoss(config.get<string>('database.url') as string);
         await boss.start();
         return boss;
       },
