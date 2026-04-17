@@ -3,14 +3,14 @@
 import React, { useState } from "react";
 import { useParams } from "next/navigation";
 import {
-  Play,
-  Copy,
-  Check,
-  CircleCheck,
-  CircleX,
-  Clock,
-  Loader2,
-} from "lucide-react";
+  IconPlayerPlayFilled,
+  IconCopy,
+  IconCheck,
+  IconCircleCheckFilled,
+  IconCircleXFilled,
+  IconClockFilled,
+  IconLoader2,
+} from "@tabler/icons-react";
 import { EmptyState } from "@/components/empty-state";
 import { StatusBadge } from "@/components/status-badge";
 import { CodeBlock } from "@/components/code-block";
@@ -31,17 +31,17 @@ function CopyButton({ text }: { text: string }) {
         setTimeout(() => setCopied(false), 2000);
       }}
     >
-      {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+      {copied ? <IconCheck className="h-3 w-3" /> : <IconCopy className="h-3 w-3" />}
       Copy
     </button>
   );
 }
 
 const statusIcon: Record<string, React.ReactNode> = {
-  success: <CircleCheck className="h-4 w-4 text-green-500" />,
-  failed: <CircleX className="h-4 w-4 text-red-500" />,
-  running: <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />,
-  pending: <Clock className="h-4 w-4 text-yellow-500" />,
+  success: <IconCircleCheckFilled className="h-4 w-4 text-green-500" />,
+  failed: <IconCircleXFilled className="h-4 w-4 text-red-500" />,
+  running: <IconLoader2 className="h-4 w-4 text-blue-500 animate-spin" />,
+  pending: <IconClockFilled className="h-4 w-4 text-yellow-500" />,
 };
 
 function RunDetail({ exec }: { exec: Execution }) {
@@ -71,7 +71,7 @@ function RunDetail({ exec }: { exec: Execution }) {
               <p className="text-[10px] text-muted-foreground mb-0.5">
                 Function
               </p>
-              <p className="text-xs font-medium text-primary">
+              <p className="text-xs font-medium text-purple-300">
                 {exec.job?.name || exec.jobId.slice(0, 8)}
               </p>
             </div>
@@ -149,7 +149,7 @@ function RunDetail({ exec }: { exec: Execution }) {
           </div>
           {exec.errorMessage && (
             <div className="rounded border border-destructive/30 bg-destructive/5 px-3 py-2 mb-3 flex items-start gap-2 ml-6">
-              <CircleX className="h-3.5 w-3.5 text-destructive mt-0.5 shrink-0" />
+              <IconCircleXFilled className="h-3.5 w-3.5 text-destructive mt-0.5 shrink-0" />
               <p className="text-xs text-destructive">{exec.errorMessage}</p>
             </div>
           )}
@@ -275,30 +275,30 @@ export default function RunsPage() {
     <div>
       <PageHeader title="Runs" />
       <div className="p-6">
-      <DataTable
-        columns={columns}
-        data={data?.items}
-        isLoading={isLoading}
-        keyFn={(exec) => exec.id}
-        expandable={{ render: (exec) => <RunDetail exec={exec} /> }}
-        emptyState={
-          <EmptyState
-            icon={Play}
-            title="No runs yet"
-            description="Execution history will appear here once your crons start running."
-          />
-        }
-        pagination={
-          data
-            ? {
-                total: data.total,
-                page,
-                limit: 20,
-                onPageChange: setPage,
-              }
-            : undefined
-        }
-      />
+        <DataTable
+          columns={columns}
+          data={data?.items}
+          isLoading={isLoading}
+          keyFn={(exec) => exec.id}
+          expandable={{ render: (exec) => <RunDetail exec={exec} /> }}
+          emptyState={
+            <EmptyState
+              icon={IconPlayerPlayFilled}
+              title="No runs yet"
+              description="Execution history will appear here once your crons start running."
+            />
+          }
+          pagination={
+            data
+              ? {
+                  total: data.total,
+                  page,
+                  limit: 20,
+                  onPageChange: setPage,
+                }
+              : undefined
+          }
+        />
       </div>
     </div>
   );

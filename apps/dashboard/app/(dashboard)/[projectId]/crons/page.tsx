@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { Clock } from "lucide-react";
+import { IconClockFilled } from "@tabler/icons-react";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/empty-state";
 import { StatusBadge } from "@/components/status-badge";
@@ -73,7 +73,7 @@ export default function CronsPage() {
           isLoading={isLoading}
           keyFn={(job) => job.id}
           emptyState={
-            <EmptyState icon={Clock} title="No crons yet" description="Functions registered via the SDK will appear here." />
+            <EmptyState icon={IconClockFilled} title="No crons yet" description="Functions registered via the SDK will appear here." />
           }
         />
       </div>

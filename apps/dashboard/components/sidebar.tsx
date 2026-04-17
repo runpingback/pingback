@@ -3,30 +3,30 @@
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import {
-  Clock,
-  ListChecks,
-  Play,
-  Terminal,
-  Key,
-  Bell,
-  FolderOpen,
-  Settings,
-} from "lucide-react";
+  IconClockFilled,
+  IconListCheck,
+  IconPlayerPlayFilled,
+  IconTerminal2,
+  IconKeyFilled,
+  IconBellFilled,
+  IconFolderFilled,
+  IconSettingsFilled,
+} from "@tabler/icons-react";
 import { ProjectSwitcher } from "./project-switcher";
 import { UserMenu } from "./user-menu";
 import { cn } from "@/lib/utils";
 
 const projectNav = [
-  { name: "Crons", href: "crons", icon: Clock },
-  { name: "Tasks", href: "tasks", icon: ListChecks },
-  { name: "Runs", href: "runs", icon: Play },
-  { name: "Logs", href: "logs", icon: Terminal },
-  { name: "API Keys", href: "api-keys", icon: Key },
-  { name: "Alerts", href: "alerts", icon: Bell },
-  { name: "Settings", href: "settings", icon: Settings },
+  { name: "Runs", href: "runs", icon: IconPlayerPlayFilled },
+  { name: "Crons", href: "crons", icon: IconClockFilled },
+  { name: "Tasks", href: "tasks", icon: IconListCheck },
+  { name: "Logs", href: "logs", icon: IconTerminal2 },
+  { name: "API Keys", href: "api-keys", icon: IconKeyFilled },
+  { name: "Alerts", href: "alerts", icon: IconBellFilled },
+  { name: "Settings", href: "settings", icon: IconSettingsFilled },
 ];
 
-const accountNav = [{ name: "Projects", href: "/projects", icon: FolderOpen }];
+const accountNav = [{ name: "Projects", href: "/projects", icon: IconFolderFilled }];
 
 export function Sidebar() {
   const params = useParams();
@@ -44,7 +44,7 @@ export function Sidebar() {
       <nav className="flex-1 overflow-y-auto px-2 py-3">
         {projectId && (
           <div className="mb-4">
-            <p className="px-3 mb-1 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+            <p className="px-3 mb-1 text-[11px] font-semibold text-muted-foreground">
               Project
             </p>
             {projectNav.map((item) => {
@@ -70,7 +70,7 @@ export function Sidebar() {
         )}
 
         <div>
-          <p className="px-3 mb-1 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+          <p className="px-3 mb-1 text-[11px] font-semibold text-muted-foreground">
             Account
           </p>
           {accountNav.map((item) => {

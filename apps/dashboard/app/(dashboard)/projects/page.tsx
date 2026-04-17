@@ -1,8 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { FolderOpen } from "lucide-react";
-import { EmptyState } from "@/components/empty-state";
 import { DataTable, type Column } from "@/components/data-table";
 import { useProjects, type Project } from "@/lib/hooks/use-projects";
 import { CreateProjectDialog } from "@/components/create-project-dialog";

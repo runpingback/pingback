@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { ListChecks } from "lucide-react";
+import { IconListCheck } from "@tabler/icons-react";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/empty-state";
 import { StatusBadge } from "@/components/status-badge";
@@ -54,7 +54,7 @@ export default function TasksPage() {
           isLoading={isLoading}
           keyFn={(job) => job.id}
           emptyState={
-            <EmptyState icon={ListChecks} title="No tasks yet" description="Background tasks defined with task() will appear here." />
+            <EmptyState icon={IconListCheck} title="No tasks yet" description="Background tasks defined with task() will appear here." />
           }
         />
       </div>

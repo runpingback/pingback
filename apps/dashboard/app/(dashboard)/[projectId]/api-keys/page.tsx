@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Key, Trash2 } from "lucide-react";
+import { IconKeyFilled, IconTrashFilled } from "@tabler/icons-react";
 import { EmptyState } from "@/components/empty-state";
 import { DataTable, type Column } from "@/components/data-table";
 import { CreateApiKeyDialog } from "@/components/create-api-key-dialog";
@@ -64,7 +64,7 @@ export default function ApiKeysPage() {
       className: "w-12",
       render: (key) => (
         <Button variant="ghost" size="sm" onClick={(e) => handleRevoke(e, key.id, key.name)}>
-          <Trash2 className="h-4 w-4 text-destructive" />
+          <IconTrashFilled className="h-4 w-4 text-destructive" />
         </Button>
       ),
     },
@@ -85,7 +85,7 @@ export default function ApiKeysPage() {
           isLoading={isLoading}
           keyFn={(key) => key.id}
           emptyState={
-            <EmptyState icon={Key} title="No API keys" description="Create an API key to connect your app to Pingback." />
+            <EmptyState icon={IconKeyFilled} title="No API keys" description="Create an API key to connect your app to Pingback." />
           }
         />
       </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useParams } from "next/navigation";
-import { ChevronsUpDown, Plus } from "lucide-react";
+import { IconSelector, IconPlus } from "@tabler/icons-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,7 +40,7 @@ export function ProjectSwitcher() {
               {currentProject?.name || "Select project"}
             </span>
           </div>
-          <ChevronsUpDown className="ml-2 h-4 w-4 text-muted-foreground shrink-0" />
+          <IconSelector className="ml-2 h-4 w-4 text-muted-foreground shrink-0" />
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="start">
@@ -56,7 +56,7 @@ export function ProjectSwitcher() {
         ))}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => router.push("/projects")}>
-          <Plus className="mr-2 h-4 w-4" /> Create new project
+          <IconPlus className="mr-2 h-4 w-4" /> Create new project
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

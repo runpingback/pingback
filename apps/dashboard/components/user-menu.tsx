@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, Settings } from "lucide-react";
+import { IconLogout, IconSettingsFilled } from "@tabler/icons-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -17,9 +17,9 @@ export function UserMenu() {
         <span className="text-sm text-muted-foreground truncate">Account</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-48">
-        <DropdownMenuItem><Settings className="mr-2 h-4 w-4" /> Settings</DropdownMenuItem>
+        <DropdownMenuItem><IconSettingsFilled className="mr-2 h-4 w-4" /> Settings</DropdownMenuItem>
         <DropdownMenuItem onClick={() => clearTokens()}>
-          <LogOut className="mr-2 h-4 w-4" /> Logout
+          <IconLogout className="mr-2 h-4 w-4" /> Logout
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

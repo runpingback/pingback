@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus } from "lucide-react";
+import { IconPlus } from "@tabler/icons-react";
 import { useCreateProject } from "@/lib/hooks/use-projects";
 import { toast } from "sonner";
 
@@ -36,7 +36,7 @@ export function CreateProjectDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm"><Plus className="mr-2 h-4 w-4" /> Create project</Button>
+        <Button size="sm"><IconPlus className="mr-2 h-4 w-4" /> Create project</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader><DialogTitle>Create a new project</DialogTitle></DialogHeader>

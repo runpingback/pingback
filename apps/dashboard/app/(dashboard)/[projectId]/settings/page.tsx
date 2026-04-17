@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Check, Copy } from "lucide-react";
+import { IconCheck, IconCopy } from "@tabler/icons-react";
 import { useProject, useDeleteProject } from "@/lib/hooks/use-projects";
 import { apiClient } from "@/lib/api";
 import { toast } from "sonner";
@@ -106,7 +106,7 @@ export default function ProjectSettingsPage() {
           <div className="flex items-center gap-2 p-3 bg-background rounded-md border font-mono text-sm break-all">
             <span className="flex-1 text-muted-foreground">{project.cronSecret || "Not available"}</span>
             <Button variant="ghost" size="sm" onClick={handleCopySecret} disabled={!project.cronSecret}>
-              {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+              {copied ? <IconCheck className="h-4 w-4 text-green-500" /> : <IconCopy className="h-4 w-4" />}
             </Button>
           </div>
         </CardContent>

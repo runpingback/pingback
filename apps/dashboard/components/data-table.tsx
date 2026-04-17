@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -154,9 +154,9 @@ export function DataTable<T>({
                   {expandable && (
                     <td className="w-10 p-2 text-center">
                       {isExpanded ? (
-                        <ChevronDown className="h-4 w-4 text-muted-foreground inline" />
+                        <IconChevronDown className="h-4 w-4 text-muted-foreground inline" />
                       ) : (
-                        <ChevronRight className="h-4 w-4 text-muted-foreground inline" />
+                        <IconChevronRight className="h-4 w-4 text-muted-foreground inline" />
                       )}
                     </td>
                   )}

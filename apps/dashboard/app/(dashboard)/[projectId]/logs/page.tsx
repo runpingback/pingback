@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
-import { Terminal, Search } from "lucide-react";
+import { IconTerminal2, IconSearch } from "@tabler/icons-react";
 import { formatDateTime } from "@/lib/format";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -39,7 +39,7 @@ export default function LogsPage() {
             className="w-64"
           />
           <Button type="submit" variant="outline" size="icon">
-            <Search className="h-4 w-4" />
+            <IconSearch className="h-4 w-4" />
           </Button>
         </form>
       </PageHeader>
@@ -53,7 +53,7 @@ export default function LogsPage() {
         </div>
       ) : !data?.items?.length ? (
         <EmptyState
-          icon={Terminal}
+          icon={IconTerminal2}
           title="No logs yet"
           description="Logs from ctx.log() calls will appear here."
         />
