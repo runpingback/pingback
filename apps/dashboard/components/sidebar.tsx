@@ -35,8 +35,10 @@ export function Sidebar() {
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-52 border-r flex flex-col bg-background">
-      <div className="h-12 flex items-center px-2 border-b w-full">
-        <ProjectSwitcher />
+      <div className="h-12 flex items-center px-2 border-b">
+        <div className="flex-1 min-w-0">
+          <ProjectSwitcher />
+        </div>
       </div>
 
       <nav className="flex-1 overflow-y-auto px-2 py-3">
