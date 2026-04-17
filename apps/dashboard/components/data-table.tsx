@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -28,6 +28,8 @@ interface DataTableProps<T> {
     limit: number;
     onPageChange: (page: number) => void;
   };
+  selectable?: boolean;
+  onSelectionChange?: (selectedIds: string[]) => void;
 }
 
 export function DataTable<T>({
@@ -39,8 +41,36 @@ export function DataTable<T>({
   onRowClick,
   emptyState,
   pagination,
+  selectable = true,
+  onSelectionChange,
 }: DataTableProps<T>) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  const allIds = data?.map(keyFn) || [];
+  const allSelected = allIds.length > 0 && allIds.every((id) => selectedIds.has(id));
+  const someSelected = allIds.some((id) => selectedIds.has(id));
+
+  const toggleAll = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    const next = new Set<string>();
+    if (!allSelected) {
+      allIds.forEach((id) => next.add(id));
+    }
+    setSelectedIds(next);
+    onSelectionChange?.(Array.from(next));
+  }, [allIds, allSelected, onSelectionChange]);
+
+  const toggleOne = useCallback((e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      onSelectionChange?.(Array.from(next));
+      return next;
+    });
+  }, [onSelectionChange]);
 
   function handleRowClick(item: T) {
     const id = keyFn(item);
@@ -65,6 +95,7 @@ export function DataTable<T>({
   }
 
   const isClickable = !!expandable || !!onRowClick;
+  const extraCols = (selectable ? 1 : 0) + (expandable ? 1 : 0);
 
   return (
     <>
@@ -72,6 +103,18 @@ export function DataTable<T>({
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b bg-secondary/30">
+              {selectable && (
+                <th className="w-10 p-2 text-center">
+                  <input
+                    type="checkbox"
+                    checked={allSelected}
+                    ref={(el) => { if (el) el.indeterminate = someSelected && !allSelected; }}
+                    onChange={() => {}}
+                    onClick={toggleAll}
+                    className="h-3.5 w-3.5 rounded border-border bg-transparent accent-primary cursor-pointer"
+                  />
+                </th>
+              )}
               {expandable && <th className="w-10 p-2" />}
               {columns.map((col) => (
                 <th
@@ -86,13 +129,25 @@ export function DataTable<T>({
           {data.map((item, index) => {
             const id = keyFn(item);
             const isExpanded = expandedId === id;
+            const isSelected = selectedIds.has(id);
 
             return (
               <tbody key={id}>
                 <tr
-                  className={`border-b transition-colors ${isClickable ? "cursor-pointer hover:bg-secondary/50" : ""} ${isExpanded ? "bg-secondary/30" : ""}`}
+                  className={`border-b transition-colors ${isClickable ? "cursor-pointer hover:bg-secondary/50" : ""} ${isExpanded ? "bg-secondary/30" : ""} ${isSelected ? "bg-secondary/20" : ""}`}
                   onClick={() => handleRowClick(item)}
                 >
+                  {selectable && (
+                    <td className="w-10 p-2 text-center">
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => {}}
+                        onClick={(e) => toggleOne(e, id)}
+                        className="h-3.5 w-3.5 rounded border-border bg-transparent accent-primary cursor-pointer"
+                      />
+                    </td>
+                  )}
                   {expandable && (
                     <td className="w-10 p-2 text-center">
                       {isExpanded ? (
@@ -110,7 +165,7 @@ export function DataTable<T>({
                 </tr>
                 {expandable && isExpanded && (
                   <tr>
-                    <td colSpan={columns.length + 1} className="p-0">
+                    <td colSpan={columns.length + extraCols} className="p-0">
                       {expandable.render(item)}
                     </td>
                   </tr>
@@ -124,7 +179,9 @@ export function DataTable<T>({
       {pagination && (
         <div className="flex items-center justify-between mt-4">
           <p className="text-sm text-muted-foreground">
-            {pagination.total} total
+            {selectedIds.size > 0
+              ? `${selectedIds.size} of ${pagination.total} selected`
+              : `${pagination.total} total`}
           </p>
           <div className="flex gap-2">
             <Button
