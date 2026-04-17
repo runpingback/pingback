@@ -7,6 +7,7 @@ import { EmptyState } from "@/components/empty-state";
 import { StatusBadge } from "@/components/status-badge";
 import { DataTable, type Column } from "@/components/data-table";
 import { useJobs, type Job } from "@/lib/hooks/use-jobs";
+import { formatDateTime } from "@/lib/format";
 
 const columns: Column<Job>[] = [
   {
@@ -29,7 +30,7 @@ const columns: Column<Job>[] = [
     header: "Last Run",
     render: (job) => (
       <span className="text-muted-foreground">
-        {job.lastRunAt ? new Date(job.lastRunAt).toLocaleString() : "Never"}
+        {job.lastRunAt ? formatDateTime(job.lastRunAt) : "Never"}
       </span>
     ),
   },
@@ -38,7 +39,7 @@ const columns: Column<Job>[] = [
     header: "Next Run",
     render: (job) => (
       <span className="text-muted-foreground">
-        {job.nextRunAt ? new Date(job.nextRunAt).toLocaleString() : "—"}
+        {job.nextRunAt ? formatDateTime(job.nextRunAt) : "—"}
       </span>
     ),
   },

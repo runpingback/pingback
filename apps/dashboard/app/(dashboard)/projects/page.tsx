@@ -6,6 +6,7 @@ import { EmptyState } from "@/components/empty-state";
 import { DataTable, type Column } from "@/components/data-table";
 import { useProjects, type Project } from "@/lib/hooks/use-projects";
 import { CreateProjectDialog } from "@/components/create-project-dialog";
+import { formatDate } from "@/lib/format";
 
 const columns: Column<Project>[] = [
   {
@@ -22,7 +23,7 @@ const columns: Column<Project>[] = [
     key: "created",
     header: "Created",
     render: (project) => (
-      <span className="text-muted-foreground">{new Date(project.createdAt).toLocaleDateString()}</span>
+      <span className="text-muted-foreground">{formatDate(project.createdAt)}</span>
     ),
   },
 ];

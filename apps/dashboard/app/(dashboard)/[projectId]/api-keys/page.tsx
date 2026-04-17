@@ -10,6 +10,7 @@ import { CreateApiKeyDialog } from "@/components/create-api-key-dialog";
 import { ApiKeyCreatedDialog } from "@/components/api-key-created-dialog";
 import { useApiKeys, useRevokeApiKey, type ApiKey } from "@/lib/hooks/use-api-keys";
 import { toast } from "sonner";
+import { formatDate } from "@/lib/format";
 
 export default function ApiKeysPage() {
   const params = useParams();
@@ -45,7 +46,7 @@ export default function ApiKeysPage() {
       header: "Last Used",
       render: (key) => (
         <span className="text-muted-foreground">
-          {key.lastUsedAt ? new Date(key.lastUsedAt).toLocaleDateString() : "Never"}
+          {key.lastUsedAt ? formatDate(key.lastUsedAt) : "Never"}
         </span>
       ),
     },
@@ -53,7 +54,7 @@ export default function ApiKeysPage() {
       key: "created",
       header: "Created",
       render: (key) => (
-        <span className="text-muted-foreground">{new Date(key.createdAt).toLocaleDateString()}</span>
+        <span className="text-muted-foreground">{formatDate(key.createdAt)}</span>
       ),
     },
     {

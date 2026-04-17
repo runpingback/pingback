@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import { Terminal, Search } from "lucide-react";
+import { formatDateTime } from "@/lib/format";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
@@ -69,7 +70,7 @@ export default function LogsPage() {
               {data.items.map((log, i) => (
                 <TableRow key={`${log.executionId}-${i}`}>
                   <TableCell className="text-muted-foreground whitespace-nowrap">
-                    {new Date(log.timestamp).toLocaleString()}
+                    {formatDateTime(log.timestamp)}
                   </TableCell>
                   <TableCell className="font-medium whitespace-nowrap">
                     {log.jobName}

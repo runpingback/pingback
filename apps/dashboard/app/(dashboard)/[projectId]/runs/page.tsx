@@ -10,6 +10,7 @@ import { StatusBadge } from "@/components/status-badge";
 import { CodeBlock } from "@/components/code-block";
 import { DataTable, type Column } from "@/components/data-table";
 import { useExecutions, type Execution } from "@/lib/hooks/use-executions";
+import { formatDateTime, formatDuration } from "@/lib/format";
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
@@ -43,10 +44,7 @@ function RunDetail({ exec }: { exec: Execution }) {
     catch { return exec.responseBody; }
   })();
 
-  const durationFormatted =
-    exec.durationMs != null
-      ? exec.durationMs >= 1000 ? `${(exec.durationMs / 1000).toFixed(1)}s` : `${exec.durationMs}ms`
-      : "—";
+  const durationFormatted = formatDuration(exec.durationMs);
 
   return (
     <div className="border-t border-border bg-background">
@@ -69,15 +67,15 @@ function RunDetail({ exec }: { exec: Execution }) {
           <div className="grid grid-cols-3 gap-4">
             <div>
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Scheduled at</p>
-              <p className="text-xs">{new Date(exec.scheduledAt).toLocaleString()}</p>
+              <p className="text-xs">{formatDateTime(exec.scheduledAt)}</p>
             </div>
             <div>
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Started at</p>
-              <p className="text-xs">{exec.startedAt ? new Date(exec.startedAt).toLocaleString() : "—"}</p>
+              <p className="text-xs">{exec.startedAt ? formatDateTime(exec.startedAt) : "—"}</p>
             </div>
             <div>
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Completed at</p>
-              <p className="text-xs">{exec.completedAt ? new Date(exec.completedAt).toLocaleString() : "—"}</p>
+              <p className="text-xs">{exec.completedAt ? formatDateTime(exec.completedAt) : "—"}</p>
             </div>
           </div>
         </div>
@@ -126,7 +124,7 @@ function RunDetail({ exec }: { exec: Execution }) {
               {exec.logs.map((log, i) => {
                 const prevTs = i > 0 ? exec.logs[i - 1].timestamp : (exec.startedAt ? new Date(exec.startedAt).getTime() : log.timestamp);
                 const stepDuration = log.timestamp - prevTs;
-                const stepFormatted = stepDuration >= 1000 ? `${(stepDuration / 1000).toFixed(1)}s` : `${stepDuration}ms`;
+                const stepFormatted = formatDuration(stepDuration);
                 return (
                   <div key={i} className="flex items-center py-1 border-l border-border pl-3 ml-1">
                     <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -196,7 +194,7 @@ export default function RunsPage() {
       header: "Started",
       render: (exec) => (
         <span className="text-muted-foreground">
-          {exec.startedAt ? new Date(exec.startedAt).toLocaleString() : "—"}
+          {exec.startedAt ? formatDateTime(exec.startedAt) : "—"}
         </span>
       ),
     },
@@ -205,7 +203,7 @@ export default function RunsPage() {
       header: "Duration",
       render: (exec) => (
         <span className="text-muted-foreground">
-          {exec.durationMs != null ? `${(exec.durationMs / 1000).toFixed(1)}s` : "—"}
+          {formatDuration(exec.durationMs)}
         </span>
       ),
     },
@@ -218,7 +216,7 @@ export default function RunsPage() {
       key: "created",
       header: "Created",
       render: (exec) => (
-        <span className="text-muted-foreground">{new Date(exec.createdAt).toLocaleString()}</span>
+        <span className="text-muted-foreground">{formatDateTime(exec.createdAt)}</span>
       ),
     },
   ];
