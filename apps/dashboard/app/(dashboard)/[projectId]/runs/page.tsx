@@ -16,10 +16,8 @@ import { useExecutions, type Execution } from "@/lib/hooks/use-executions";
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
   return (
-    <Button
-      variant="ghost"
-      size="sm"
-      className="h-7 px-2 text-xs"
+    <button
+      className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground border rounded px-2 py-1 transition-colors"
       onClick={(e) => {
         e.stopPropagation();
         navigator.clipboard.writeText(text);
@@ -27,9 +25,9 @@ function CopyButton({ text }: { text: string }) {
         setTimeout(() => setCopied(false), 2000);
       }}
     >
-      {copied ? <Check className="h-3 w-3 mr-1" /> : <Copy className="h-3 w-3 mr-1" />}
+      {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
       Copy
-    </Button>
+    </button>
   );
 }
 
@@ -47,80 +45,131 @@ function RunDetail({ exec }: { exec: Execution }) {
     catch { return exec.responseBody; }
   })();
 
-  // Format logs as a readable text block for syntax highlighting
-  const logsText = exec.logs?.length
-    ? exec.logs.map((log) => {
-        const time = new Date(log.timestamp).toLocaleTimeString([], {
-          hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit",
-        });
-        return `[${time}] ${log.message}`;
-      }).join("\n")
-    : null;
+  const durationFormatted = exec.durationMs != null
+    ? exec.durationMs >= 1000 ? `${(exec.durationMs / 1000).toFixed(1)}s` : `${exec.durationMs}ms`
+    : "—";
 
   return (
     <div className="border-t border-border">
-      {/* Top metadata bar */}
-      <div className="grid grid-cols-2 md:grid-cols-6 gap-px bg-border">
-        <div className="bg-secondary/50 px-4 py-3">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Run ID</p>
-          <p className="text-xs font-mono mt-0.5 truncate">{exec.id.slice(0, 20)}...</p>
+      {/* Metadata — two rows like Inngest */}
+      <div className="grid grid-cols-1 md:grid-cols-2 divide-x divide-border">
+        {/* Left metadata */}
+        <div className="p-4 pb-2">
+          <div className="flex gap-8 mb-3">
+            <div>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Run ID</p>
+              <p className="text-xs font-mono">{exec.id.slice(0, 24)}...</p>
+            </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Function</p>
+              <p className="text-xs font-medium text-primary">{exec.job?.name || exec.jobId.slice(0, 8)}</p>
+            </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Duration</p>
+              <p className="text-xs font-medium">{durationFormatted}</p>
+            </div>
+          </div>
+          <div className="flex gap-8">
+            <div>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Scheduled at</p>
+              <p className="text-xs">{new Date(exec.scheduledAt).toLocaleString()}</p>
+            </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Started at</p>
+              <p className="text-xs">{exec.startedAt ? new Date(exec.startedAt).toLocaleString() : "—"}</p>
+            </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Completed at</p>
+              <p className="text-xs">{exec.completedAt ? new Date(exec.completedAt).toLocaleString() : "—"}</p>
+            </div>
+          </div>
         </div>
-        <div className="bg-secondary/50 px-4 py-3">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Function</p>
-          <p className="text-xs font-medium text-primary mt-0.5">{exec.job?.name || exec.jobId.slice(0, 8)}</p>
-        </div>
-        <div className="bg-secondary/50 px-4 py-3">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Duration</p>
-          <p className="text-xs font-medium mt-0.5">{exec.durationMs != null ? `${(exec.durationMs / 1000).toFixed(2)}s` : "—"}</p>
-        </div>
-        <div className="bg-secondary/50 px-4 py-3">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Started at</p>
-          <p className="text-xs mt-0.5">{exec.startedAt ? new Date(exec.startedAt).toLocaleString() : "—"}</p>
-        </div>
-        <div className="bg-secondary/50 px-4 py-3">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Completed at</p>
-          <p className="text-xs mt-0.5">{exec.completedAt ? new Date(exec.completedAt).toLocaleString() : "—"}</p>
-        </div>
-        <div className="bg-secondary/50 px-4 py-3">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">HTTP Status</p>
-          <p className="text-xs font-medium mt-0.5">{exec.httpStatus || "—"}</p>
+
+        {/* Right metadata */}
+        <div className="p-4 pb-2">
+          <div className="flex gap-8">
+            <div>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">HTTP Status</p>
+              <p className="text-xs font-medium">{exec.httpStatus || "—"}</p>
+            </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Attempt</p>
+              <p className="text-xs font-medium">{exec.attempt}</p>
+            </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Duration</p>
+              <p className="text-xs font-medium">{durationFormatted}</p>
+            </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Status</p>
+              <StatusBadge status={exec.status} />
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Two-panel layout: Trace/Logs left, Output right */}
-      <div className="grid grid-cols-1 md:grid-cols-2 divide-x divide-border min-h-[200px]">
-        {/* Left panel — Trace / Logs */}
+      {/* Two-panel: Trace left, Output right */}
+      <div className="grid grid-cols-1 md:grid-cols-2 divide-x divide-border border-t border-border">
+        {/* Trace panel */}
         <div className="p-4">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Trace</p>
-            {logsText && <CopyButton text={logsText} />}
+          <p className="text-sm font-medium mb-3">Trace</p>
+
+          {/* Timeline bar */}
+          <div className="mb-4">
+            <div className="flex items-center gap-2 mb-1">
+              <div className="flex items-center gap-1.5">
+                {statusIcon[exec.status]}
+                <span className="text-sm font-medium">Run</span>
+              </div>
+              <span className="text-xs text-muted-foreground">{durationFormatted}</span>
+            </div>
+            <div className="ml-6 h-5 rounded-sm bg-border overflow-hidden">
+              <div
+                className={`h-full rounded-sm ${exec.status === "success" ? "bg-green-500" : exec.status === "failed" ? "bg-red-500" : "bg-blue-500"}`}
+                style={{ width: "100%" }}
+              />
+            </div>
           </div>
 
+          {/* Error */}
           {exec.errorMessage && (
-            <div className="rounded border border-destructive/30 bg-destructive/5 px-3 py-2 mb-3 flex items-start gap-2">
+            <div className="rounded border border-destructive/30 bg-destructive/5 px-3 py-2 mb-3 flex items-start gap-2 ml-6">
               <CircleX className="h-3.5 w-3.5 text-destructive mt-0.5 shrink-0" />
-              <p className="text-xs font-medium text-destructive">{exec.errorMessage}</p>
+              <p className="text-xs text-destructive">{exec.errorMessage}</p>
             </div>
           )}
 
-          {logsText ? (
-            <div className="rounded border bg-black p-3 overflow-auto max-h-[300px]">
-              <CodeBlock code={logsText} lang="log" />
+          {/* Log steps as tree items */}
+          {exec.logs && exec.logs.length > 0 && (
+            <div className="ml-6 space-y-0">
+              {exec.logs.map((log, i) => {
+                const prevTs = i > 0 ? exec.logs[i - 1].timestamp : (exec.startedAt ? new Date(exec.startedAt).getTime() : log.timestamp);
+                const stepDuration = log.timestamp - prevTs;
+                const stepFormatted = stepDuration >= 1000 ? `${(stepDuration / 1000).toFixed(1)}s` : `${stepDuration}ms`;
+
+                return (
+                  <div key={i} className="flex items-center py-1 border-l border-border pl-3 ml-1">
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground shrink-0" />
+                      <span className="text-xs truncate">{log.message}</span>
+                    </div>
+                    <span className="text-[10px] text-muted-foreground tabular-nums shrink-0 ml-2">{stepFormatted}</span>
+                  </div>
+                );
+              })}
             </div>
-          ) : (
-            <p className="text-xs text-muted-foreground">No log entries</p>
           )}
         </div>
 
-        {/* Right panel — Output */}
+        {/* Output panel */}
         <div className="p-4">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Output</p>
+            <p className="text-sm font-medium">Output</p>
             {formattedOutput && <CopyButton text={formattedOutput} />}
           </div>
 
           {formattedOutput ? (
-            <div className="rounded border bg-black p-3 overflow-auto max-h-[300px]">
+            <div className="overflow-auto max-h-[400px]">
               <CodeBlock code={formattedOutput} lang="json" />
             </div>
           ) : (
