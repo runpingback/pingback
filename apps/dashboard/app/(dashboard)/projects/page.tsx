@@ -1,12 +1,34 @@
 "use client";
 
-import Link from "next/link";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useProjects } from "@/lib/hooks/use-projects";
+import { useRouter } from "next/navigation";
+import { FolderOpen } from "lucide-react";
+import { EmptyState } from "@/components/empty-state";
+import { DataTable, type Column } from "@/components/data-table";
+import { useProjects, type Project } from "@/lib/hooks/use-projects";
 import { CreateProjectDialog } from "@/components/create-project-dialog";
 
+const columns: Column<Project>[] = [
+  {
+    key: "name",
+    header: "Name",
+    render: (project) => <span className="text-primary font-medium">{project.name}</span>,
+  },
+  {
+    key: "endpointUrl",
+    header: "Endpoint URL",
+    render: (project) => <span className="text-muted-foreground">{project.endpointUrl}</span>,
+  },
+  {
+    key: "created",
+    header: "Created",
+    render: (project) => (
+      <span className="text-muted-foreground">{new Date(project.createdAt).toLocaleDateString()}</span>
+    ),
+  },
+];
+
 export default function ProjectsPage() {
+  const router = useRouter();
   const { data: projects, isLoading } = useProjects();
 
   return (
@@ -15,40 +37,19 @@ export default function ProjectsPage() {
         <h1 className="text-2xl font-bold">Projects</h1>
         <CreateProjectDialog />
       </div>
-
-      {isLoading ? (
-        <div className="space-y-2">
-          {Array.from({ length: 3 }).map((_, i) => (<Skeleton key={i} className="h-12 w-full" />))}
-        </div>
-      ) : projects?.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground mb-4">No projects yet. Create one to get started.</p>
-          <CreateProjectDialog />
-        </div>
-      ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Endpoint URL</TableHead>
-              <TableHead>Created</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {projects?.map((project) => (
-              <TableRow key={project.id}>
-                <TableCell>
-                  <Link href={`/${project.id}/crons`} className="text-primary hover:underline font-medium">
-                    {project.name}
-                  </Link>
-                </TableCell>
-                <TableCell className="text-muted-foreground">{project.endpointUrl}</TableCell>
-                <TableCell className="text-muted-foreground">{new Date(project.createdAt).toLocaleDateString()}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      )}
+      <DataTable
+        columns={columns}
+        data={projects}
+        isLoading={isLoading}
+        keyFn={(project) => project.id}
+        onRowClick={(project) => router.push(`/${project.id}/crons`)}
+        emptyState={
+          <div className="text-center py-12">
+            <p className="text-muted-foreground mb-4">No projects yet. Create one to get started.</p>
+            <CreateProjectDialog />
+          </div>
+        }
+      />
     </div>
   );
 }

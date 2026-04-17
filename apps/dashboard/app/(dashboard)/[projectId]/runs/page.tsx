@@ -3,21 +3,12 @@
 import React, { useState } from "react";
 import { useParams } from "next/navigation";
 import {
-  Play,
-  ChevronDown,
-  ChevronRight,
-  Copy,
-  Check,
-  CircleCheck,
-  CircleX,
-  Clock,
-  Loader2,
+  Play, Copy, Check, CircleCheck, CircleX, Clock, Loader2,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/empty-state";
 import { StatusBadge } from "@/components/status-badge";
 import { CodeBlock } from "@/components/code-block";
+import { DataTable, type Column } from "@/components/data-table";
 import { useExecutions, type Execution } from "@/lib/hooks/use-executions";
 
 function CopyButton({ text }: { text: string }) {
@@ -48,23 +39,17 @@ const statusIcon: Record<string, React.ReactNode> = {
 function RunDetail({ exec }: { exec: Execution }) {
   const formattedOutput = (() => {
     if (!exec.responseBody) return null;
-    try {
-      return JSON.stringify(JSON.parse(exec.responseBody), null, 2);
-    } catch {
-      return exec.responseBody;
-    }
+    try { return JSON.stringify(JSON.parse(exec.responseBody), null, 2); }
+    catch { return exec.responseBody; }
   })();
 
   const durationFormatted =
     exec.durationMs != null
-      ? exec.durationMs >= 1000
-        ? `${(exec.durationMs / 1000).toFixed(1)}s`
-        : `${exec.durationMs}ms`
+      ? exec.durationMs >= 1000 ? `${(exec.durationMs / 1000).toFixed(1)}s` : `${exec.durationMs}ms`
       : "—";
 
   return (
     <div className="border-t border-border bg-background">
-      {/* Metadata grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 divide-x divide-border">
         <div className="p-4 pb-3">
           <div className="grid grid-cols-3 gap-4 mb-4">
@@ -92,11 +77,7 @@ function RunDetail({ exec }: { exec: Execution }) {
             </div>
             <div>
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Completed at</p>
-              <p className="text-xs">
-                {exec.completedAt
-                  ? new Date(exec.completedAt).toLocaleString()
-                  : "—"}
-              </p>
+              <p className="text-xs">{exec.completedAt ? new Date(exec.completedAt).toLocaleString() : "—"}</p>
             </div>
           </div>
         </div>
@@ -118,7 +99,6 @@ function RunDetail({ exec }: { exec: Execution }) {
         </div>
       </div>
 
-      {/* Trace + Output */}
       <div className="grid grid-cols-1 md:grid-cols-2 divide-x divide-border border-t border-border">
         <div className="p-4">
           <p className="text-sm font-medium mb-3">Trace</p>
@@ -126,9 +106,7 @@ function RunDetail({ exec }: { exec: Execution }) {
             <div className="flex items-center gap-2 mb-1">
               {statusIcon[exec.status]}
               <span className="text-sm font-medium">Run</span>
-              <span className="text-xs text-muted-foreground">
-                {durationFormatted}
-              </span>
+              <span className="text-xs text-muted-foreground">{durationFormatted}</span>
             </div>
             <div className="ml-6 h-5 rounded-sm bg-border overflow-hidden">
               <div
@@ -146,29 +124,16 @@ function RunDetail({ exec }: { exec: Execution }) {
           {exec.logs && exec.logs.length > 0 && (
             <div className="ml-6 space-y-0">
               {exec.logs.map((log, i) => {
-                const prevTs =
-                  i > 0
-                    ? exec.logs[i - 1].timestamp
-                    : exec.startedAt
-                      ? new Date(exec.startedAt).getTime()
-                      : log.timestamp;
+                const prevTs = i > 0 ? exec.logs[i - 1].timestamp : (exec.startedAt ? new Date(exec.startedAt).getTime() : log.timestamp);
                 const stepDuration = log.timestamp - prevTs;
-                const stepFormatted =
-                  stepDuration >= 1000
-                    ? `${(stepDuration / 1000).toFixed(1)}s`
-                    : `${stepDuration}ms`;
+                const stepFormatted = stepDuration >= 1000 ? `${(stepDuration / 1000).toFixed(1)}s` : `${stepDuration}ms`;
                 return (
-                  <div
-                    key={i}
-                    className="flex items-center py-1 border-l border-border pl-3 ml-1"
-                  >
+                  <div key={i} className="flex items-center py-1 border-l border-border pl-3 ml-1">
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground shrink-0" />
                       <span className="text-xs truncate">{log.message}</span>
                     </div>
-                    <span className="text-[10px] text-muted-foreground tabular-nums shrink-0 ml-2">
-                      {stepFormatted}
-                    </span>
+                    <span className="text-[10px] text-muted-foreground tabular-nums shrink-0 ml-2">{stepFormatted}</span>
                   </div>
                 );
               })}
@@ -197,108 +162,90 @@ export default function RunsPage() {
   const params = useParams();
   const projectId = params.projectId as string;
   const [page, setPage] = useState(1);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
   const { data, isLoading } = useExecutions(projectId, { page, limit: 20 });
 
-  function toggleRow(id: string) {
-    setExpandedId((prev) => (prev === id ? null : id));
-  }
+  const columns: Column<Execution>[] = [
+    {
+      key: "run",
+      header: "Run",
+      render: (_, index) => (
+        <span className="text-primary font-mono">
+          {(data?.total || 0) - (page - 1) * 20 - index}
+        </span>
+      ),
+    },
+    {
+      key: "job",
+      header: "Job",
+      render: (exec) => (
+        <span className="font-medium">{exec.job?.name || exec.jobId.slice(0, 8)}</span>
+      ),
+    },
+    {
+      key: "status",
+      header: "Status",
+      render: (exec) => (
+        <div className="flex items-center gap-1.5">
+          {statusIcon[exec.status]}
+          <StatusBadge status={exec.status} />
+        </div>
+      ),
+    },
+    {
+      key: "started",
+      header: "Started",
+      render: (exec) => (
+        <span className="text-muted-foreground">
+          {exec.startedAt ? new Date(exec.startedAt).toLocaleString() : "—"}
+        </span>
+      ),
+    },
+    {
+      key: "duration",
+      header: "Duration",
+      render: (exec) => (
+        <span className="text-muted-foreground">
+          {exec.durationMs != null ? `${(exec.durationMs / 1000).toFixed(1)}s` : "—"}
+        </span>
+      ),
+    },
+    {
+      key: "attempt",
+      header: "Attempt",
+      render: (exec) => <span className="text-muted-foreground">{exec.attempt}</span>,
+    },
+    {
+      key: "created",
+      header: "Created",
+      render: (exec) => (
+        <span className="text-muted-foreground">{new Date(exec.createdAt).toLocaleString()}</span>
+      ),
+    },
+  ];
 
   return (
     <div>
       <h1 className="text-2xl font-bold mb-6">Runs</h1>
-
-      {isLoading ? (
-        <div className="space-y-2">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className="h-12 w-full" />
-          ))}
-        </div>
-      ) : !data?.items?.length ? (
-        <EmptyState
-          icon={Play}
-          title="No runs yet"
-          description="Execution history will appear here once your crons start running."
-        />
-      ) : (
-        <>
-          <div className="rounded-md border overflow-hidden">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b bg-secondary/30">
-                  <th className="w-10 p-2" />
-                  <th className="p-2 text-left text-xs font-medium text-muted-foreground">Run</th>
-                  <th className="p-2 text-left text-xs font-medium text-muted-foreground">Job</th>
-                  <th className="p-2 text-left text-xs font-medium text-muted-foreground">Status</th>
-                  <th className="p-2 text-left text-xs font-medium text-muted-foreground">Started</th>
-                  <th className="p-2 text-left text-xs font-medium text-muted-foreground">Duration</th>
-                  <th className="p-2 text-left text-xs font-medium text-muted-foreground">Attempt</th>
-                  <th className="p-2 text-left text-xs font-medium text-muted-foreground">Created</th>
-                </tr>
-              </thead>
-              {data.items.map((exec, index) => (
-                <tbody key={exec.id}>
-                  <tr
-                    className={`border-b cursor-pointer transition-colors hover:bg-secondary/50 ${expandedId === exec.id ? "bg-secondary/30" : ""}`}
-                    onClick={() => toggleRow(exec.id)}
-                  >
-                    <td className="w-10 p-2 text-center">
-                      {expandedId === exec.id ? (
-                        <ChevronDown className="h-4 w-4 text-muted-foreground inline" />
-                      ) : (
-                        <ChevronRight className="h-4 w-4 text-muted-foreground inline" />
-                      )}
-                    </td>
-                    <td className="p-2 text-primary font-mono">{data.total - (page - 1) * 20 - index}</td>
-                    <td className="p-2 font-medium">{exec.job?.name || exec.jobId.slice(0, 8)}</td>
-                    <td className="p-2">
-                      <div className="flex items-center gap-1.5">
-                        {statusIcon[exec.status]}
-                        <StatusBadge status={exec.status} />
-                      </div>
-                    </td>
-                    <td className="p-2 text-muted-foreground">{exec.startedAt ? new Date(exec.startedAt).toLocaleString() : "—"}</td>
-                    <td className="p-2 text-muted-foreground">{exec.durationMs != null ? `${(exec.durationMs / 1000).toFixed(1)}s` : "—"}</td>
-                    <td className="p-2 text-muted-foreground">{exec.attempt}</td>
-                    <td className="p-2 text-muted-foreground">{new Date(exec.createdAt).toLocaleString()}</td>
-                  </tr>
-                  {expandedId === exec.id && (
-                    <tr>
-                      <td colSpan={8} className="p-0">
-                        <RunDetail exec={exec} />
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              ))}
-            </table>
-          </div>
-
-          <div className="flex items-center justify-between mt-4">
-            <p className="text-sm text-muted-foreground">
-              {data.total} total runs
-            </p>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page === 1}
-                onClick={() => setPage(page - 1)}
-              >
-                Previous
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page * 20 >= data.total}
-                onClick={() => setPage(page + 1)}
-              >
-                Next
-              </Button>
-            </div>
-          </div>
-        </>
-      )}
+      <DataTable
+        columns={columns}
+        data={data?.items}
+        isLoading={isLoading}
+        keyFn={(exec) => exec.id}
+        expandable={{ render: (exec) => <RunDetail exec={exec} /> }}
+        emptyState={
+          <EmptyState
+            icon={Play}
+            title="No runs yet"
+            description="Execution history will appear here once your crons start running."
+          />
+        }
+        pagination={data ? {
+          total: data.total,
+          page,
+          limit: 20,
+          onPageChange: setPage,
+        } : undefined}
+      />
     </div>
   );
 }

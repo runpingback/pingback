@@ -2,14 +2,13 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Key, Trash2 } from "lucide-react";
 import { EmptyState } from "@/components/empty-state";
+import { DataTable, type Column } from "@/components/data-table";
 import { CreateApiKeyDialog } from "@/components/create-api-key-dialog";
 import { ApiKeyCreatedDialog } from "@/components/api-key-created-dialog";
-import { useApiKeys, useRevokeApiKey } from "@/lib/hooks/use-api-keys";
+import { useApiKeys, useRevokeApiKey, type ApiKey } from "@/lib/hooks/use-api-keys";
 import { toast } from "sonner";
 
 export default function ApiKeysPage() {
@@ -19,7 +18,8 @@ export default function ApiKeysPage() {
   const revokeApiKey = useRevokeApiKey(projectId);
   const [createdKey, setCreatedKey] = useState<string | null>(null);
 
-  async function handleRevoke(keyId: string, keyName: string) {
+  async function handleRevoke(e: React.MouseEvent, keyId: string, keyName: string) {
+    e.stopPropagation();
     if (!confirm(`Revoke "${keyName}"? This cannot be undone.`)) return;
     try {
       await revokeApiKey.mutateAsync(keyId);
@@ -28,6 +28,45 @@ export default function ApiKeysPage() {
       toast.error((err as Error).message);
     }
   }
+
+  const columns: Column<ApiKey>[] = [
+    {
+      key: "name",
+      header: "Name",
+      render: (key) => <span className="font-medium">{key.name}</span>,
+    },
+    {
+      key: "key",
+      header: "Key",
+      render: (key) => <span className="font-mono text-muted-foreground">{key.keyPrefix}...</span>,
+    },
+    {
+      key: "lastUsed",
+      header: "Last Used",
+      render: (key) => (
+        <span className="text-muted-foreground">
+          {key.lastUsedAt ? new Date(key.lastUsedAt).toLocaleDateString() : "Never"}
+        </span>
+      ),
+    },
+    {
+      key: "created",
+      header: "Created",
+      render: (key) => (
+        <span className="text-muted-foreground">{new Date(key.createdAt).toLocaleDateString()}</span>
+      ),
+    },
+    {
+      key: "actions",
+      header: "",
+      className: "w-12",
+      render: (key) => (
+        <Button variant="ghost" size="sm" onClick={(e) => handleRevoke(e, key.id, key.name)}>
+          <Trash2 className="h-4 w-4 text-destructive" />
+        </Button>
+      ),
+    },
+  ];
 
   return (
     <div>
@@ -38,42 +77,15 @@ export default function ApiKeysPage() {
 
       <ApiKeyCreatedDialog apiKey={createdKey} onClose={() => setCreatedKey(null)} />
 
-      {isLoading ? (
-        <div className="space-y-2">
-          {Array.from({ length: 3 }).map((_, i) => (<Skeleton key={i} className="h-12 w-full" />))}
-        </div>
-      ) : apiKeys?.length === 0 ? (
-        <EmptyState icon={Key} title="No API keys" description="Create an API key to connect your app to Pingback." />
-      ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Key</TableHead>
-              <TableHead>Last Used</TableHead>
-              <TableHead>Created</TableHead>
-              <TableHead className="w-12"></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {apiKeys?.map((key) => (
-              <TableRow key={key.id}>
-                <TableCell className="font-medium">{key.name}</TableCell>
-                <TableCell className="font-mono text-sm text-muted-foreground">{key.keyPrefix}...</TableCell>
-                <TableCell className="text-muted-foreground">
-                  {key.lastUsedAt ? new Date(key.lastUsedAt).toLocaleDateString() : "Never"}
-                </TableCell>
-                <TableCell className="text-muted-foreground">{new Date(key.createdAt).toLocaleDateString()}</TableCell>
-                <TableCell>
-                  <Button variant="ghost" size="sm" onClick={() => handleRevoke(key.id, key.name)}>
-                    <Trash2 className="h-4 w-4 text-destructive" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      )}
+      <DataTable
+        columns={columns}
+        data={apiKeys}
+        isLoading={isLoading}
+        keyFn={(key) => key.id}
+        emptyState={
+          <EmptyState icon={Key} title="No API keys" description="Create an API key to connect your app to Pingback." />
+        }
+      />
     </div>
   );
 }

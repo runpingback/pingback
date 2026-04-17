@@ -2,14 +2,59 @@
 
 import { useParams } from "next/navigation";
 import { Clock } from "lucide-react";
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/empty-state";
 import { StatusBadge } from "@/components/status-badge";
-import { useJobs } from "@/lib/hooks/use-jobs";
+import { DataTable, type Column } from "@/components/data-table";
+import { useJobs, type Job } from "@/lib/hooks/use-jobs";
+
+const columns: Column<Job>[] = [
+  {
+    key: "name",
+    header: "Name",
+    render: (job) => <span className="font-medium">{job.name}</span>,
+  },
+  {
+    key: "schedule",
+    header: "Schedule",
+    render: (job) => <span className="font-mono text-muted-foreground">{job.schedule}</span>,
+  },
+  {
+    key: "status",
+    header: "Status",
+    render: (job) => <StatusBadge status={job.status} />,
+  },
+  {
+    key: "lastRun",
+    header: "Last Run",
+    render: (job) => (
+      <span className="text-muted-foreground">
+        {job.lastRunAt ? new Date(job.lastRunAt).toLocaleString() : "Never"}
+      </span>
+    ),
+  },
+  {
+    key: "nextRun",
+    header: "Next Run",
+    render: (job) => (
+      <span className="text-muted-foreground">
+        {job.nextRunAt ? new Date(job.nextRunAt).toLocaleString() : "—"}
+      </span>
+    ),
+  },
+  {
+    key: "retries",
+    header: "Retries",
+    render: (job) => <span className="text-muted-foreground">{job.retries}</span>,
+  },
+  {
+    key: "source",
+    header: "Source",
+    render: (job) => (
+      <Badge variant="outline" className="font-normal text-xs">{job.source.toUpperCase()}</Badge>
+    ),
+  },
+];
 
 export default function CronsPage() {
   const params = useParams();
@@ -19,57 +64,15 @@ export default function CronsPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold mb-6">Crons</h1>
-
-      {isLoading ? (
-        <div className="space-y-2">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} className="h-12 w-full" />
-          ))}
-        </div>
-      ) : !jobs?.length ? (
-        <EmptyState
-          icon={Clock}
-          title="No crons yet"
-          description="Functions registered via the SDK will appear here."
-        />
-      ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Schedule</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Last Run</TableHead>
-              <TableHead>Next Run</TableHead>
-              <TableHead>Retries</TableHead>
-              <TableHead>Source</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {jobs.map((job) => (
-              <TableRow key={job.id}>
-                <TableCell className="font-medium">{job.name}</TableCell>
-                <TableCell className="font-mono text-sm text-muted-foreground">
-                  {job.schedule}
-                </TableCell>
-                <TableCell><StatusBadge status={job.status} /></TableCell>
-                <TableCell className="text-muted-foreground">
-                  {job.lastRunAt ? new Date(job.lastRunAt).toLocaleString() : "Never"}
-                </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {job.nextRunAt ? new Date(job.nextRunAt).toLocaleString() : "—"}
-                </TableCell>
-                <TableCell className="text-muted-foreground">{job.retries}</TableCell>
-                <TableCell>
-                  <Badge variant="outline" className="font-normal text-xs">
-                    {job.source.toUpperCase()}
-                  </Badge>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      )}
+      <DataTable
+        columns={columns}
+        data={jobs}
+        isLoading={isLoading}
+        keyFn={(job) => job.id}
+        emptyState={
+          <EmptyState icon={Clock} title="No crons yet" description="Functions registered via the SDK will appear here." />
+        }
+      />
     </div>
   );
 }

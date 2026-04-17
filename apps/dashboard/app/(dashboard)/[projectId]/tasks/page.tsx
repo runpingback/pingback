@@ -2,14 +2,41 @@
 
 import { useParams } from "next/navigation";
 import { ListChecks } from "lucide-react";
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/empty-state";
 import { StatusBadge } from "@/components/status-badge";
-import { useJobs } from "@/lib/hooks/use-jobs";
+import { DataTable, type Column } from "@/components/data-table";
+import { useJobs, type Job } from "@/lib/hooks/use-jobs";
+
+const columns: Column<Job>[] = [
+  {
+    key: "name",
+    header: "Name",
+    render: (job) => <span className="font-medium">{job.name}</span>,
+  },
+  {
+    key: "status",
+    header: "Status",
+    render: (job) => <StatusBadge status={job.status} />,
+  },
+  {
+    key: "retries",
+    header: "Retries",
+    render: (job) => <span className="text-muted-foreground">{job.retries}</span>,
+  },
+  {
+    key: "timeout",
+    header: "Timeout",
+    render: (job) => <span className="text-muted-foreground">{job.timeoutSeconds}s</span>,
+  },
+  {
+    key: "source",
+    header: "Source",
+    render: (job) => (
+      <Badge variant="outline" className="font-normal text-xs">{job.source.toUpperCase()}</Badge>
+    ),
+  },
+];
 
 export default function TasksPage() {
   const params = useParams();
@@ -19,47 +46,15 @@ export default function TasksPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold mb-6">Tasks</h1>
-
-      {isLoading ? (
-        <div className="space-y-2">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} className="h-12 w-full" />
-          ))}
-        </div>
-      ) : !jobs?.length ? (
-        <EmptyState
-          icon={ListChecks}
-          title="No tasks yet"
-          description="Background tasks defined with task() will appear here."
-        />
-      ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Retries</TableHead>
-              <TableHead>Timeout</TableHead>
-              <TableHead>Source</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {jobs.map((job) => (
-              <TableRow key={job.id}>
-                <TableCell className="font-medium">{job.name}</TableCell>
-                <TableCell><StatusBadge status={job.status} /></TableCell>
-                <TableCell className="text-muted-foreground">{job.retries}</TableCell>
-                <TableCell className="text-muted-foreground">{job.timeoutSeconds}s</TableCell>
-                <TableCell>
-                  <Badge variant="outline" className="font-normal text-xs">
-                    {job.source.toUpperCase()}
-                  </Badge>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      )}
+      <DataTable
+        columns={columns}
+        data={jobs}
+        isLoading={isLoading}
+        keyFn={(job) => job.id}
+        emptyState={
+          <EmptyState icon={ListChecks} title="No tasks yet" description="Background tasks defined with task() will appear here." />
+        }
+      />
     </div>
   );
 }
