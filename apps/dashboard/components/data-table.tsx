@@ -3,6 +3,7 @@
 import React, { useState, useCallback } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export interface Column<T> {
@@ -105,13 +106,10 @@ export function DataTable<T>({
             <tr className="border-b bg-secondary/30">
               {selectable && (
                 <th className="w-10 p-2 text-center">
-                  <input
-                    type="checkbox"
-                    checked={allSelected}
-                    ref={(el) => { if (el) el.indeterminate = someSelected && !allSelected; }}
-                    onChange={() => {}}
+                  <Checkbox
+                    checked={allSelected || (someSelected ? "mixed" : false)}
+                    onCheckedChange={() => {}}
                     onClick={toggleAll}
-                    className="h-3.5 w-3.5 rounded border-border bg-transparent accent-primary cursor-pointer"
                   />
                 </th>
               )}
@@ -139,12 +137,10 @@ export function DataTable<T>({
                 >
                   {selectable && (
                     <td className="w-10 p-2 text-center">
-                      <input
-                        type="checkbox"
+                      <Checkbox
                         checked={isSelected}
-                        onChange={() => {}}
+                        onCheckedChange={() => {}}
                         onClick={(e) => toggleOne(e, id)}
-                        className="h-3.5 w-3.5 rounded border-border bg-transparent accent-primary cursor-pointer"
                       />
                     </td>
                   )}
