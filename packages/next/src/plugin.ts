@@ -46,15 +46,23 @@ export const POST = createRouteHandler();
 
 export function withPingback(nextConfig: any = {}): any {
   const originalWebpack = nextConfig.webpack;
+  let buildPromise: Promise<void> | null = null;
 
   return {
     ...nextConfig,
     webpack(config: any, context: any) {
-      if (context.isServer) {
-        // Generate route in both dev and production
-        // Only register with platform in production builds
-        runPingbackBuild(context.dir, !context.dev).catch((err: Error) => {
+      if (context.isServer && !buildPromise) {
+        buildPromise = runPingbackBuild(context.dir, !context.dev).catch((err: Error) => {
           console.error('[pingback] Build failed:', err.message);
+        });
+
+        // Add a plugin that waits for registration to finish before build completes
+        config.plugins.push({
+          apply(compiler: any) {
+            compiler.hooks.afterEmit.tapPromise('PingbackRegistration', async () => {
+              if (buildPromise) await buildPromise;
+            });
+          },
         });
       }
 
@@ -86,9 +94,15 @@ async function runPingbackBuild(projectRoot: string, shouldRegister = true): Pro
 
   if (files.length > 0 && shouldRegister) {
     for (const file of files) {
-      try { await import(file); } catch {}
+      try { await import(file); } catch (err) {
+        console.warn(`[pingback] Could not import ${file}: ${(err as Error).message}`);
+      }
     }
-    const result = await registerFunctions(config);
-    console.log(`[pingback] Registered ${result.jobs.length} function(s) with platform`);
+    try {
+      const result = await registerFunctions(config);
+      console.log(`[pingback] Registered ${result.jobs.length} function(s) with platform`);
+    } catch (err) {
+      console.error(`[pingback] Registration failed: ${(err as Error).message}`);
+    }
   }
 }
