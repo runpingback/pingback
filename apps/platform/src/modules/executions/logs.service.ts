@@ -25,14 +25,7 @@ export class LogsService {
 
     const qb = this.execRepo
       .createQueryBuilder('exec')
-      .innerJoin('exec.job', 'job')
-      .select([
-        'exec.id',
-        'exec.jobId',
-        'exec.logs',
-        'exec.createdAt',
-        'job.name',
-      ])
+      .leftJoinAndSelect('exec.job', 'job')
       .where('job.project_id = :projectId', { projectId })
       .andWhere("exec.logs != '[]'::jsonb");
 
@@ -52,7 +45,7 @@ export class LogsService {
       );
     }
 
-    qb.orderBy('exec.created_at', 'DESC')
+    qb.orderBy('exec.createdAt', 'DESC')
       .skip((page - 1) * limit)
       .take(limit);
 

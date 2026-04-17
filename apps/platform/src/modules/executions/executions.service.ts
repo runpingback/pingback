@@ -88,7 +88,7 @@ export class ExecutionsService {
 
     const qb = this.execRepo
       .createQueryBuilder('exec')
-      .innerJoin('exec.job', 'job')
+      .leftJoinAndSelect('exec.job', 'job')
       .where('job.project_id = :projectId', { projectId });
 
     if (filters?.status) {
@@ -104,7 +104,7 @@ export class ExecutionsService {
       qb.andWhere('exec.created_at <= :dateTo', { dateTo: filters.dateTo });
     }
 
-    qb.orderBy('exec.created_at', 'DESC')
+    qb.orderBy('exec.createdAt', 'DESC')
       .skip((page - 1) * limit)
       .take(limit);
 
