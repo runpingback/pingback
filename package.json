@@ -4,7 +4,8 @@
   "workspaces": [
     "packages/*",
     "shared/*",
-    "apps/*"
+    "apps/*",
+    "examples/*"
   ],
   "scripts": {
     "build": "npm run build --workspaces --if-present",
