@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "pingback": "dist/cli.js"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -30,6 +33,7 @@
     "ts-jest": "^29.2.0",
     "@types/jest": "^29.5.0",
     "typescript": "^5.5.0",
-    "next": "^15.0.0"
+    "next": "^15.0.0",
+    "ts-node": "^10.9.0"
   }
 }
