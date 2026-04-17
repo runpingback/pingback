@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useParams } from "next/navigation";
-import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 import { Play } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -16,6 +15,7 @@ import { useExecutions } from "@/lib/hooks/use-executions";
 export default function RunsPage() {
   const params = useParams();
   const projectId = params.projectId as string;
+  const router = useRouter();
   const [page, setPage] = useState(1);
   const { data, isLoading } = useExecutions(projectId, { page, limit: 20 });
 
@@ -51,14 +51,13 @@ export default function RunsPage() {
             </TableHeader>
             <TableBody>
               {data.items.map((exec, index) => (
-                <TableRow key={exec.id}>
-                  <TableCell>
-                    <Link
-                      href={`/${projectId}/runs/${exec.id}`}
-                      className="text-primary hover:underline font-mono text-sm"
-                    >
-                      {data.total - ((page - 1) * 20) - index}
-                    </Link>
+                <TableRow
+                  key={exec.id}
+                  className="cursor-pointer hover:bg-secondary"
+                  onClick={() => router.push(`/${projectId}/runs/${exec.id}`)}
+                >
+                  <TableCell className="text-primary font-mono text-sm">
+                    {data.total - ((page - 1) * 20) - index}
                   </TableCell>
                   <TableCell className="font-medium">
                     {exec.job?.name || exec.jobId.slice(0, 8)}
