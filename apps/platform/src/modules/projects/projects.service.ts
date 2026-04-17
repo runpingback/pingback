@@ -35,6 +35,14 @@ export class ProjectsService {
     return project;
   }
 
+  async update(id: string, userId: string, dto: Partial<CreateProjectDto>) {
+    const project = await this.findOneByUser(id, userId);
+    if (dto.name) project.name = dto.name;
+    if (dto.endpointUrl) project.endpointUrl = dto.endpointUrl;
+    if (dto.domain !== undefined) project.domain = dto.domain;
+    return this.projectRepo.save(project);
+  }
+
   async remove(id: string, userId: string) {
     await this.findOneByUser(id, userId);
     await this.projectRepo.delete(id);

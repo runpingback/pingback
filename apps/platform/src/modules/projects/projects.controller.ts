@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Patch,
   Delete,
   Body,
   Param,
@@ -46,6 +47,20 @@ export class ProjectsController {
   findOne(@Req() req: Request, @Param('projectId') projectId: string) {
     const user = req.user as { id: string };
     return this.projectsService.findOneByUser(projectId, user.id);
+  }
+
+  @Patch(':projectId')
+  @ApiOperation({ summary: 'Update a project' })
+  @ApiParam({ name: 'projectId', description: 'Project UUID' })
+  @ApiResponse({ status: 200, description: 'Project updated', type: ProjectResponse })
+  @ApiResponse({ status: 404, description: 'Project not found' })
+  update(
+    @Req() req: Request,
+    @Param('projectId') projectId: string,
+    @Body() dto: CreateProjectDto,
+  ) {
+    const user = req.user as { id: string };
+    return this.projectsService.update(projectId, user.id, dto);
   }
 
   @Delete(':projectId')
