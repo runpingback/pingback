@@ -21,7 +21,7 @@ export class Job {
   @Column({ type: 'text' })
   name: string;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', nullable: true })
   schedule: string;
 
   @Column({ type: 'enum', enum: ['active', 'paused', 'inactive'], default: 'active' })

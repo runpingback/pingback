@@ -26,6 +26,9 @@ export class User {
   @Column({ type: 'text', nullable: true, name: 'avatar_url' })
   avatarUrl: string;
 
+  @Column({ type: 'text', nullable: true, name: 'refresh_token' })
+  refreshToken: string;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
