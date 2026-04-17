@@ -64,54 +64,34 @@ function RunDetail({ exec }: { exec: Execution }) {
 
   return (
     <div className="border-t border-border bg-background">
-      {/* Metadata rows */}
+      {/* Metadata grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 divide-x divide-border">
-        <div className="p-4 pb-2">
-          <div className="flex gap-8 mb-3">
+        <div className="p-4 pb-3">
+          <div className="grid grid-cols-3 gap-4 mb-4">
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">
-                Run ID
-              </p>
-              <p className="text-xs font-mono">{exec.id.slice(0, 24)}...</p>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Run ID</p>
+              <p className="text-xs font-mono truncate">{exec.id.slice(0, 24)}...</p>
             </div>
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">
-                Function
-              </p>
-              <p className="text-xs font-medium text-primary">
-                {exec.job?.name || exec.jobId.slice(0, 8)}
-              </p>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Function</p>
+              <p className="text-xs font-medium text-primary">{exec.job?.name || exec.jobId.slice(0, 8)}</p>
             </div>
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">
-                Duration
-              </p>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Duration</p>
               <p className="text-xs font-medium">{durationFormatted}</p>
             </div>
           </div>
-          <div className="flex gap-8">
+          <div className="grid grid-cols-3 gap-4">
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">
-                Scheduled at
-              </p>
-              <p className="text-xs">
-                {new Date(exec.scheduledAt).toLocaleString()}
-              </p>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Scheduled at</p>
+              <p className="text-xs">{new Date(exec.scheduledAt).toLocaleString()}</p>
             </div>
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">
-                Started at
-              </p>
-              <p className="text-xs">
-                {exec.startedAt
-                  ? new Date(exec.startedAt).toLocaleString()
-                  : "—"}
-              </p>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Started at</p>
+              <p className="text-xs">{exec.startedAt ? new Date(exec.startedAt).toLocaleString() : "—"}</p>
             </div>
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">
-                Completed at
-              </p>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Completed at</p>
               <p className="text-xs">
                 {exec.completedAt
                   ? new Date(exec.completedAt).toLocaleString()
@@ -120,24 +100,18 @@ function RunDetail({ exec }: { exec: Execution }) {
             </div>
           </div>
         </div>
-        <div className="p-4 pb-2">
-          <div className="flex gap-8">
+        <div className="p-4 pb-3">
+          <div className="grid grid-cols-3 gap-4">
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">
-                HTTP Status
-              </p>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">HTTP Status</p>
               <p className="text-xs font-medium">{exec.httpStatus || "—"}</p>
             </div>
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">
-                Attempt
-              </p>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Attempt</p>
               <p className="text-xs font-medium">{exec.attempt}</p>
             </div>
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">
-                Status
-              </p>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Status</p>
               <StatusBadge status={exec.status} />
             </div>
           </div>
