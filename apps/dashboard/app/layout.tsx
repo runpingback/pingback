@@ -4,7 +4,7 @@ import { Nunito } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { Providers } from "@/lib/providers";
 
-const nunito = Nunito({ subsets: ["latin"], variable: "--font-sans" });
+const nunito = Nunito({ subsets: ["latin"], weight: ["500", "600", "700"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: "Pingback",
@@ -18,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={cn("dark", "font-sans", nunito.variable)}>
-      <body className="antialiased">
+      <body className="antialiased font-medium">
         <Providers>{children}</Providers>
       </body>
     </html>
