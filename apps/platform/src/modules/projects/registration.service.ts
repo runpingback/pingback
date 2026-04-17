@@ -51,32 +51,21 @@ export class RegistrationService {
         }
       }
 
-      if (existing) {
-        existing.schedule = (fn.type === 'cron' ? fn.schedule : null) as string;
-        existing.status = 'active';
-        existing.retries = fn.options?.retries ?? existing.retries;
-        existing.timeoutSeconds = timeoutSeconds;
-        existing.concurrency = fn.options?.concurrency ?? existing.concurrency;
-        if (nextRunAt) existing.nextRunAt = nextRunAt;
+      const jobData: Partial<Job> = {
+        projectId,
+        name: fn.name,
+        schedule: (fn.type === 'cron' ? fn.schedule : null) as string,
+        source: 'sdk' as const,
+        status: 'active' as const,
+        retries: fn.options?.retries ?? (existing?.retries ?? 0),
+        timeoutSeconds,
+        concurrency: fn.options?.concurrency ?? (existing?.concurrency ?? 1),
+      };
+      if (nextRunAt) jobData.nextRunAt = nextRunAt;
+      if (existing) jobData.id = existing.id;
 
-        const saved = await this.jobRepo.save(existing);
-        results.push({ name: saved.name, status: saved.status });
-      } else {
-        const jobData: Partial<Job> = {
-          projectId,
-          name: fn.name,
-          schedule: (fn.type === 'cron' ? fn.schedule : null) as string,
-          source: 'sdk' as const,
-          status: 'active' as const,
-          retries: fn.options?.retries ?? 0,
-          timeoutSeconds,
-          concurrency: fn.options?.concurrency ?? 1,
-          nextRunAt: nextRunAt as Date,
-        };
-        const job = this.jobRepo.create(jobData as any);
-        const saved = await this.jobRepo.save(job) as unknown as Job;
-        results.push({ name: saved.name, status: saved.status });
-      }
+      const saved = await this.jobRepo.save(this.jobRepo.create(jobData as any)) as unknown as Job;
+      results.push({ name: saved.name, status: saved.status });
     }
 
     // Deactivate stale SDK jobs not in the incoming list
