@@ -115,10 +115,17 @@ export class WorkerService implements OnModuleInit {
 
   private async handleFailure(msg: QueueMessage) {
     if (msg.attempt < msg.maxRetries) {
+      // Create a new execution for the retry attempt
+      const retryExecution = await this.executionsService.createPending(
+        msg.jobId,
+        new Date(msg.scheduledAt),
+        msg.attempt + 1,
+      );
+
       const backoffSeconds = Math.min(Math.pow(2, msg.attempt), 60);
       await this.queueService.send(
         'pingback-execution',
-        { ...msg, attempt: msg.attempt + 1 },
+        { ...msg, executionId: retryExecution.id, attempt: msg.attempt + 1 },
         { startAfter: backoffSeconds },
       );
     }
