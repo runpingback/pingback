@@ -3,7 +3,7 @@ import { Poppins, Unbounded } from "next/font/google";
 import "./globals.css";
 
 const poppins = Poppins({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700"], variable: "--font-sans" });
-const unbounded = Unbounded({ subsets: ["latin"], weight: ["700", "800"], variable: "--font-display" });
+const unbounded = Unbounded({ subsets: ["latin"], weight: ["300", "400", "700", "800"], variable: "--font-display" });
 
 export const metadata: Metadata = {
   title: "Pingback — Reliable cron jobs for modern web apps",
