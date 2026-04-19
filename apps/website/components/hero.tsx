@@ -30,7 +30,9 @@ export function Hero() {
             </Link>
           </div>
         </div>
-        <div className="border-t px-6 py-8">
+        <div className="border-t px-6 py-8 relative">
+          <div className="absolute -top-[5px] -left-[5px] w-2.5 h-2.5 rotate-45 border border-border bg-background z-10 hidden md:block" />
+          <div className="absolute -top-[5px] -right-[5px] w-2.5 h-2.5 rotate-45 border border-border bg-background z-10 hidden md:block" />
           <CodeSnippet />
         </div>
     </GridSection>
