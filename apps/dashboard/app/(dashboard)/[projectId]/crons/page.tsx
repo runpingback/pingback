@@ -132,17 +132,19 @@ export default function CronsPage() {
             <DropdownMenuItem onClick={(e) => handleRun(e, job)}>
               <IconPlayerPlayFilled className="h-4 w-4" /> Run now
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={(e) => handleToggle(e, job)}>
-              {job.status === "paused" ? (
-                <>
-                  <IconPlayerPlayFilled className="h-4 w-4" /> Resume
-                </>
-              ) : (
-                <>
-                  <IconPlayerPauseFilled className="h-4 w-4" /> Pause
-                </>
-              )}
-            </DropdownMenuItem>
+            {job.status !== "inactive" && (
+              <DropdownMenuItem onClick={(e) => handleToggle(e, job)}>
+                {job.status === "paused" ? (
+                  <>
+                    <IconPlayerPlayFilled className="h-4 w-4" /> Resume
+                  </>
+                ) : (
+                  <>
+                    <IconPlayerPauseFilled className="h-4 w-4" /> Pause
+                  </>
+                )}
+              </DropdownMenuItem>
+            )}
             <DropdownMenuSeparator />
             <DropdownMenuItem variant="destructive" onClick={(e) => handleDelete(e, job)}>
               <IconTrashFilled className="h-4 w-4" /> Delete
@@ -162,6 +164,7 @@ export default function CronsPage() {
           data={jobs}
           isLoading={isLoading}
           keyFn={(job) => job.id}
+          selectable={false}
           emptyState={
             <EmptyState
               icon={IconClockFilled}
