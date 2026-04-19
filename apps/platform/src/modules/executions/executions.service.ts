@@ -9,12 +9,19 @@ export class ExecutionsService {
     @InjectRepository(Execution) private execRepo: Repository<Execution>,
   ) {}
 
-  async createPending(jobId: string, scheduledAt: Date, attempt = 1) {
+  async createPending(
+    jobId: string,
+    scheduledAt: Date,
+    attempt = 1,
+    options?: { parentId?: string; payload?: any },
+  ) {
     const exec = this.execRepo.create({
       jobId,
       status: 'pending' as const,
       scheduledAt,
       attempt,
+      ...(options?.parentId ? { parentId: options.parentId } : {}),
+      ...(options?.payload !== undefined ? { payload: options.payload } : {}),
     });
     return this.execRepo.save(exec);
   }
@@ -77,6 +84,7 @@ export class ExecutionsService {
     filters?: {
       status?: string;
       jobId?: string;
+      parentId?: string;
       dateFrom?: string;
       dateTo?: string;
       page?: number;
@@ -96,6 +104,9 @@ export class ExecutionsService {
     }
     if (filters?.jobId) {
       qb.andWhere('exec.job_id = :jobId', { jobId: filters.jobId });
+    }
+    if (filters?.parentId) {
+      qb.andWhere('exec.parent_id = :parentId', { parentId: filters.parentId });
     }
     if (filters?.dateFrom) {
       qb.andWhere('exec.created_at >= :dateFrom', { dateFrom: filters.dateFrom });
