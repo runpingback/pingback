@@ -15,7 +15,7 @@ export function Hero() {
             Define scheduled functions directly in your codebase. Pingback handles
             scheduling, retries, and monitoring. Starting with Next.js.
           </p>
-          <div className="flex items-center justify-center gap-3 mb-16">
+          <div className="flex items-center justify-center gap-3">
             <Link
               href="https://app.pingback.dev/register"
               className="bg-accent text-accent-foreground px-6 py-2.5 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"

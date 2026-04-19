@@ -12,15 +12,15 @@ export function Navbar() {
         </Link>
 
         <div className="flex items-center gap-6">
-          <a href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <a href="#pricing" className="text-sm text-foreground hover:text-foreground/70 transition-colors">
             Pricing
           </a>
-          <Link href="https://docs.pingback.dev" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <Link href="https://docs.pingback.dev" className="text-sm text-foreground hover:text-foreground/70 transition-colors">
             Docs
           </Link>
           <Link
             href="https://app.pingback.dev/login"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            className="text-sm text-foreground hover:text-foreground/70 transition-colors"
           >
             Login
           </Link>
