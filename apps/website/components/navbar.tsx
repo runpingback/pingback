@@ -3,7 +3,8 @@ import Link from "next/link";
 export function Navbar() {
   return (
     <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b">
-      <div className="max-w-5xl mx-auto flex items-center justify-between h-14 px-6">
+      <div className="max-w-5xl mx-auto border-x">
+        <div className="flex items-center justify-between h-14 px-6">
         <Link href="/" className="text-lg font-semibold tracking-tight">
           Pingback
         </Link>
@@ -30,6 +31,7 @@ export function Navbar() {
           >
             Get Started
           </Link>
+        </div>
         </div>
       </div>
     </header>
