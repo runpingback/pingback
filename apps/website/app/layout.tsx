@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 export const metadata: Metadata = {
   title: "Pingback — Reliable cron jobs for modern web apps",
   description:
-    "Define scheduled functions in your Next.js codebase. Pingback handles scheduling, retries, and monitoring.",
+    "Define scheduled functions directly in your codebase. Pingback handles scheduling, retries, and monitoring.",
 };
 
 export default function RootLayout({

@@ -12,8 +12,8 @@ export function Hero() {
             modern web apps.
           </h1>
           <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-8">
-            Define scheduled functions in your Next.js codebase. Pingback handles
-            scheduling, retries, and monitoring.
+            Define scheduled functions directly in your codebase. Pingback handles
+            scheduling, retries, and monitoring. Starting with Next.js.
           </p>
           <div className="flex items-center justify-center gap-3 mb-16">
             <Link
