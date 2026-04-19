@@ -11,16 +11,13 @@ export function Navbar() {
           pingback
         </Link>
 
-        <nav className="flex items-center gap-6">
+        <div className="flex items-center gap-6">
           <a href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             Pricing
           </a>
           <Link href="https://docs.pingback.dev" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             Docs
           </Link>
-        </nav>
-
-        <div className="flex items-center gap-3">
           <Link
             href="https://app.pingback.dev/login"
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
