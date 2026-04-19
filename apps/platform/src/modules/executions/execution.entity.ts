@@ -48,6 +48,16 @@ export class Execution {
   @Column({ type: 'jsonb', default: '[]' })
   logs: Array<{ timestamp: number; message: string }>;
 
+  @Column({ type: 'uuid', nullable: true, name: 'parent_id' })
+  parentId: string | null;
+
+  @ManyToOne(() => Execution, { nullable: true })
+  @JoinColumn({ name: 'parent_id' })
+  parent: Execution;
+
+  @Column({ type: 'jsonb', nullable: true })
+  payload: any;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 }
