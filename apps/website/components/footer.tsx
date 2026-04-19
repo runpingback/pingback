@@ -26,7 +26,7 @@ export function Footer() {
           <GridDot className="-top-[5px] left-3/4 -translate-x-1/2" />
           <GridDot className="-top-[5px] -right-[5px]" />
           <div className="p-8 col-span-2 md:col-span-1 md:border-r border-b md:border-b-0">
-            <p className="text-xl mb-2" style={{ fontFamily: "var(--font-logo)" }}>pingback</p>
+            <p className="text-xl font-light mb-2">pingback</p>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Reliable cron jobs and background tasks for modern web apps.
             </p>

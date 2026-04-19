@@ -7,7 +7,7 @@ export function Navbar() {
         <div className="absolute -bottom-[5px] -left-[5px] w-2.5 h-2.5 rotate-45 border border-border bg-background z-10 hidden md:block" />
         <div className="absolute -bottom-[5px] -right-[5px] w-2.5 h-2.5 rotate-45 border border-border bg-background z-10 hidden md:block" />
         <div className="flex items-center justify-between h-14 px-6">
-        <Link href="/" className="text-xl tracking-tight" style={{ fontFamily: "var(--font-logo)" }}>
+        <Link href="/" className="text-xl font-light tracking-tight">
           pingback
         </Link>
 

@@ -3,7 +3,7 @@ import { Inter, Unbounded } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
-const unbounded = Unbounded({ subsets: ["latin"], weight: ["300"], variable: "--font-logo" });
+const unbounded = Unbounded({ subsets: ["latin"], weight: ["200", "300", "400", "500", "600", "700"], variable: "--font-logo" });
 
 export const metadata: Metadata = {
   title: "Pingback — Reliable cron jobs for modern web apps",
@@ -18,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.variable} ${unbounded.variable}`}>
-      <body className="antialiased font-sans">{children}</body>
+      <body className="antialiased" style={{ fontFamily: "var(--font-logo)" }}>{children}</body>
     </html>
   );
 }
