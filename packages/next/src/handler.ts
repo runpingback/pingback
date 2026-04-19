@@ -60,13 +60,14 @@ export function createRouteHandler() {
     const start = Date.now();
 
     try {
-      const result = await definition.handler(ctx);
+      const result = await definition.handler(ctx, payload.payload);
       const durationMs = Date.now() - start;
 
       return Response.json({
         status: 'success',
         result,
         logs: ctx._getLogs(),
+        tasks: ctx._getTasks(),
         durationMs,
       });
     } catch (err) {
@@ -77,6 +78,7 @@ export function createRouteHandler() {
           status: 'error',
           error: (err as Error).message,
           logs: ctx._getLogs(),
+          tasks: ctx._getTasks(),
           durationMs,
         },
         { status: 500 },
