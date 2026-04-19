@@ -26,7 +26,7 @@ export function Footer() {
           <GridDot className="-top-[5px] left-3/4 -translate-x-1/2" />
           <GridDot className="-top-[5px] -right-[5px]" />
           <div className="p-8 col-span-2 md:col-span-1 md:border-r border-b md:border-b-0">
-            <p className="text-lg font-semibold mb-2">Pingback</p>
+            <p className="text-lg font-semibold mb-2">Ping<span className="text-accent">back</span></p>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Reliable cron jobs and background tasks for modern web apps.
             </p>
