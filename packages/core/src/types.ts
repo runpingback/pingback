@@ -30,6 +30,12 @@ export interface ExecutionPayload {
   executionId: string;
   attempt: number;
   scheduledAt: string;
+  payload?: any;
+}
+
+export interface TaskRequest {
+  name: string;
+  payload: any;
 }
 
 export interface ExecutionResult {
@@ -37,5 +43,6 @@ export interface ExecutionResult {
   result?: unknown;
   error?: string;
   logs: LogEntry[];
+  tasks: TaskRequest[];
   durationMs: number;
 }
