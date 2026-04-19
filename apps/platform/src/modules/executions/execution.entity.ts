@@ -7,6 +7,7 @@ import { Job } from '../jobs/job.entity';
 @Entity('executions')
 @Index(['jobId', 'createdAt'])
 @Index(['status'])
+@Index(['parentId'])
 export class Execution {
   @PrimaryGeneratedColumn('uuid')
   id: string;
