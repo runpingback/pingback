@@ -1,4 +1,4 @@
-import { GridSection } from "./grid-section";
+import { GridSection, GridDot } from "./grid-section";
 
 const features = [
   {
@@ -34,12 +34,24 @@ export function Features() {
             Built for developers who need more than a basic cron scheduler.
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 border-t">
+        <div className="grid grid-cols-1 md:grid-cols-2 border-t relative">
+          <GridDot className="-top-[5px] -left-[5px]" />
+          <GridDot className="-top-[5px] left-1/2 -translate-x-1/2" />
+          <GridDot className="-top-[5px] -right-[5px]" />
           {features.map((feature, i) => (
             <div
               key={feature.title}
-              className={`p-8 ${i % 2 === 0 ? "md:border-r" : ""} ${i < 2 ? "border-b" : ""}`}
+              className={`p-8 relative ${i % 2 === 0 ? "md:border-r" : ""} ${i < 2 ? "border-b" : ""}`}
             >
+              {i === 0 && (
+                <>
+                  <GridDot className="-bottom-[5px] -left-[5px]" />
+                  <GridDot className="-bottom-[5px] -right-[5px]" />
+                </>
+              )}
+              {i === 1 && (
+                <GridDot className="-bottom-[5px] -right-[5px]" />
+              )}
               <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 {feature.description}

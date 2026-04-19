@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { GridSection } from "./grid-section";
+import { GridSection, GridDot } from "./grid-section";
 
 const tiers = [
   {
@@ -59,7 +59,11 @@ export function Pricing() {
             Start free. Upgrade when you need more.
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 border-t">
+        <div className="grid grid-cols-1 md:grid-cols-3 border-t relative">
+          <GridDot className="-top-[5px] -left-[5px]" />
+          <GridDot className="-top-[5px] left-1/3 -translate-x-1/2" />
+          <GridDot className="-top-[5px] left-2/3 -translate-x-1/2" />
+          <GridDot className="-top-[5px] -right-[5px]" />
           {tiers.map((tier, i) => (
             <div
               key={tier.name}

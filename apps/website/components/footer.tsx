@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { GridSection } from "./grid-section";
+import { GridSection, GridDot } from "./grid-section";
 
 const links = {
   Product: [
@@ -19,7 +19,12 @@ export function Footer() {
   return (
     <footer>
       <GridSection>
-        <div className="grid grid-cols-2 md:grid-cols-4 border-t">
+        <div className="grid grid-cols-2 md:grid-cols-4 border-t relative">
+          <GridDot className="-top-[5px] -left-[5px]" />
+          <GridDot className="-top-[5px] left-1/4 -translate-x-1/2" />
+          <GridDot className="-top-[5px] left-1/2 -translate-x-1/2" />
+          <GridDot className="-top-[5px] left-3/4 -translate-x-1/2" />
+          <GridDot className="-top-[5px] -right-[5px]" />
           <div className="p-8 col-span-2 md:col-span-1 md:border-r border-b md:border-b-0">
             <p className="text-lg font-semibold mb-2">Pingback</p>
             <p className="text-sm text-muted-foreground leading-relaxed">
@@ -47,7 +52,9 @@ export function Footer() {
             </div>
           ))}
         </div>
-        <div className="border-t px-8 py-4">
+        <div className="border-t px-8 py-4 relative">
+          <GridDot className="-top-[5px] -left-[5px]" />
+          <GridDot className="-top-[5px] -right-[5px]" />
           <p className="text-xs text-muted-foreground">
             &copy; {new Date().getFullYear()} Pingback. All rights reserved.
           </p>

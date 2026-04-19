@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { CodeSnippet } from "./code-snippet";
-import { GridSection } from "./grid-section";
+import { GridSection, GridDot } from "./grid-section";
 
 export function Hero() {
   return (
@@ -31,8 +31,8 @@ export function Hero() {
           </div>
         </div>
         <div className="border-t px-6 py-8 relative">
-          <div className="absolute -top-[5px] -left-[5px] w-2.5 h-2.5 rotate-45 border border-border bg-background z-10 hidden md:block" />
-          <div className="absolute -top-[5px] -right-[5px] w-2.5 h-2.5 rotate-45 border border-border bg-background z-10 hidden md:block" />
+          <GridDot className="-top-[5px] -left-[5px]" />
+          <GridDot className="-top-[5px] -right-[5px]" />
           <CodeSnippet />
         </div>
     </GridSection>

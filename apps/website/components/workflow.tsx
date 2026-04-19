@@ -1,4 +1,4 @@
-import { GridSection } from "./grid-section";
+import { GridSection, GridDot } from "./grid-section";
 
 const steps = [
   {
@@ -54,7 +54,11 @@ export function Workflow() {
             From install to monitoring in under 10 minutes.
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 border-t">
+        <div className="grid grid-cols-1 md:grid-cols-3 border-t relative">
+          <GridDot className="-top-[5px] -left-[5px]" />
+          <GridDot className="-top-[5px] left-1/3 -translate-x-1/2" />
+          <GridDot className="-top-[5px] left-2/3 -translate-x-1/2" />
+          <GridDot className="-top-[5px] -right-[5px]" />
           {steps.map((step, i) => (
             <div
               key={step.number}
