@@ -60,6 +60,10 @@ export class JobsService {
     return qb.orderBy('job.created_at', 'DESC').getMany();
   }
 
+  async findByName(projectId: string, name: string): Promise<Job | null> {
+    return this.jobRepo.findOne({ where: { projectId, name } });
+  }
+
   async findOne(id: string, projectId: string) {
     const job = await this.jobRepo.findOne({
       where: { id, projectId },

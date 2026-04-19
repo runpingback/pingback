@@ -3,6 +3,7 @@ import { createHmac } from 'crypto';
 import { ExecutionsService } from '../executions/executions.service';
 import { QueueService } from '../queue/queue.service';
 import { AlertsService } from '../alerts/alerts.service';
+import { JobsService } from '../jobs/jobs.service';
 
 interface QueueMessage {
   executionId: string;
@@ -15,6 +16,7 @@ interface QueueMessage {
   maxRetries: number;
   timeoutSeconds: number;
   scheduledAt: string;
+  payload?: any;
 }
 
 @Injectable()
@@ -25,6 +27,7 @@ export class WorkerService implements OnModuleInit {
     private executionsService: ExecutionsService,
     private queueService: QueueService,
     private alertsService: AlertsService,
+    private jobsService: JobsService,
   ) {}
 
   onModuleInit() {
@@ -49,6 +52,7 @@ export class WorkerService implements OnModuleInit {
         executionId: msg.executionId,
         attempt: msg.attempt,
         scheduledAt: msg.scheduledAt,
+        ...(msg.payload !== undefined ? { payload: msg.payload } : {}),
       });
 
       const signature = createHmac('sha256', msg.cronSecret)
@@ -78,9 +82,11 @@ export class WorkerService implements OnModuleInit {
 
         if (response.ok) {
           let logs: Array<{ timestamp: number; message: string }> = [];
+          let tasks: Array<{ name: string; payload: any }> = [];
           try {
             const parsed = JSON.parse(responseText);
             logs = parsed.logs || [];
+            tasks = parsed.tasks || [];
           } catch {}
 
           await this.executionsService.markCompleted(msg.executionId, {
@@ -89,6 +95,47 @@ export class WorkerService implements OnModuleInit {
             responseBody: responseText,
             logs,
           });
+
+          // Fan-out: dispatch child tasks
+          for (const task of tasks) {
+            try {
+              const taskJob = await this.jobsService.findByName(
+                msg.projectId,
+                task.name,
+              );
+              if (!taskJob) {
+                this.logger.warn(
+                  `Fan-out: task function "${task.name}" not registered, skipping`,
+                );
+                continue;
+              }
+
+              const childExec = await this.executionsService.createPending(
+                taskJob.id,
+                new Date(),
+                1,
+                { parentId: msg.executionId, payload: task.payload },
+              );
+
+              await this.queueService.send('pingback-execution', {
+                executionId: childExec.id,
+                jobId: taskJob.id,
+                projectId: msg.projectId,
+                functionName: task.name,
+                endpointUrl: msg.endpointUrl,
+                cronSecret: msg.cronSecret,
+                attempt: 1,
+                maxRetries: taskJob.retries,
+                timeoutSeconds: taskJob.timeoutSeconds,
+                scheduledAt: new Date().toISOString(),
+                payload: task.payload,
+              });
+            } catch (err) {
+              this.logger.error(
+                `Fan-out error for task "${task.name}": ${(err as Error).message}`,
+              );
+            }
+          }
         } else {
           await this.executionsService.markCompleted(msg.executionId, {
             status: 'failed',
