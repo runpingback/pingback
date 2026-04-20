@@ -1,6 +1,6 @@
 # Pingback Next.js Example
 
-Demonstrates how to use `@pingback/next` to define cron jobs in a Next.js app.
+Demonstrates how to use `@usepingback/next` to define cron jobs in a Next.js app.
 
 ## Cron Jobs
 

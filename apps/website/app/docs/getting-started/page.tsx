@@ -15,7 +15,7 @@ export default function GettingStartedPage() {
 
       <h2 className="text-xl font-semibold mt-10 mb-3">How it works</h2>
       <div className="text-sm text-muted-foreground space-y-2">
-        <p>1. Install a framework adapter (e.g. <InlineCode>@pingback/next</InlineCode>).</p>
+        <p>1. Install a framework adapter (e.g. <InlineCode>@usepingback/next</InlineCode>).</p>
         <p>2. Define <InlineCode>cron()</InlineCode> and <InlineCode>task()</InlineCode> functions in your code.</p>
         <p>3. Deploy — Pingback discovers your functions at build time and registers them.</p>
         <p>4. The platform schedules and executes your functions, with retries and logging built in.</p>
@@ -26,7 +26,7 @@ export default function GettingStartedPage() {
       <FrameworkSwitcher>
         {{
           next: (
-            <DocsCode code={`import { cron } from "@pingback/next";
+            <DocsCode code={`import { cron } from "@usepingback/next";
 
 export const dailyCleanup = cron(
   "daily-cleanup",
@@ -58,7 +58,7 @@ export const dailyCleanup = cron(
           <tbody className="text-muted-foreground">
             <tr className="border-b">
               <td className="p-3"><Link href="/docs/next" className="text-accent hover:underline">Next.js</Link></td>
-              <td className="p-3 font-mono">@pingback/next</td>
+              <td className="p-3 font-mono">@usepingback/next</td>
               <td className="p-3">Available</td>
             </tr>
             <tr className="border-b">

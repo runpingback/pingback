@@ -11,7 +11,7 @@
     "next": "^15.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "@pingback/next": "0.0.1"
+    "@usepingback/next": "0.0.1"
   },
   "devDependencies": {
     "typescript": "^5.5.0",

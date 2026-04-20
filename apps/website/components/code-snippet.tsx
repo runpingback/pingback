@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { codeToHtml } from "shiki";
 
-const CODE = `import { cron } from "@pingback/next";
+const CODE = `import { cron } from "@usepingback/next";
 
 export const sendEmails = cron(
   "send-emails",

@@ -27,7 +27,7 @@ export default function TasksPage() {
       <FrameworkSwitcher>
         {{
           next: (
-            <DocsCode code={`import { task } from "@pingback/next";
+            <DocsCode code={`import { task } from "@usepingback/next";
 
 export const sendEmail = task(
   "send-email",
@@ -50,7 +50,7 @@ export const sendEmail = task(
       <FrameworkSwitcher>
         {{
           next: (
-            <DocsCode code={`import { cron, task } from "@pingback/next";
+            <DocsCode code={`import { cron, task } from "@usepingback/next";
 
 // Parent cron — runs every 15 minutes
 export const sendEmails = cron(

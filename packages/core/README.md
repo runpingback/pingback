@@ -1,8 +1,8 @@
-# @pingback/core
+# @usepingback/core
 
-Framework-agnostic core for Pingback SDKs. This package is used internally by framework adapters like `@pingback/next`.
+Framework-agnostic core for Pingback SDKs. This package is used internally by framework adapters like `@usepingback/next`.
 
-**You probably want [`@pingback/next`](../next) instead.**
+**You probably want [`@usepingback/next`](../next) instead.**
 
 ## What's Inside
 
@@ -20,7 +20,7 @@ import {
   signPayload, 
   verifySignature, 
   RegistrationClient 
-} from "@pingback/core";
+} from "@usepingback/core";
 
 // Register functions
 const registry = new Registry();
@@ -46,7 +46,7 @@ await client.register(functions, { projectId: "proj-123" });
 
 ## For Framework Adapter Authors
 
-If you're building a Pingback adapter for a new framework, use this package as your foundation. See `@pingback/next` for a reference implementation. An adapter typically needs:
+If you're building a Pingback adapter for a new framework, use this package as your foundation. See `@usepingback/next` for a reference implementation. An adapter typically needs:
 
 1. Wrapper functions around `Registry` (`cron()`, `task()`)
 2. A route handler that uses `createContext()` and HMAC verification

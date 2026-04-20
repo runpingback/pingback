@@ -62,7 +62,7 @@ export default function CronJobsPage() {
       <FrameworkSwitcher>
         {{
           next: (
-            <DocsCode code={`import { cron } from "@pingback/next";
+            <DocsCode code={`import { cron } from "@usepingback/next";
 
 export const syncData = cron(
   "sync-data",

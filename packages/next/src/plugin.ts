@@ -11,7 +11,7 @@ export function discoverFunctionFilesSync(
 
   return files.filter((file) => {
     const content = readFileSync(file, 'utf-8');
-    return content.includes('@pingback/next');
+    return content.includes('@usepingback/next');
   });
 }
 

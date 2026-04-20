@@ -1,3 +1,3 @@
-import { withPingback } from "@pingback/next";
+import { withPingback } from "@usepingback/next";
 
 export default withPingback({});

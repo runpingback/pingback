@@ -1,5 +1,5 @@
-import { Registry, FunctionOptions } from '@pingback/core';
-import type { Context } from '@pingback/core';
+import { Registry, FunctionOptions } from '@usepingback/core';
+import type { Context } from '@usepingback/core';
 
 export const registry = new Registry();
 

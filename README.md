@@ -8,8 +8,8 @@ Pingback is a platform with framework-specific SDKs that let you define schedule
 
 | Package | Description |
 |---------|-------------|
-| [`@pingback/next`](packages/next) | Next.js SDK adapter |
-| [`@pingback/core`](packages/core) | Framework-agnostic core (used internally) |
+| [`@usepingback/next`](packages/next) | Next.js SDK adapter |
+| [`@usepingback/core`](packages/core) | Framework-agnostic core (used internally) |
 
 ## Apps
 
@@ -24,14 +24,14 @@ Pingback is a platform with framework-specific SDKs that let you define schedule
 ### 1. Install
 
 ```bash
-npm install @pingback/next
+npm install @usepingback/next
 ```
 
 ### 2. Create config
 
 ```ts
 // pingback.config.ts
-import { defineConfig } from "@pingback/next";
+import { defineConfig } from "@usepingback/next";
 
 export default defineConfig({
   apiKey: process.env.PINGBACK_API_KEY,
@@ -42,7 +42,7 @@ export default defineConfig({
 
 ```ts
 // next.config.ts
-import { withPingback } from "@pingback/next";
+import { withPingback } from "@usepingback/next";
 
 export default withPingback({
   // your existing config
@@ -53,7 +53,7 @@ export default withPingback({
 
 ```ts
 // app/api/__pingback/route.ts
-import { createRouteHandler } from "@pingback/next";
+import { createRouteHandler } from "@usepingback/next";
 
 export const { POST } = createRouteHandler();
 ```
@@ -62,7 +62,7 @@ export const { POST } = createRouteHandler();
 
 ```ts
 // lib/pingback/review-emails.ts
-import { cron } from "@pingback/next";
+import { cron } from "@usepingback/next";
 
 export const sendReviewEmails = cron(
   "send-review-emails",
@@ -162,7 +162,7 @@ pingback/
 ├── shared/
 │   └── types/             # Shared TypeScript types
 └── examples/
-    └── nextjs/            # Example Next.js app using @pingback/next
+    └── nextjs/            # Example Next.js app using @usepingback/next
 ```
 
 ## Tech Stack

@@ -1,4 +1,4 @@
-import { defineConfig } from "@pingback/next";
+import { defineConfig } from "@usepingback/next";
 
 export default defineConfig({
   apiKey: process.env.PINGBACK_API_KEY!,

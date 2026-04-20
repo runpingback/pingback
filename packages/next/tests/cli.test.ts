@@ -70,14 +70,14 @@ describe('CLI init', () => {
     );
     runInit();
     const content = readFileSync(join(tmpDir, 'next.config.js'), 'utf-8');
-    expect(content).toContain('require("@pingback/next")');
+    expect(content).toContain('require("@usepingback/next")');
     expect(content).toContain('withPingback(nextConfig)');
   });
 
   it('should not double-wrap if already configured', () => {
     writeFileSync(
       join(tmpDir, 'next.config.ts'),
-      `import { withPingback } from "@pingback/next";\nexport default withPingback({});\n`,
+      `import { withPingback } from "@usepingback/next";\nexport default withPingback({});\n`,
     );
     runInit();
     const content = readFileSync(join(tmpDir, 'next.config.ts'), 'utf-8');

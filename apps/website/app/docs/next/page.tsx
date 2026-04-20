@@ -7,17 +7,17 @@ export default function NextJsPage() {
     <>
       <h1 className="text-3xl font-bold tracking-tight mb-2">Next.js</h1>
       <p className="text-muted-foreground mb-8">
-        Set up Pingback in your Next.js app with the <InlineCode>@pingback/next</InlineCode> adapter.
+        Set up Pingback in your Next.js app with the <InlineCode>@usepingback/next</InlineCode> adapter.
       </p>
 
       <h2 className="text-xl font-semibold mt-10 mb-3">Installation</h2>
-      <DocsCode code="npm install @pingback/next" lang="bash" />
+      <DocsCode code="npm install @usepingback/next" lang="bash" />
 
       <h2 className="text-xl font-semibold mt-10 mb-3">Configuration</h2>
       <p className="text-sm text-muted-foreground mb-2">
         Create <InlineCode>pingback.config.ts</InlineCode> in your project root:
       </p>
-      <DocsCode code={`import { defineConfig } from "@pingback/next";
+      <DocsCode code={`import { defineConfig } from "@usepingback/next";
 
 export default defineConfig({
   apiKey: process.env.PINGBACK_API_KEY,
@@ -29,7 +29,7 @@ export default defineConfig({
         it scans your project for <InlineCode>cron()</InlineCode> and <InlineCode>task()</InlineCode> calls,
         collects their metadata, and registers them with the Pingback platform:
       </p>
-      <DocsCode code={`import { withPingback } from "@pingback/next";
+      <DocsCode code={`import { withPingback } from "@usepingback/next";
 
 export default withPingback({
   // your existing Next.js config
@@ -40,7 +40,7 @@ export default withPingback({
         Create <InlineCode>app/api/__pingback/route.ts</InlineCode> to receive execution
         requests from the platform:
       </p>
-      <DocsCode code={`import { createRouteHandler } from "@pingback/next";
+      <DocsCode code={`import { createRouteHandler } from "@usepingback/next";
 
 export const { POST } = createRouteHandler();`} />
       <p className="text-sm text-muted-foreground mt-2">
@@ -53,7 +53,7 @@ export const { POST } = createRouteHandler();`} />
         Create your cron and task functions anywhere in your project. They are
         automatically discovered at build time:
       </p>
-      <DocsCode code={`import { cron, task } from "@pingback/next";
+      <DocsCode code={`import { cron, task } from "@usepingback/next";
 
 export const sendEmails = cron(
   "send-emails",

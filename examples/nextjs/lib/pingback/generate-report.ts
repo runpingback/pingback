@@ -1,4 +1,4 @@
-import { task } from "@pingback/next";
+import { task } from "@usepingback/next";
 
 export const generateReport = task(
   "generate-report",

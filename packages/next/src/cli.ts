@@ -22,7 +22,7 @@ function createPingbackConfig() {
 
   writeFileSync(
     configPath,
-    `import { defineConfig } from "@pingback/next";
+    `import { defineConfig } from "@usepingback/next";
 
 export default defineConfig({
   apiKey: process.env.PINGBACK_API_KEY!,
@@ -47,7 +47,7 @@ function wrapNextConfig() {
     // Create a new next.config.ts with withPingback
     writeFileSync(
       join(cwd, 'next.config.ts'),
-      `import { withPingback } from "@pingback/next";
+      `import { withPingback } from "@usepingback/next";
 
 export default withPingback({});
 `,
@@ -65,8 +65,8 @@ export default withPingback({});
   }
 
   const importLine = configFile.endsWith('.js')
-    ? `const { withPingback } = require("@pingback/next");\n`
-    : `import { withPingback } from "@pingback/next";\n`;
+    ? `const { withPingback } = require("@usepingback/next");\n`
+    : `import { withPingback } from "@usepingback/next";\n`;
 
   let updated = importLine + content;
 
@@ -114,7 +114,7 @@ function createRouteHandler() {
   mkdirSync(routeDir, { recursive: true });
   writeFileSync(
     routeFile,
-    `import { createRouteHandler } from "@pingback/next/handler";
+    `import { createRouteHandler } from "@usepingback/next/handler";
 
 // Import all your pingback function files here
 import "@/lib/pingback/example";
@@ -137,7 +137,7 @@ function createExampleFunction() {
   mkdirSync(dir, { recursive: true });
   writeFileSync(
     filePath,
-    `import { cron } from "@pingback/next";
+    `import { cron } from "@usepingback/next";
 
 export const exampleJob = cron(
   "example-job",

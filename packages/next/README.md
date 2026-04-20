@@ -1,11 +1,11 @@
-# @pingback/next
+# @usepingback/next
 
 Next.js SDK for [Pingback](https://pingback.dev) — reliable cron jobs and background tasks.
 
 ## Installation
 
 ```bash
-npm install @pingback/next
+npm install @usepingback/next
 ```
 
 ## Setup
@@ -13,7 +13,7 @@ npm install @pingback/next
 ### 1. Create `pingback.config.ts` in your project root
 
 ```ts
-import { defineConfig } from "@pingback/next";
+import { defineConfig } from "@usepingback/next";
 
 export default defineConfig({
   apiKey: process.env.PINGBACK_API_KEY,
@@ -24,7 +24,7 @@ export default defineConfig({
 
 ```ts
 // next.config.ts
-import { withPingback } from "@pingback/next";
+import { withPingback } from "@usepingback/next";
 
 export default withPingback({
   // your existing Next.js config
@@ -46,7 +46,7 @@ Create files in `lib/pingback/` (configurable):
 
 ```ts
 // lib/pingback/review-emails.ts
-import { cron } from "@pingback/next";
+import { cron } from "@usepingback/next";
 
 export const sendReviewEmails = cron(
   "send-review-emails",     // unique name
@@ -73,7 +73,7 @@ export const sendReviewEmails = cron(
 
 ```ts
 // lib/pingback/send-email.ts
-import { task } from "@pingback/next";
+import { task } from "@usepingback/next";
 
 export const sendSingleEmail = task(
   "send-single-email",
@@ -92,7 +92,7 @@ export const sendSingleEmail = task(
 Use `ctx.task()` inside a cron to dispatch independent sub-tasks:
 
 ```ts
-import { cron, task } from "@pingback/next";
+import { cron, task } from "@usepingback/next";
 
 export const sendEmails = cron("send-emails", "*/15 * * * *", async (ctx) => {
   const pending = await db.emails.findPending();
@@ -137,7 +137,7 @@ defineConfig({
 ## How It Works
 
 1. `withPingback()` hooks into `next build`
-2. Discovers files in `lib/pingback/` that import from `@pingback/next`
+2. Discovers files in `lib/pingback/` that import from `@usepingback/next`
 3. Generates `app/api/__pingback/route.ts` (add to `.gitignore`)
 4. Registers discovered functions with the Pingback platform
 5. At runtime, the platform sends signed requests to your route handler

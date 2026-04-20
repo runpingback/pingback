@@ -7,7 +7,7 @@ const steps = [
     content: (
       <div className="mt-4 rounded-lg border bg-[#0d1117] px-4 py-3">
         <code className="text-sm text-gray-300 font-mono">
-          npm install @pingback/next
+          npm install @usepingback/next
         </code>
       </div>
     ),
@@ -17,7 +17,7 @@ const steps = [
     title: "Define",
     content: (
       <div className="mt-4 rounded-lg border bg-[#0d1117] px-4 py-3 overflow-auto">
-        <pre className="text-sm text-gray-300 font-mono leading-6">{`import { cron } from "@pingback/next";
+        <pre className="text-sm text-gray-300 font-mono leading-6">{`import { cron } from "@usepingback/next";
 
 export const cleanup = cron(
   "cleanup",

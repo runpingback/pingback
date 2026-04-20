@@ -1,4 +1,4 @@
-import { cron } from "@pingback/next";
+import { cron } from "@usepingback/next";
 
 export const sendEmails = cron(
   "send-pending-emails",

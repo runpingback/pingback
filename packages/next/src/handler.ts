@@ -1,6 +1,6 @@
 import { createHmac, timingSafeEqual } from 'crypto';
-import { createContext } from '@pingback/core';
-import type { ContextWithInternals, ExecutionPayload } from '@pingback/core';
+import { createContext } from '@usepingback/core';
+import type { ContextWithInternals, ExecutionPayload } from '@usepingback/core';
 import { registry } from './functions';
 
 function verifyWorkerSignature(

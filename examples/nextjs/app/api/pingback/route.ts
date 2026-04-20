@@ -1,4 +1,4 @@
-import { createRouteHandler } from "@pingback/next/handler";
+import { createRouteHandler } from "@usepingback/next/handler";
 
 // Import all your pingback function files here
 import "@/lib/pingback/quick-test";
