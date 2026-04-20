@@ -63,17 +63,17 @@ export const dailyCleanup = cron(
             </tr>
             <tr className="border-b">
               <td className="p-3">Nuxt</td>
-              <td className="p-3 font-mono">@pingback/nuxt</td>
+              <td className="p-3 font-mono">@usepingback/nuxt</td>
               <td className="p-3">Coming soon</td>
             </tr>
             <tr className="border-b">
               <td className="p-3">SvelteKit</td>
-              <td className="p-3 font-mono">@pingback/sveltekit</td>
+              <td className="p-3 font-mono">@usepingback/sveltekit</td>
               <td className="p-3">Coming soon</td>
             </tr>
             <tr>
               <td className="p-3">Remix</td>
-              <td className="p-3 font-mono">@pingback/remix</td>
+              <td className="p-3 font-mono">@usepingback/remix</td>
               <td className="p-3">Coming soon</td>
             </tr>
           </tbody>
