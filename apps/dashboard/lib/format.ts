@@ -13,7 +13,7 @@ const months = [
   "July", "August", "September", "October", "November", "December",
 ];
 
-export function formatDateTime(dateStr: string | Date): string {
+export function formatDateTime(dateStr: string | number | Date): string {
   const d = new Date(dateStr);
   const day = d.getDate();
   const month = months[d.getMonth()];
