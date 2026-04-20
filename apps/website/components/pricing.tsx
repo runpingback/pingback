@@ -112,7 +112,7 @@ export function Pricing() {
                 ))}
               </ul>
               <Link
-                href="https://app.pingback.dev/register"
+                href="https://app.pingback.lol/register"
                 className={`text-sm font-medium text-center py-2.5 rounded-full transition-opacity ${
                   tier.highlight
                     ? "bg-accent text-accent-foreground hover:opacity-90"

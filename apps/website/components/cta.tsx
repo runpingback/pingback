@@ -9,7 +9,7 @@ export function CTA() {
         </h2>
         <p className="text-muted-foreground mb-8">No credit card required.</p>
         <Link
-          href="https://app.pingback.dev/register"
+          href="https://app.pingback.lol/register"
           className="bg-accent text-accent-foreground px-8 py-2.5 rounded-full text-sm font-medium hover:opacity-90 transition-opacity inline-block"
         >
           Get Started

@@ -19,13 +19,13 @@ export function Navbar() {
             Docs
           </Link>
           <Link
-            href="https://app.pingback.dev/login"
+            href="https://app.pingback.lol/login"
             className="text-sm text-foreground hover:text-foreground/70 transition-colors"
           >
             Login
           </Link>
           <Link
-            href="https://app.pingback.dev/register"
+            href="https://app.pingback.lol/register"
             className="text-sm bg-accent text-accent-foreground px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity"
           >
             Get Started
