@@ -15,7 +15,7 @@ export function Navbar() {
           <a href="#pricing" className="text-sm text-foreground hover:text-foreground/70 transition-colors">
             Pricing
           </a>
-          <Link href="https://docs.pingback.dev" className="text-sm text-foreground hover:text-foreground/70 transition-colors">
+          <Link href="/docs" className="text-sm text-foreground hover:text-foreground/70 transition-colors">
             Docs
           </Link>
           <Link
