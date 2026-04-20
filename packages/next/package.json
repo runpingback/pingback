@@ -40,12 +40,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/pingback/pingback",
+    "url": "https://github.com/champ3oy/pingback",
     "directory": "packages/next"
   },
   "homepage": "https://pingback.dev/docs/next",
   "bugs": {
-    "url": "https://github.com/pingback/pingback/issues"
+    "url": "https://github.com/champ3oy/pingback/issues"
   },
   "dependencies": {
     "@pingback/core": "0.1.0",
