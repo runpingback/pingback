@@ -1,6 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Not, IsNull } from 'typeorm';
 import { Alert } from './alert.entity';
 import { Execution } from '../executions/execution.entity';
 import { Job } from '../jobs/job.entity';
@@ -56,7 +56,7 @@ export class AlertsService {
             execution.durationMs > alert.triggerValue * 1000;
           break;
         case 'missed_run':
-          continue;
+          break;
       }
 
       if (shouldFire) {
@@ -96,6 +96,48 @@ export class AlertsService {
       recent.length >= threshold &&
       recent.every((e) => e.status === 'failed')
     );
+  }
+
+  async checkMissedRuns() {
+    const overdueJobs = await this.jobRepo.find({
+      where: {
+        status: 'active' as any,
+        schedule: Not(IsNull()),
+      },
+      relations: ['project'],
+    });
+
+    for (const job of overdueJobs) {
+      if (!job.nextRunAt) continue;
+
+      const overdueMs = Date.now() - job.nextRunAt.getTime();
+      if (overdueMs <= 0) continue;
+      const overdueMinutes = overdueMs / (60 * 1000);
+
+      const alerts = await this.alertRepo.find({
+        where: [
+          { projectId: job.projectId, jobId: job.id, triggerType: 'missed_run' as any, enabled: true },
+          { projectId: job.projectId, jobId: IsNull() as any, triggerType: 'missed_run' as any, enabled: true },
+        ],
+      });
+
+      for (const alert of alerts) {
+        if (this.isInCooldown(alert)) continue;
+        if (overdueMinutes >= alert.triggerValue) {
+          await this.emailNotifier.send({
+            to: alert.target,
+            jobName: job.name,
+            projectName: job.project.name,
+            errorMessage: `Job "${job.name}" is ${Math.round(overdueMinutes)} minutes overdue`,
+            attempt: 0,
+            executionId: '',
+            projectId: job.projectId,
+          });
+          alert.lastFiredAt = new Date();
+          await this.alertRepo.save(alert);
+        }
+      }
+    }
   }
 
   async create(projectId: string, dto: CreateAlertDto) {

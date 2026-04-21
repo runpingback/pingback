@@ -10,6 +10,7 @@ import { parseExpression } from 'cron-parser';
 import { Job } from '../jobs/job.entity';
 import { ExecutionsService } from '../executions/executions.service';
 import { QueueService } from '../queue/queue.service';
+import { AlertsService } from '../alerts/alerts.service';
 
 const TICK_INTERVAL_MS = 10_000;
 
@@ -22,6 +23,7 @@ export class SchedulerService implements OnModuleInit, OnModuleDestroy {
     @InjectRepository(Job) private jobRepo: Repository<Job>,
     private executionsService: ExecutionsService,
     private queueService: QueueService,
+    private alertsService: AlertsService,
   ) {}
 
   onModuleInit() {
@@ -80,6 +82,12 @@ export class SchedulerService implements OnModuleInit, OnModuleDestroy {
         } catch (err) {
           this.logger.error(`Failed to process job ${job.id}: ${(err as Error).message}`);
         }
+      }
+      // Check for missed runs after processing due jobs
+      try {
+        await this.alertsService.checkMissedRuns();
+      } catch (err) {
+        this.logger.error(`Missed run check failed: ${(err as Error).message}`);
       }
     } catch (err) {
       this.logger.error(`Scheduler tick failed: ${(err as Error).message}`);
