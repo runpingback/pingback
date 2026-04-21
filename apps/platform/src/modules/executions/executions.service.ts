@@ -97,6 +97,9 @@ export class ExecutionsService {
     const qb = this.execRepo
       .createQueryBuilder('exec')
       .leftJoinAndSelect('exec.job', 'job')
+      .leftJoin('exec.parent', 'parent')
+      .leftJoin('parent.job', 'parentJob')
+      .addSelect(['parent.id', 'parentJob.name'])
       .where('job.project_id = :projectId', { projectId });
 
     if (filters?.status) {

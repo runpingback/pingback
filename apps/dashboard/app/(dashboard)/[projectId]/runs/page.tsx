@@ -272,12 +272,18 @@ function RunDetail({ exec, projectId }: { exec: Execution; projectId: string }) 
   return (
     <div className="border-t border-border bg-background">
       {exec.parentId && (
-        <div className="px-4 pt-3 pb-0">
+        <div className="px-4 pt-3 pb-0 flex items-center gap-2">
           <span
             className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
             style={{ backgroundColor: "rgba(212, 165, 116, 0.15)", color: "#d4a574" }}
           >
             Child Task
+          </span>
+          <span className="text-xs text-muted-foreground">
+            spawned by{" "}
+            <span className="font-medium" style={{ color: "#d4a574" }}>
+              {exec.parent?.job?.name || exec.parentId.slice(0, 8) + "..."}
+            </span>
           </span>
         </div>
       )}

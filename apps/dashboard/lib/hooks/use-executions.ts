@@ -30,6 +30,7 @@ export interface Execution {
   }>;
   createdAt: string;
   job?: { name: string; retries: number };
+  parent?: { id: string; job?: { name: string } } | null;
 }
 
 interface PaginatedResponse<T> {
