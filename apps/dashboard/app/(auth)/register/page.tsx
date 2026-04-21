@@ -6,8 +6,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { registerWithCredentials, getGithubAuthUrl } from "@/lib/auth";
 import { setTokens } from "@/lib/api";
 
@@ -36,14 +34,21 @@ export default function RegisterPage() {
   }
 
   return (
-    <Card>
-      <CardHeader className="text-center">
-        <CardTitle className="text-2xl font-bold">Pingback</CardTitle>
+    <div>
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-light font-display tracking-tight mb-2" style={{ color: "#f5f5f0" }}>
+          pingback
+        </h1>
         <p className="text-sm text-muted-foreground">Create your account</p>
-      </CardHeader>
-      <CardContent>
+      </div>
+
+      <div className="rounded-lg border p-6" style={{ backgroundColor: "#1a1a17" }}>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {error && <p className="text-sm text-destructive text-center">{error}</p>}
+          {error && (
+            <div className="rounded-md px-3 py-2 text-sm" style={{ backgroundColor: "rgba(212, 115, 74, 0.1)", color: "#d4734a" }}>
+              {error}
+            </div>
+          )}
           <div className="space-y-2">
             <Label htmlFor="name">Name (optional)</Label>
             <Input id="name" type="text" placeholder="Your name" value={name} onChange={(e) => setName(e.target.value)} />
@@ -56,15 +61,20 @@ export default function RegisterPage() {
             <Label htmlFor="password">Password</Label>
             <Input id="password" type="password" placeholder="Min 8 characters" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} />
           </div>
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={loading}
+            style={{ backgroundColor: "#d4a574", color: "#000", borderColor: "#d4a574" }}
+          >
             {loading ? "Creating account..." : "Create account"}
           </Button>
         </form>
 
-        <div className="my-4 flex items-center gap-3">
-          <Separator className="flex-1" />
+        <div className="my-5 flex items-center gap-3">
+          <div className="flex-1 h-px" style={{ backgroundColor: "var(--border)" }} />
           <span className="text-xs text-muted-foreground">or</span>
-          <Separator className="flex-1" />
+          <div className="flex-1 h-px" style={{ backgroundColor: "var(--border)" }} />
         </div>
 
         <Button variant="outline" className="w-full" onClick={() => (window.location.href = getGithubAuthUrl())}>
@@ -73,12 +83,12 @@ export default function RegisterPage() {
           </svg>
           Sign in with GitHub
         </Button>
+      </div>
 
-        <p className="mt-4 text-center text-sm text-muted-foreground">
-          Already have an account?{" "}
-          <Link href="/login" className="text-primary hover:underline">Sign in</Link>
-        </p>
-      </CardContent>
-    </Card>
+      <p className="mt-6 text-center text-sm text-muted-foreground">
+        Already have an account?{" "}
+        <Link href="/login" className="hover:underline" style={{ color: "#d4a574" }}>Sign in</Link>
+      </p>
+    </div>
   );
 }

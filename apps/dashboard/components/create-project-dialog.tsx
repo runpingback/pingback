@@ -46,8 +46,8 @@ export function CreateProjectDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" className="bg-amber-400 text-black gap-0">
-          <IconPlus className="mr-2 h-4 w-4 " /> Create project
+        <Button size="sm" className="bg-primary text-primary-foreground gap-0 hover:opacity-90">
+          <IconPlus className="mr-2 h-4 w-4" /> Create project
         </Button>
       </DialogTrigger>
       <DialogContent>

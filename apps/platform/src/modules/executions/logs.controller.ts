@@ -23,6 +23,18 @@ export class LogsController {
     private projectsService: ProjectsService,
   ) {}
 
+  @Get('histogram')
+  @ApiOperation({ summary: 'Get logs histogram for a project' })
+  @ApiParam({ name: 'projectId', description: 'Project UUID' })
+  async getHistogram(
+    @Req() req: Request,
+    @Param('projectId') projectId: string,
+  ) {
+    const user = req.user as { id: string };
+    await this.projectsService.findOneByUser(projectId, user.id);
+    return this.logsService.getHistogram(projectId);
+  }
+
   @Get()
   @ApiOperation({ summary: 'Search and list logs for a project' })
   @ApiParam({ name: 'projectId', description: 'Project UUID' })

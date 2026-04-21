@@ -1,6 +1,6 @@
 # Fan-Out Tasks (`ctx.task()`) Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Enable cron handlers to spawn independent child task executions via `ctx.task(name, payload)`, with the platform dispatching them after the parent completes.
 
@@ -32,7 +32,7 @@
 **Files:**
 - Modify: `packages/core/src/types.ts`
 
-- [ ] **Step 1: Add `payload` to `ExecutionPayload` and add `TaskRequest` type**
+- [x] **Step 1: Add `payload` to `ExecutionPayload` and add `TaskRequest` type**
 
 In `packages/core/src/types.ts`, add `payload?: any` to the `ExecutionPayload` interface and add a new `TaskRequest` interface:
 
@@ -86,12 +86,12 @@ export interface ExecutionResult {
 }
 ```
 
-- [ ] **Step 2: Verify it compiles**
+- [x] **Step 2: Verify it compiles**
 
 Run: `cd packages/core && npx tsc --noEmit --pretty 2>&1 | head -20`
 Expected: No errors (or only pre-existing ones)
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add packages/core/src/types.ts
@@ -106,7 +106,7 @@ git commit -m "feat(core): add payload to ExecutionPayload and TaskRequest type"
 - Modify: `packages/core/src/context.ts`
 - Modify: `packages/core/src/index.ts`
 
-- [ ] **Step 1: Rewrite context.ts to collect tasks instead of throwing**
+- [x] **Step 1: Rewrite context.ts to collect tasks instead of throwing**
 
 Replace the entire contents of `packages/core/src/context.ts` with:
 
@@ -146,7 +146,7 @@ export function createContext(payload: ExecutionPayload): ContextWithInternals {
 }
 ```
 
-- [ ] **Step 2: Update index.ts exports**
+- [x] **Step 2: Update index.ts exports**
 
 In `packages/core/src/index.ts`, change:
 ```typescript
@@ -157,7 +157,7 @@ to:
 export type { ContextWithInternals } from './context';
 ```
 
-- [ ] **Step 3: Update handler.ts import**
+- [x] **Step 3: Update handler.ts import**
 
 In `packages/next/src/handler.ts`, change:
 ```typescript
@@ -177,12 +177,12 @@ to:
     const ctx = createContext(payload) as ContextWithInternals;
 ```
 
-- [ ] **Step 4: Verify it compiles**
+- [x] **Step 4: Verify it compiles**
 
 Run: `cd packages/core && npx tsc --noEmit --pretty 2>&1 | head -20`
 Expected: No errors
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add packages/core/src/context.ts packages/core/src/index.ts packages/next/src/handler.ts
@@ -196,7 +196,7 @@ git commit -m "feat(core): implement ctx.task() collection with _getTasks()"
 **Files:**
 - Modify: `packages/next/src/handler.ts`
 
-- [ ] **Step 1: Update the route handler to pass payload and return tasks**
+- [x] **Step 1: Update the route handler to pass payload and return tasks**
 
 In `packages/next/src/handler.ts`, make two changes:
 
@@ -255,12 +255,12 @@ to:
       );
 ```
 
-- [ ] **Step 2: Verify it compiles**
+- [x] **Step 2: Verify it compiles**
 
 Run: `cd packages/next && npx tsc --noEmit --pretty 2>&1 | head -20`
 Expected: No errors
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add packages/next/src/handler.ts
@@ -274,7 +274,7 @@ git commit -m "feat(next): pass payload to handlers and return collected tasks i
 **Files:**
 - Modify: `apps/platform/src/modules/executions/execution.entity.ts`
 
-- [ ] **Step 1: Add parentId and payload columns**
+- [x] **Step 1: Add parentId and payload columns**
 
 In `apps/platform/src/modules/executions/execution.entity.ts`, add these columns after the `logs` column (before `createdAt`):
 
@@ -292,12 +292,12 @@ In `apps/platform/src/modules/executions/execution.entity.ts`, add these columns
 
 Note: The `ManyToOne` self-reference requires importing nothing extra — `Execution` is already in scope since it's a self-reference within the class. TypeORM handles this with `() => Execution`.
 
-- [ ] **Step 2: Verify it compiles**
+- [x] **Step 2: Verify it compiles**
 
 Run: `cd apps/platform && npx tsc --noEmit --pretty 2>&1 | head -20`
 Expected: No errors
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add apps/platform/src/modules/executions/execution.entity.ts
@@ -313,7 +313,7 @@ git commit -m "feat(platform): add parentId and payload columns to execution ent
 **Files:**
 - Modify: `apps/platform/src/modules/executions/executions.service.ts`
 
-- [ ] **Step 1: Update createPending to accept parentId and payload**
+- [x] **Step 1: Update createPending to accept parentId and payload**
 
 In `apps/platform/src/modules/executions/executions.service.ts`, change the `createPending` method from:
 
@@ -350,7 +350,7 @@ to:
   }
 ```
 
-- [ ] **Step 2: Add parentId filter to findByProject**
+- [x] **Step 2: Add parentId filter to findByProject**
 
 In the `findByProject` method, add a `parentId` filter. After the existing `jobId` filter block:
 
@@ -396,12 +396,12 @@ to:
     },
 ```
 
-- [ ] **Step 3: Verify it compiles**
+- [x] **Step 3: Verify it compiles**
 
 Run: `cd apps/platform && npx tsc --noEmit --pretty 2>&1 | head -20`
 Expected: No errors
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add apps/platform/src/modules/executions/executions.service.ts
@@ -415,7 +415,7 @@ git commit -m "feat(platform): support parentId and payload in executions servic
 **Files:**
 - Modify: `apps/platform/src/modules/executions/executions.controller.ts`
 
-- [ ] **Step 1: Add parentId query parameter to the dashboard controller**
+- [x] **Step 1: Add parentId query parameter to the dashboard controller**
 
 In the `ExecutionsDashboardController`'s `findByProject` method, add a `parentId` query parameter.
 
@@ -460,12 +460,12 @@ to:
     });
 ```
 
-- [ ] **Step 2: Verify it compiles**
+- [x] **Step 2: Verify it compiles**
 
 Run: `cd apps/platform && npx tsc --noEmit --pretty 2>&1 | head -20`
 Expected: No errors
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add apps/platform/src/modules/executions/executions.controller.ts
@@ -483,7 +483,7 @@ This is the most complex task. The worker needs to:
 1. Include `payload` in the HTTP request body when dispatching
 2. After a successful execution, parse `tasks` from the response and create child executions
 
-- [ ] **Step 1: Add payload to QueueMessage and inject JobsService**
+- [x] **Step 1: Add payload to QueueMessage and inject JobsService**
 
 In `apps/platform/src/modules/worker/worker.service.ts`:
 
@@ -527,7 +527,7 @@ to:
   ) {}
 ```
 
-- [ ] **Step 2: Include payload in the request body**
+- [x] **Step 2: Include payload in the request body**
 
 Change the `body` construction in `processJob` from:
 ```typescript
@@ -549,7 +549,7 @@ to:
       });
 ```
 
-- [ ] **Step 3: Process tasks from successful response**
+- [x] **Step 3: Process tasks from successful response**
 
 In the success branch of `processJob` (inside the `if (response.ok)` block), after `markCompleted`, add fan-out processing. Change from:
 
@@ -630,7 +630,7 @@ to:
           }
 ```
 
-- [ ] **Step 4: Add `findByName` method to JobsService**
+- [x] **Step 4: Add `findByName` method to JobsService**
 
 In `apps/platform/src/modules/jobs/jobs.service.ts`, add this method:
 
@@ -640,7 +640,7 @@ In `apps/platform/src/modules/jobs/jobs.service.ts`, add this method:
   }
 ```
 
-- [ ] **Step 5: Add JobsModule to WorkerModule imports**
+- [x] **Step 5: Add JobsModule to WorkerModule imports**
 
 Check `apps/platform/src/modules/worker/worker.module.ts` and ensure `JobsModule` is imported. If not, add it:
 
@@ -654,12 +654,12 @@ import { JobsModule } from '../jobs/jobs.module';
 export class WorkerModule {}
 ```
 
-- [ ] **Step 6: Verify it compiles**
+- [x] **Step 6: Verify it compiles**
 
 Run: `cd apps/platform && npx tsc --noEmit --pretty 2>&1 | head -20`
 Expected: No errors
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add apps/platform/src/modules/worker/worker.service.ts apps/platform/src/modules/worker/worker.module.ts apps/platform/src/modules/jobs/jobs.service.ts
@@ -673,7 +673,7 @@ git commit -m "feat(platform): worker processes fan-out tasks from response and 
 **Files:**
 - Modify: `apps/dashboard/lib/hooks/use-executions.ts`
 
-- [ ] **Step 1: Add parentId to Execution interface and add useChildExecutions hook**
+- [x] **Step 1: Add parentId to Execution interface and add useChildExecutions hook**
 
 In `apps/dashboard/lib/hooks/use-executions.ts`:
 
@@ -715,12 +715,12 @@ export function useChildExecutions(projectId: string, parentId: string) {
 }
 ```
 
-- [ ] **Step 2: Verify it compiles**
+- [x] **Step 2: Verify it compiles**
 
 Run: `cd apps/dashboard && npx tsc --noEmit --pretty 2>&1 | head -20`
 Expected: No errors
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add apps/dashboard/lib/hooks/use-executions.ts
@@ -734,7 +734,7 @@ git commit -m "feat(dashboard): add useChildExecutions hook"
 **Files:**
 - Modify: `apps/dashboard/app/(dashboard)/[projectId]/runs/page.tsx`
 
-- [ ] **Step 1: Import useChildExecutions and update RunDetail**
+- [x] **Step 1: Import useChildExecutions and update RunDetail**
 
 In `apps/dashboard/app/(dashboard)/[projectId]/runs/page.tsx`:
 
@@ -745,7 +745,7 @@ import { useExecutions, useChildExecutions, type Execution } from "@/lib/hooks/u
 
 Add `useParams` is already imported. Add `formatDuration` is already imported.
 
-- [ ] **Step 2: Create ChildTasks component**
+- [x] **Step 2: Create ChildTasks component**
 
 Add this component before the `RunDetail` component:
 
@@ -800,7 +800,7 @@ function ChildTasks({ projectId, parentId }: { projectId: string; parentId: stri
 }
 ```
 
-- [ ] **Step 3: Add ChildTasks to RunDetail and show parent indicator**
+- [x] **Step 3: Add ChildTasks to RunDetail and show parent indicator**
 
 In the `RunDetail` component, add `ChildTasks` at the bottom (just before the closing `</div>` of the component, after the Output section's closing `</div>`):
 
@@ -831,7 +831,7 @@ Also add a parent indicator at the top of RunDetail. After the opening `<div cla
       )}
 ```
 
-- [ ] **Step 4: Update RunDetail usage in the DataTable**
+- [x] **Step 4: Update RunDetail usage in the DataTable**
 
 In the `RunsPage` component, update the expandable render to pass `projectId`:
 
@@ -844,12 +844,12 @@ to:
           expandable={{ render: (exec) => <RunDetail exec={exec} projectId={projectId} /> }}
 ```
 
-- [ ] **Step 5: Verify it compiles**
+- [x] **Step 5: Verify it compiles**
 
 Run: `cd apps/dashboard && npx tsc --noEmit --pretty 2>&1 | head -20`
 Expected: No errors
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add apps/dashboard/app/\(dashboard\)/\[projectId\]/runs/page.tsx

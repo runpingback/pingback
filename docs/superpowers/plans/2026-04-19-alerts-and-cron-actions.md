@@ -1,6 +1,6 @@
 # Alerts Page & Cron Actions Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Wire up the alerts page with full CRUD and add pause/resume, run now, and delete actions to the crons page.
 
@@ -15,7 +15,7 @@
 **Files:**
 - Create: `apps/dashboard/lib/hooks/use-alerts.ts`
 
-- [ ] **Step 1: Create the alerts hooks file**
+- [x] **Step 1: Create the alerts hooks file**
 
 ```typescript
 "use client";
@@ -106,12 +106,12 @@ export function useDeleteAlert(projectId: string) {
 }
 ```
 
-- [ ] **Step 2: Verify the file compiles**
+- [x] **Step 2: Verify the file compiles**
 
 Run: `cd apps/dashboard && npx tsc --noEmit --pretty 2>&1 | head -20`
 Expected: No errors related to `use-alerts.ts`
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add apps/dashboard/lib/hooks/use-alerts.ts
@@ -127,7 +127,7 @@ git commit -m "feat(dashboard): add React Query hooks for alerts CRUD"
 
 This dialog is used for both creating and editing alerts. When `alert` prop is provided, it pre-fills the form for editing.
 
-- [ ] **Step 1: Create the alert dialog component**
+- [x] **Step 1: Create the alert dialog component**
 
 ```typescript
 "use client";
@@ -338,12 +338,12 @@ export function AlertDialog({
 }
 ```
 
-- [ ] **Step 2: Verify the file compiles**
+- [x] **Step 2: Verify the file compiles**
 
 Run: `cd apps/dashboard && npx tsc --noEmit --pretty 2>&1 | head -20`
 Expected: No errors related to `alert-dialog.tsx`
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add apps/dashboard/components/alert-dialog.tsx
@@ -359,7 +359,7 @@ git commit -m "feat(dashboard): add create/edit alert dialog component"
 
 Replace the empty state shell with a full DataTable-based alerts page.
 
-- [ ] **Step 1: Rewrite the alerts page**
+- [x] **Step 1: Rewrite the alerts page**
 
 Replace the entire contents of `apps/dashboard/app/(dashboard)/[projectId]/alerts/page.tsx` with:
 
@@ -521,12 +521,12 @@ export default function AlertsPage() {
 }
 ```
 
-- [ ] **Step 2: Verify the file compiles**
+- [x] **Step 2: Verify the file compiles**
 
 Run: `cd apps/dashboard && npx tsc --noEmit --pretty 2>&1 | head -20`
 Expected: No errors
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add apps/dashboard/app/\(dashboard\)/\[projectId\]/alerts/page.tsx
@@ -542,7 +542,7 @@ git commit -m "feat(dashboard): wire up alerts page with CRUD and DataTable"
 
 Add mutation hooks for run, update (pause/resume), and delete.
 
-- [ ] **Step 1: Add mutation hooks to use-jobs.ts**
+- [x] **Step 1: Add mutation hooks to use-jobs.ts**
 
 Append the following to the end of `apps/dashboard/lib/hooks/use-jobs.ts`, and update the import line from:
 ```typescript
@@ -590,12 +590,12 @@ export function useDeleteJob(projectId: string) {
 }
 ```
 
-- [ ] **Step 2: Verify the file compiles**
+- [x] **Step 2: Verify the file compiles**
 
 Run: `cd apps/dashboard && npx tsc --noEmit --pretty 2>&1 | head -20`
 Expected: No errors
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add apps/dashboard/lib/hooks/use-jobs.ts
@@ -611,7 +611,7 @@ git commit -m "feat(dashboard): add run, update, and delete mutation hooks for j
 
 Add an actions column with a DropdownMenu for Run Now, Pause/Resume, and Delete.
 
-- [ ] **Step 1: Update the crons page**
+- [x] **Step 1: Update the crons page**
 
 Replace the entire contents of `apps/dashboard/app/(dashboard)/[projectId]/crons/page.tsx` with:
 
@@ -794,12 +794,12 @@ export default function CronsPage() {
 }
 ```
 
-- [ ] **Step 2: Verify the file compiles**
+- [x] **Step 2: Verify the file compiles**
 
 Run: `cd apps/dashboard && npx tsc --noEmit --pretty 2>&1 | head -20`
 Expected: No errors
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add apps/dashboard/app/\(dashboard\)/\[projectId\]/crons/page.tsx

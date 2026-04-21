@@ -49,6 +49,18 @@ export class Execution {
   @Column({ type: 'jsonb', default: '[]' })
   logs: Array<{ timestamp: number; message: string }>;
 
+  @Column({ type: 'jsonb', default: '[]' })
+  attempts: Array<{
+    attempt: number;
+    status: string;
+    startedAt: string | null;
+    completedAt: string | null;
+    durationMs: number | null;
+    httpStatus: number | null;
+    errorMessage: string | null;
+    logs: Array<{ timestamp: number; message: string }>;
+  }>;
+
   @Column({ type: 'uuid', nullable: true, name: 'parent_id' })
   parentId: string | null;
 

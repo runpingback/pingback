@@ -7,7 +7,7 @@ export class CreateProjectDto {
   name: string;
 
   @ApiProperty({ description: 'URL where Pingback will send job execution requests', example: 'https://myapp.com/api/pingback' })
-  @IsUrl()
+  @IsUrl({ require_tld: false })
   endpointUrl: string;
 
   @ApiPropertyOptional({ description: 'Custom domain for the project', example: 'myapp.com' })

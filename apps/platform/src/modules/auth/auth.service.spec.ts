@@ -107,7 +107,7 @@ describe('AuthService', () => {
         refreshToken: hash,
       });
 
-      const result = await service.refreshTokens('user-1', 'valid-refresh');
+      const result = await service.refreshTokens('valid-refresh');
 
       expect(result).toHaveProperty('accessToken');
       expect(result).toHaveProperty('refreshToken');
@@ -121,7 +121,7 @@ describe('AuthService', () => {
       });
 
       await expect(
-        service.refreshTokens('user-1', 'invalid-refresh'),
+        service.refreshTokens('invalid-refresh'),
       ).rejects.toThrow(UnauthorizedException);
     });
   });

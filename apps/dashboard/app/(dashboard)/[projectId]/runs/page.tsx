@@ -18,12 +18,13 @@ import { DataTable, type Column } from "@/components/data-table";
 import { useExecutions, useChildExecutions, type Execution } from "@/lib/hooks/use-executions";
 import { formatDateTime, formatDuration } from "@/lib/format";
 import { PageHeader } from "@/components/page-header";
+import { ExecutionChart } from "@/components/execution-chart";
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
   return (
     <button
-      className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground border rounded px-2 py-1 transition-colors"
+      className="text-muted-foreground hover:text-foreground transition-colors p-0.5"
       onClick={(e) => {
         e.stopPropagation();
         navigator.clipboard.writeText(text);
@@ -32,16 +33,22 @@ function CopyButton({ text }: { text: string }) {
       }}
     >
       {copied ? <IconCheck className="h-3 w-3" /> : <IconCopy className="h-3 w-3" />}
-      Copy
     </button>
   );
 }
 
+const statusColor: Record<string, string> = {
+  success: "#a8b545",
+  failed: "#d4734a",
+  running: "#e8b44a",
+  pending: "#e8b44a",
+};
+
 const statusIcon: Record<string, React.ReactNode> = {
-  success: <IconCircleCheckFilled className="h-4 w-4 text-green-500" />,
-  failed: <IconCircleXFilled className="h-4 w-4 text-red-500" />,
-  running: <IconLoader2 className="h-4 w-4 text-blue-500 animate-spin" />,
-  pending: <IconClockFilled className="h-4 w-4 text-yellow-500" />,
+  success: <IconCircleCheckFilled className="h-4 w-4" style={{ color: "#a8b545" }} />,
+  failed: <IconCircleXFilled className="h-4 w-4" style={{ color: "#d4734a" }} />,
+  running: <IconLoader2 className="h-4 w-4 animate-spin" style={{ color: "#e8b44a" }} />,
+  pending: <IconClockFilled className="h-4 w-4" style={{ color: "#e8b44a" }} />,
 };
 
 function ChildTasks({ projectId, parentId }: { projectId: string; parentId: string }) {
@@ -93,6 +100,163 @@ function ChildTasks({ projectId, parentId }: { projectId: string; parentId: stri
   );
 }
 
+function TraceTimeline({ exec }: { exec: Execution }) {
+  // Build segments: past attempts + current
+  const segments: Array<{
+    attempt: number;
+    status: string;
+    durationMs: number | null;
+    errorMessage: string | null;
+    logs: Array<{ timestamp: number; message: string }>;
+  }> = [];
+
+  if (exec.attempts && exec.attempts.length > 0) {
+    for (const att of exec.attempts) {
+      segments.push({
+        attempt: att.attempt,
+        status: att.status,
+        durationMs: att.durationMs,
+        errorMessage: att.errorMessage,
+        logs: att.logs || [],
+      });
+    }
+  }
+
+  segments.push({
+    attempt: exec.attempt,
+    status: exec.status,
+    durationMs: exec.durationMs,
+    errorMessage: exec.errorMessage,
+    logs: exec.logs || [],
+  });
+
+  const totalDuration = segments.reduce((sum, s) => sum + (s.durationMs || 1), 0) || 1;
+
+  return (
+    <div>
+      <p className="text-sm font-medium mb-3">Trace</p>
+
+      {/* Total duration */}
+      <div className="flex items-center gap-2 mb-2">
+        {statusIcon[exec.status]}
+        <span className="text-sm font-medium">
+          {segments.length > 1 ? `${segments.length} attempts` : "Run"}
+        </span>
+        <span className="text-xs text-muted-foreground">
+          {formatDuration(totalDuration)}
+        </span>
+      </div>
+
+      {/* Waterfall bar */}
+      <div className="h-6 rounded-sm bg-border overflow-hidden flex mb-3">
+        {segments.map((seg, i) => {
+          const width = Math.max(((seg.durationMs || 1) / totalDuration) * 100, segments.length > 1 ? 2 : 100);
+          const color = seg.status === "success" ? "#a8b545"
+            : seg.status === "failed" ? "#d4734a"
+            : seg.status === "running" ? "#e8b44a"
+            : "#e8b44a";
+          const isLast = i === segments.length - 1;
+          return (
+            <div
+              key={i}
+              className="h-full relative group"
+              style={{
+                width: `${width}%`,
+                backgroundColor: color,
+                borderRight: !isLast ? "1.5px solid var(--background)" : "none",
+              }}
+            >
+              {/* Hover tooltip */}
+              <div
+                className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block z-50 pointer-events-none"
+                style={{
+                  backgroundColor: "#2a2a25",
+                  border: "1px solid #3a3a35",
+                  borderRadius: "6px",
+                  padding: "4px 8px",
+                  whiteSpace: "nowrap",
+                  fontSize: "11px",
+                  color: "#f5f5f0",
+                }}
+              >
+                Attempt {seg.attempt} — {seg.status} — {formatDuration(seg.durationMs)}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Segment details */}
+      {segments.map((seg, i) => {
+        const isLast = i === segments.length - 1;
+        const isFailed = seg.status === "failed";
+        return (
+          <div key={i} className={`${i > 0 ? "mt-2" : ""} ${!isLast ? "mb-2" : ""}`}>
+            {/* Segment label */}
+            {segments.length > 1 && (
+              <div className="flex items-center gap-1.5 mb-1">
+                <span
+                  className="h-2 w-2 rounded-full shrink-0"
+                  style={{ backgroundColor: isFailed ? "#d4734a" : "#a8b545" }}
+                />
+                <span className="text-xs font-medium">
+                  Attempt {seg.attempt}
+                </span>
+                <span className="text-[10px] text-muted-foreground">
+                  {formatDuration(seg.durationMs)}
+                </span>
+                {isFailed && seg.errorMessage && (
+                  <span className="text-[10px] text-muted-foreground">
+                    — {seg.errorMessage}
+                  </span>
+                )}
+              </div>
+            )}
+
+            {/* Logs */}
+            {seg.logs.length > 0 && (
+              <div className={`space-y-0 ${segments.length > 1 ? "ml-3.5" : ""}`}>
+                {seg.logs.map((log, j) => {
+                  const prevTs = j > 0 ? seg.logs[j - 1].timestamp : log.timestamp;
+                  const stepDuration = log.timestamp - prevTs;
+                  return (
+                    <div
+                      key={j}
+                      className="flex items-center py-1 border-l border-border pl-3 ml-1"
+                    >
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        <span
+                          className="h-1.5 w-1.5 rounded-full shrink-0"
+                          style={{ backgroundColor: (log as any).level === "error" ? "#d4734a" : (log as any).level === "warn" ? "#e8b44a" : "#8a8a80" }}
+                        />
+                        <span className="text-xs truncate">{log.message}</span>
+                      </div>
+                      <span className="text-[10px] text-muted-foreground tabular-nums shrink-0 ml-2">
+                        {formatDuration(stepDuration)}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
+      })}
+
+      {/* Final error message */}
+      {exec.status === "failed" && exec.errorMessage && (
+        <div
+          className="rounded border px-3 py-2 mt-3 flex items-start gap-2"
+          style={{ borderColor: "rgba(212,115,74,0.3)", backgroundColor: "rgba(212,115,74,0.05)" }}
+        >
+          <IconCircleXFilled className="h-3.5 w-3.5 mt-0.5 shrink-0" style={{ color: "#d4734a" }} />
+          <p className="text-xs" style={{ color: "#d4734a" }}>{exec.errorMessage}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function RunDetail({ exec, projectId }: { exec: Execution; projectId: string }) {
   const formattedOutput = (() => {
     if (!exec.responseBody) return null;
@@ -109,7 +273,10 @@ function RunDetail({ exec, projectId }: { exec: Execution; projectId: string }) 
     <div className="border-t border-border bg-background">
       {exec.parentId && (
         <div className="px-4 pt-3 pb-0">
-          <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-purple-500/10 text-purple-500">
+          <span
+            className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
+            style={{ backgroundColor: "rgba(212, 165, 116, 0.15)", color: "#d4a574" }}
+          >
             Child Task
           </span>
         </div>
@@ -119,15 +286,16 @@ function RunDetail({ exec, projectId }: { exec: Execution; projectId: string }) 
           <div className="grid grid-cols-3 gap-4 mb-4">
             <div>
               <p className="text-[10px] text-muted-foreground mb-0.5">Run ID</p>
-              <p className="text-xs font-mono truncate">
-                {exec.id.slice(0, 24)}...
-              </p>
+              <div className="flex items-center gap-1">
+                <p className="text-xs font-mono truncate">{exec.id.slice(0, 24)}...</p>
+                <CopyButton text={exec.id} />
+              </div>
             </div>
             <div>
               <p className="text-[10px] text-muted-foreground mb-0.5">
                 Function
               </p>
-              <p className="text-xs font-medium text-purple-300">
+              <p className="text-xs font-medium" style={{ color: "#d4a574" }}>
                 {exec.job?.name || exec.jobId.slice(0, 8)}
               </p>
             </div>
@@ -187,56 +355,7 @@ function RunDetail({ exec, projectId }: { exec: Execution; projectId: string }) 
 
       <div className="grid grid-cols-1 md:grid-cols-2 divide-x divide-border border-t border-border">
         <div className="p-4">
-          <p className="text-sm font-medium mb-3">Trace</p>
-          <div className="mb-4">
-            <div className="flex items-center gap-2 mb-1">
-              {statusIcon[exec.status]}
-              <span className="text-sm font-medium">Run</span>
-              <span className="text-xs text-muted-foreground">
-                {durationFormatted}
-              </span>
-            </div>
-            <div className="ml-6 h-5 rounded-sm bg-border overflow-hidden">
-              <div
-                className={`h-full rounded-sm ${exec.status === "success" ? "bg-green-500" : exec.status === "failed" ? "bg-red-500" : "bg-blue-500"}`}
-                style={{ width: "100%" }}
-              />
-            </div>
-          </div>
-          {exec.errorMessage && (
-            <div className="rounded border border-destructive/30 bg-destructive/5 px-3 py-2 mb-3 flex items-start gap-2 ml-6">
-              <IconCircleXFilled className="h-3.5 w-3.5 text-destructive mt-0.5 shrink-0" />
-              <p className="text-xs text-destructive">{exec.errorMessage}</p>
-            </div>
-          )}
-          {exec.logs && exec.logs.length > 0 && (
-            <div className="ml-6 space-y-0">
-              {exec.logs.map((log, i) => {
-                const prevTs =
-                  i > 0
-                    ? exec.logs[i - 1].timestamp
-                    : exec.startedAt
-                      ? new Date(exec.startedAt).getTime()
-                      : log.timestamp;
-                const stepDuration = log.timestamp - prevTs;
-                const stepFormatted = formatDuration(stepDuration);
-                return (
-                  <div
-                    key={i}
-                    className="flex items-center py-1 border-l border-border pl-3 ml-1"
-                  >
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground shrink-0" />
-                      <span className="text-xs truncate">{log.message}</span>
-                    </div>
-                    <span className="text-[10px] text-muted-foreground tabular-nums shrink-0 ml-2">
-                      {stepFormatted}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+          <TraceTimeline exec={exec} />
         </div>
         <div className="p-4">
           <div className="flex items-center justify-between mb-3">
@@ -304,9 +423,17 @@ export default function RunsPage() {
     {
       key: "attempt",
       header: "Attempt",
-      render: (exec) => (
-        <span className="text-muted-foreground">{exec.attempt}</span>
-      ),
+      render: (exec) => {
+        const maxAttempts = (exec.job?.retries ?? 0) + 1;
+        const current = exec.status === "success" || exec.status === "failed"
+          ? exec.attempt
+          : exec.attempt;
+        return (
+          <span className="text-muted-foreground font-mono text-xs">
+            {current}/{maxAttempts}
+          </span>
+        );
+      },
     },
     {
       key: "started",
@@ -332,6 +459,7 @@ export default function RunsPage() {
     <div>
       <PageHeader title="Runs" />
       <div className="p-6">
+        <ExecutionChart projectId={projectId} />
         <DataTable
           columns={columns}
           data={data?.items}

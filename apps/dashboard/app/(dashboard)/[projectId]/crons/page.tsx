@@ -20,6 +20,7 @@ import { EmptyState } from "@/components/empty-state";
 import { StatusBadge } from "@/components/status-badge";
 import { DataTable, type Column } from "@/components/data-table";
 import { useJobs, useRunJob, useUpdateJob, useDeleteJob, type Job } from "@/lib/hooks/use-jobs";
+import { useConfirm } from "@/components/confirm-dialog";
 import { formatDateTime } from "@/lib/format";
 import { PageHeader } from "@/components/page-header";
 import { toast } from "sonner";
@@ -31,6 +32,7 @@ export default function CronsPage() {
   const runJob = useRunJob(projectId);
   const updateJob = useUpdateJob(projectId);
   const deleteJob = useDeleteJob(projectId);
+  const { confirm, ConfirmDialog } = useConfirm();
 
   async function handleRun(e: React.MouseEvent, job: Job) {
     e.stopPropagation();
@@ -53,15 +55,20 @@ export default function CronsPage() {
     }
   }
 
-  async function handleDelete(e: React.MouseEvent, job: Job) {
-    e.stopPropagation();
-    if (!confirm(`Delete "${job.name}"? This cannot be undone.`)) return;
-    try {
-      await deleteJob.mutateAsync(job.id);
-      toast.success(`Deleted "${job.name}"`);
-    } catch (err) {
-      toast.error((err as Error).message);
-    }
+  function handleDelete(job: Job) {
+    confirm({
+      title: `Delete "${job.name}"?`,
+      description: "This cannot be undone. All execution history for this job will be lost.",
+      confirmLabel: "Delete",
+      onConfirm: async () => {
+        try {
+          await deleteJob.mutateAsync(job.id);
+          toast.success(`Deleted "${job.name}"`);
+        } catch (err) {
+          toast.error((err as Error).message);
+        }
+      },
+    });
   }
 
   const columns: Column<Job>[] = [
@@ -146,7 +153,7 @@ export default function CronsPage() {
               </DropdownMenuItem>
             )}
             <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive" onClick={(e) => handleDelete(e, job)}>
+            <DropdownMenuItem variant="destructive" onSelect={() => handleDelete(job)}>
               <IconTrashFilled className="h-4 w-4" /> Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -159,6 +166,7 @@ export default function CronsPage() {
     <div>
       <PageHeader title="Crons" />
       <div className="p-6">
+        {ConfirmDialog}
         <DataTable
           columns={columns}
           data={jobs}

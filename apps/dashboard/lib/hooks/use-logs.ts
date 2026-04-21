@@ -8,7 +8,9 @@ export interface LogEntry {
   jobId: string;
   jobName: string;
   timestamp: number;
+  level: "info" | "warn" | "error" | "debug";
   message: string;
+  meta?: Record<string, any>;
 }
 
 interface PaginatedLogs {
@@ -16,6 +18,27 @@ interface PaginatedLogs {
   total: number;
   page: number;
   limit: number;
+}
+
+export interface LogsHistogramBucket {
+  time: string;
+  info: number;
+  warn: number;
+  error: number;
+  debug: number;
+  total: number;
+}
+
+export function useLogsHistogram(projectId: string) {
+  return useQuery({
+    queryKey: ["logs-histogram", projectId],
+    queryFn: () =>
+      apiClient.get<LogsHistogramBucket[]>(
+        `/api/v1/projects/${projectId}/logs/histogram`
+      ),
+    enabled: !!projectId,
+    refetchInterval: 10000,
+  });
 }
 
 export function useLogs(

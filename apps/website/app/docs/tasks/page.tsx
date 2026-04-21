@@ -8,7 +8,8 @@ export default function TasksPage() {
     <>
       <h1 className="text-3xl font-bold tracking-tight mb-2">Tasks</h1>
       <p className="text-muted-foreground mb-8">
-        Define background tasks that are triggered via fan-out from cron jobs.
+        Define background tasks that are triggered via fan-out from cron jobs or
+        manually from the dashboard.
       </p>
 
       <h2 className="text-xl font-semibold mt-10 mb-3">API</h2>
@@ -89,6 +90,15 @@ export const sendEmail = task(
         <p>3. The platform creates a child execution for each task, linked to the parent.</p>
         <p>4. Each child task is dispatched independently via the queue with its own retry policy.</p>
         <p>5. Child tasks appear nested under the parent execution in the dashboard.</p>
+      </div>
+
+      <div className="rounded-lg border border-blue-500/20 bg-blue-500/5 p-4 mt-6">
+        <p className="text-sm text-muted-foreground">
+          <strong className="text-foreground">Note:</strong> Tasks can also be triggered
+          manually from the Pingback dashboard. Navigate to your task in the dashboard
+          and click "Run" to dispatch it with a custom payload — useful for testing and
+          one-off executions.
+        </p>
       </div>
     </>
   );

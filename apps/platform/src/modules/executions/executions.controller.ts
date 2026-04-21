@@ -94,6 +94,26 @@ export class ExecutionsDashboardController {
     });
   }
 
+  @Get('executions/histogram')
+  @ApiOperation({ summary: 'Get execution histogram for a project (dashboard)' })
+  @ApiParam({ name: 'projectId', description: 'Project UUID' })
+  @ApiQuery({ name: 'hours', required: false, description: 'Lookback hours (default 48)' })
+  @ApiQuery({ name: 'buckets', required: false, description: 'Number of buckets (default 60)' })
+  async getHistogram(
+    @Req() req: Request,
+    @Param('projectId') projectId: string,
+    @Query('hours') hours?: string,
+    @Query('buckets') buckets?: string,
+  ) {
+    const user = req.user as { id: string };
+    await this.projectsService.findOneByUser(projectId, user.id);
+    return this.executionsService.getHistogram(
+      projectId,
+      hours ? parseInt(hours) : 48,
+      buckets ? parseInt(buckets) : 60,
+    );
+  }
+
   @Get('executions/:id')
   @ApiOperation({ summary: 'Get a single execution by ID (dashboard)' })
   @ApiParam({ name: 'projectId', description: 'Project UUID' })

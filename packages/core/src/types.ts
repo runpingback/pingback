@@ -12,16 +12,28 @@ export interface FunctionDefinition {
   options: FunctionOptions;
 }
 
+export type LogLevel = 'info' | 'warn' | 'error' | 'debug';
+
 export interface LogEntry {
   timestamp: number;
+  level: LogLevel;
   message: string;
+  meta?: Record<string, any>;
+}
+
+export interface LogFunction {
+  (message: string, meta?: Record<string, any>): void;
+  info(message: string, meta?: Record<string, any>): void;
+  warn(message: string, meta?: Record<string, any>): void;
+  error(message: string, meta?: Record<string, any>): void;
+  debug(message: string, meta?: Record<string, any>): void;
 }
 
 export interface Context {
   executionId: string;
   attempt: number;
   scheduledAt: Date;
-  log(message: string): void;
+  log: LogFunction;
   task(name: string, payload: any): Promise<void>;
 }
 

@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Roboto_Mono } from "next/font/google";
+import { Poppins, Unbounded } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { Providers } from "@/lib/providers";
 
-const robotoMono = Roboto_Mono({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-sans" });
+const poppins = Poppins({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700"], variable: "--font-sans" });
+const unbounded = Unbounded({ subsets: ["latin"], weight: ["300", "400", "700", "800"], variable: "--font-display" });
 
 export const metadata: Metadata = {
   title: "Pingback",
@@ -17,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={cn("dark", "font-sans", robotoMono.variable)}>
+    <html lang="en" className={cn("dark", "font-sans", poppins.variable, unbounded.variable)}>
       <body className="antialiased font-medium">
         <Providers>{children}</Providers>
       </body>

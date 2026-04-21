@@ -31,16 +31,12 @@ export function clearTokens() {
 
 async function refreshAccessToken(): Promise<string | null> {
   const refreshToken = getCookie("pingback_refresh_token");
-  const accessToken = getCookie("pingback_access_token");
-  if (!refreshToken || !accessToken) return null;
+  if (!refreshToken) return null;
 
   try {
     const res = await fetch(`${API_URL}/auth/refresh`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ refreshToken }),
     });
 
@@ -70,9 +66,19 @@ async function fetchWithAuth(
       },
     });
 
-  let res = await makeRequest(token || "");
+  // If no token, try refreshing first
+  if (!token) {
+    const newToken = await refreshAccessToken();
+    if (newToken) {
+      return makeRequest(newToken);
+    }
+    clearTokens();
+    return new Response(JSON.stringify({ message: "Session expired. Please sign in again." }), { status: 401 });
+  }
 
-  if (res.status === 401 && token) {
+  let res = await makeRequest(token);
+
+  if (res.status === 401) {
     const newToken = await refreshAccessToken();
     if (newToken) {
       res = await makeRequest(newToken);

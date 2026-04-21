@@ -123,6 +123,100 @@ export class ExecutionsService {
     return { items, total, page, limit };
   }
 
+  async saveAttemptAndRetry(
+    id: string,
+    result: {
+      status: 'failed';
+      httpStatus?: number;
+      responseBody?: string;
+      errorMessage?: string;
+      logs?: Array<{ timestamp: number; message: string }>;
+    },
+  ) {
+    const exec = await this.execRepo.findOne({ where: { id } });
+    if (!exec) throw new NotFoundException('Execution not found');
+
+    const completedAt = new Date();
+    const durationMs = exec.startedAt
+      ? completedAt.getTime() - exec.startedAt.getTime()
+      : 0;
+
+    // Save current attempt to history
+    const attemptRecord = {
+      attempt: exec.attempt,
+      status: result.status,
+      startedAt: exec.startedAt?.toISOString() || null,
+      completedAt: completedAt.toISOString(),
+      durationMs,
+      httpStatus: result.httpStatus ?? null,
+      errorMessage: result.errorMessage ?? null,
+      logs: result.logs || [],
+    };
+
+    exec.attempts = [...(exec.attempts || []), attemptRecord];
+    exec.attempt += 1;
+    exec.status = 'pending';
+    exec.startedAt = null as any;
+    exec.completedAt = null as any;
+    exec.durationMs = null as any;
+    exec.httpStatus = null as any;
+    exec.responseBody = null as any;
+    exec.errorMessage = null as any;
+    exec.logs = [];
+
+    return this.execRepo.save(exec);
+  }
+
+  async getHistogram(
+    projectId: string,
+    hours = 48,
+    buckets = 60,
+  ) {
+    const now = new Date();
+    const from = new Date(now.getTime() - hours * 60 * 60 * 1000);
+    const intervalMs = (hours * 60 * 60 * 1000) / buckets;
+
+    const rows = await this.execRepo
+      .createQueryBuilder('exec')
+      .leftJoin('exec.job', 'job')
+      .select('exec.status', 'status')
+      .addSelect('exec.created_at', 'created_at')
+      .where('job.project_id = :projectId', { projectId })
+      .andWhere('exec.created_at >= :from', { from: from.toISOString() })
+      .getRawMany();
+
+    const result: Array<{
+      time: string;
+      success: number;
+      failed: number;
+      total: number;
+    }> = [];
+
+    for (let i = 0; i < buckets; i++) {
+      const bucketStart = new Date(from.getTime() + i * intervalMs);
+      const bucketEnd = new Date(bucketStart.getTime() + intervalMs);
+      let success = 0;
+      let failed = 0;
+
+      for (const row of rows) {
+        const t = new Date(row.created_at).getTime();
+        if (t >= bucketStart.getTime() && t < bucketEnd.getTime()) {
+          if (row.status === 'success') success++;
+          else if (row.status === 'failed') failed++;
+        }
+      }
+
+      result.push({
+        time: bucketStart.toISOString(),
+        success,
+        failed,
+        total: success + failed,
+      });
+    }
+
+    return result;
+  }
+
   async hasPendingOrRunning(jobId: string, scheduledAt: Date): Promise<boolean> {
     const count = await this.execRepo.count({
       where: [

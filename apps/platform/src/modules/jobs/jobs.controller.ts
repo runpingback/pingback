@@ -15,6 +15,8 @@ import { Request } from 'express';
 import { ApiKeyGuard } from '../auth/api-key.guard';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ProjectsService } from '../projects/projects.service';
+import { ExecutionsService } from '../executions/executions.service';
+import { QueueService } from '../queue/queue.service';
 import { JobsService } from './jobs.service';
 import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
@@ -85,6 +87,8 @@ export class JobsDashboardController {
   constructor(
     private jobsService: JobsService,
     private projectsService: ProjectsService,
+    private executionsService: ExecutionsService,
+    private queueService: QueueService,
   ) {}
 
   @Get()
@@ -161,8 +165,28 @@ export class JobsDashboardController {
     @Param('id') id: string,
   ) {
     const user = req.user as { id: string };
-    await this.projectsService.findOneByUser(projectId, user.id);
+    const project = await this.projectsService.findOneByUser(projectId, user.id);
     const job = await this.jobsService.findOne(id, projectId);
-    return { message: 'Run triggered', jobId: job.id };
+
+    const execution = await this.executionsService.createPending(
+      job.id,
+      new Date(),
+      1,
+    );
+
+    await this.queueService.send('pingback-execution', {
+      executionId: execution.id,
+      jobId: job.id,
+      projectId,
+      functionName: job.name,
+      endpointUrl: project.endpointUrl,
+      cronSecret: project.cronSecret,
+      attempt: 1,
+      maxRetries: job.retries,
+      timeoutSeconds: job.timeoutSeconds,
+      scheduledAt: new Date().toISOString(),
+    });
+
+    return { message: 'Run triggered', executionId: execution.id, jobId: job.id };
   }
 }

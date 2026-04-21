@@ -89,6 +89,25 @@ PINGBACK_CRON_SECRET=your_cron_secret_here`} lang="bash" />
       <p className="text-sm text-muted-foreground mt-2">
         You can find both values in the Pingback dashboard under your project settings.
       </p>
+
+      <h2 className="text-xl font-semibold mt-10 mb-3">Scaffolding</h2>
+      <p className="text-sm text-muted-foreground mb-2">
+        Use <InlineCode>npx pingback init</InlineCode> to scaffold a new project with
+        the recommended file structure, config, and route handler:
+      </p>
+      <DocsCode code="npx pingback init" lang="bash" />
+
+      <h2 className="text-xl font-semibold mt-10 mb-3">Local Development</h2>
+      <p className="text-sm text-muted-foreground mb-2">
+        Use <InlineCode>npx pingback dev</InlineCode> to start a tunnel-based local
+        development session against the production Pingback platform. This lets you
+        test cron and task executions locally without deploying:
+      </p>
+      <DocsCode code="npx pingback dev [port]" lang="bash" />
+      <p className="text-sm text-muted-foreground mt-2">
+        The CLI creates a secure tunnel to your local server so the platform can reach
+        your route handler. Pass an optional port number to match your dev server (defaults to 3000).
+      </p>
     </>
   );
 }

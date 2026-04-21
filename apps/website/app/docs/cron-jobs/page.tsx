@@ -68,14 +68,14 @@ export const syncData = cron(
   "sync-data",
   "0 */6 * * *",
   async (ctx) => {
-    ctx.log("Starting data sync");
+    ctx.log("Starting data sync", { source: "postgres" });
     const records = await fetchRecordsToSync();
 
     for (const record of records) {
       await syncRecord(record);
     }
 
-    ctx.log(\`Synced \${records.length} records\`);
+    ctx.log(\`Synced \${records.length} records\`, { count: records.length });
     return { synced: records.length };
   },
   {

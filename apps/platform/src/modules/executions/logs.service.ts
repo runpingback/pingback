@@ -52,15 +52,63 @@ export class LogsService {
     const [executions, total] = await qb.getManyAndCount();
 
     const logs = executions.flatMap((exec) =>
-      exec.logs.map((log) => ({
+      exec.logs.map((log: any) => ({
         executionId: exec.id,
         jobId: exec.jobId,
         jobName: (exec as any).job?.name,
         timestamp: log.timestamp,
+        level: log.level || 'info',
         message: log.message,
+        ...(log.meta ? { meta: log.meta } : {}),
       })),
     );
 
     return { items: logs, total, page, limit };
+  }
+
+  async getHistogram(projectId: string, hours = 24, buckets = 144) {
+    const now = new Date();
+    const from = new Date(now.getTime() - hours * 60 * 60 * 1000);
+    const intervalMs = (hours * 60 * 60 * 1000) / buckets;
+
+    const rows = await this.execRepo
+      .createQueryBuilder('exec')
+      .leftJoin('exec.job', 'job')
+      .select('exec.logs', 'logs')
+      .addSelect('exec.created_at', 'created_at')
+      .where('job.project_id = :projectId', { projectId })
+      .andWhere('exec.created_at >= :from', { from: from.toISOString() })
+      .andWhere("exec.logs != '[]'::jsonb")
+      .getRawMany();
+
+    const result: Array<{ time: string; info: number; warn: number; error: number; debug: number; total: number }> = [];
+
+    for (let i = 0; i < buckets; i++) {
+      const bucketStart = new Date(from.getTime() + i * intervalMs);
+      const bucketEnd = new Date(bucketStart.getTime() + intervalMs);
+      let info = 0, warn = 0, error = 0, debug = 0;
+
+      for (const row of rows) {
+        const t = new Date(row.created_at).getTime();
+        if (t >= bucketStart.getTime() && t < bucketEnd.getTime()) {
+          const logs = row.logs || [];
+          for (const log of logs) {
+            const level = (log as any).level || 'info';
+            if (level === 'error') error++;
+            else if (level === 'warn') warn++;
+            else if (level === 'debug') debug++;
+            else info++;
+          }
+        }
+      }
+
+      result.push({
+        time: bucketStart.toISOString(),
+        info, warn, error, debug,
+        total: info + warn + error + debug,
+      });
+    }
+
+    return result;
   }
 }

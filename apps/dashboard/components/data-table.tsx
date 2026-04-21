@@ -168,7 +168,7 @@ export function DataTable<T>({
                   ))}
                 </tr>
                 {expandable && isExpanded && (
-                  <tr>
+                  <tr className="border-b">
                     <td colSpan={columns.length + extraCols} className="p-0">
                       {expandable.render(item)}
                     </td>

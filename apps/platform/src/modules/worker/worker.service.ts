@@ -137,23 +137,47 @@ export class WorkerService implements OnModuleInit {
             }
           }
         } else {
-          await this.executionsService.markCompleted(msg.executionId, {
-            status: 'failed',
-            httpStatus: response.status,
-            responseBody: responseText,
-            errorMessage: `HTTP ${response.status}`,
-          });
+          let failLogs: Array<{ timestamp: number; message: string }> = [];
+          try {
+            const parsed = JSON.parse(responseText);
+            failLogs = parsed.logs || [];
+          } catch {}
 
-          await this.handleFailure(msg);
+          const failResult = {
+            httpStatus: response.status,
+            errorMessage: `HTTP ${response.status}`,
+            logs: failLogs,
+          };
+
+          if (msg.attempt <= msg.maxRetries) {
+            await this.handleFailure(msg, failResult);
+          } else {
+            await this.executionsService.markCompleted(msg.executionId, {
+              status: 'failed',
+              httpStatus: response.status,
+              responseBody: responseText,
+              errorMessage: `HTTP ${response.status}`,
+              logs: failLogs,
+            });
+            await this.handleFailure(msg, failResult);
+          }
         }
       } catch (err) {
         clearTimeout(timeout);
-        await this.executionsService.markCompleted(msg.executionId, {
-          status: 'failed',
+        const errResult = {
           errorMessage: (err as Error).message,
-        });
+          logs: [] as Array<{ timestamp: number; message: string }>,
+        };
 
-        await this.handleFailure(msg);
+        if (msg.attempt <= msg.maxRetries) {
+          await this.handleFailure(msg, errResult);
+        } else {
+          await this.executionsService.markCompleted(msg.executionId, {
+            status: 'failed',
+            errorMessage: (err as Error).message,
+          });
+          await this.handleFailure(msg, errResult);
+        }
       }
     } catch (err) {
       this.logger.error(
@@ -162,23 +186,31 @@ export class WorkerService implements OnModuleInit {
     }
   }
 
-  private async handleFailure(msg: QueueMessage) {
-    if (msg.attempt < msg.maxRetries) {
-      // Create a new execution for the retry attempt
-      const retryExecution = await this.executionsService.createPending(
-        msg.jobId,
-        new Date(msg.scheduledAt),
-        msg.attempt + 1,
-      );
+  private async handleFailure(
+    msg: QueueMessage,
+    result: {
+      httpStatus?: number;
+      errorMessage?: string;
+      logs?: Array<{ timestamp: number; message: string }>;
+    },
+  ) {
+    if (msg.attempt <= msg.maxRetries) {
+      // Save failed attempt and reset execution for retry
+      await this.executionsService.saveAttemptAndRetry(msg.executionId, {
+        status: 'failed',
+        httpStatus: result.httpStatus,
+        errorMessage: result.errorMessage,
+        logs: result.logs,
+      });
 
       const backoffSeconds = Math.min(Math.pow(2, msg.attempt), 60);
       await this.queueService.send(
         'pingback-execution',
-        { ...msg, executionId: retryExecution.id, attempt: msg.attempt + 1 },
+        { ...msg, attempt: msg.attempt + 1 },
         { startAfter: backoffSeconds },
       );
+    } else {
+      await this.alertsService.evaluate(msg.jobId, msg.executionId);
     }
-
-    await this.alertsService.evaluate(msg.jobId, msg.executionId);
   }
 }

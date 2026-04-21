@@ -4,6 +4,10 @@ Reliable cron jobs and background tasks for modern web apps. Starting with Next.
 
 Pingback is a platform with framework-specific SDKs that let you define scheduled functions and background tasks directly in your codebase. Pingback handles scheduling, execution, retries, fan-out, and provides a dashboard for monitoring.
 
+- **Platform:** https://api.pingback.lol
+- **Dashboard:** https://app.pingback.lol
+- **Website:** https://pingback.lol
+
 ## Packages
 
 | Package | Description |
@@ -21,10 +25,11 @@ Pingback is a platform with framework-specific SDKs that let you define schedule
 
 ## Quick Start (Next.js)
 
-### 1. Install
+### 1. Install & initialize
 
 ```bash
 npm install @usepingback/next
+pingback init
 ```
 
 ### 2. Create config
@@ -52,8 +57,8 @@ export default withPingback({
 ### 4. Create the route handler
 
 ```ts
-// app/api/__pingback/route.ts
-import { createRouteHandler } from "@usepingback/next";
+// app/api/pingback/route.ts
+import { createRouteHandler } from "@usepingback/next/handler";
 
 export const { POST } = createRouteHandler();
 ```
@@ -72,7 +77,10 @@ export const sendReviewEmails = cron(
     for (const email of pending) {
       await ctx.task("send-email", { id: email.id });
     }
-    ctx.log(`Processed ${pending.length} emails`);
+    ctx.log("Processed emails", { count: pending.length });
+    ctx.log.warn("Slow batch detected", { threshold: 100 });
+    ctx.log.error("Failed to send", { emailId: "abc" });
+    ctx.log.debug("Email payload", { email });
     return { processed: pending.length };
   },
   { retries: 3, timeout: "60s" }
@@ -92,13 +100,24 @@ PINGBACK_CRON_SECRET=...            # From your Pingback project settings
 next build
 ```
 
-Your cron functions are automatically discovered, registered with Pingback, and a route handler is generated at `/api/__pingback`.
+Your cron functions are automatically discovered, registered with Pingback, and a route handler is generated at `/api/pingback`.
+
+## Local Development
+
+Use `pingback dev` to create a tunnel so the Pingback platform can reach your local app:
+
+```bash
+pingback dev        # tunnels to localhost:3000
+pingback dev 4000   # tunnels to localhost:4000
+```
+
+This lets you test cron jobs and background tasks locally without deploying.
 
 ## How It Works
 
 1. **At build time:** `withPingback()` scans your codebase for `cron()` and `task()` calls, generates a route handler, and registers your functions with the Pingback platform.
 
-2. **At runtime:** When a job is due, the scheduler enqueues it. The worker sends an HMAC-signed POST request to your app's `/api/__pingback` endpoint. The handler verifies the signature, executes the function, and returns the result with logs.
+2. **At runtime:** When a job is due, the scheduler enqueues it. The worker sends an HMAC-signed POST request to your app's `/api/pingback` endpoint. The handler verifies the signature, executes the function, and returns the result with logs.
 
 3. **Fan-out:** Cron handlers can call `ctx.task()` to spawn independent child tasks. Each child runs with its own retries, timeout, and tracking.
 
@@ -113,7 +132,7 @@ Your Next.js App                    Pingback Platform
 │    emails.ts     │               │         │             │
 │    sync.ts       │               │         ▼             │
 │                  │  ◄── POST ──  │  Worker (HTTP dispatch)│
-│  /api/__pingback │               │         │             │
+│  /api/pingback   │               │         │             │
 │  (auto-generated)│  ── result ─► │  Executions DB        │
 └──────────────────┘               │  Dashboard API        │
                                    └──────────────────────┘

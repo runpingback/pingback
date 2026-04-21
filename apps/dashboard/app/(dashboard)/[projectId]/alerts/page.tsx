@@ -11,8 +11,10 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { EmptyState } from "@/components/empty-state";
+import { StatusBadge } from "@/components/status-badge";
 import { DataTable, type Column } from "@/components/data-table";
 import { useAlerts, useDeleteAlert, useUpdateAlert, type Alert } from "@/lib/hooks/use-alerts";
+import { useConfirm } from "@/components/confirm-dialog";
 import { useJobs } from "@/lib/hooks/use-jobs";
 import { AlertDialog } from "@/components/alert-dialog";
 import { PageHeader } from "@/components/page-header";
@@ -31,18 +33,24 @@ export default function AlertsPage() {
   const { data: jobs } = useJobs(projectId);
   const deleteAlert = useDeleteAlert(projectId);
   const updateAlert = useUpdateAlert(projectId);
+  const { confirm, ConfirmDialog } = useConfirm();
 
   const jobMap = new Map(jobs?.map((j) => [j.id, j.name]) || []);
 
-  async function handleDelete(e: React.MouseEvent, alert: Alert) {
-    e.stopPropagation();
-    if (!confirm(`Delete alert for "${alert.target}"? This cannot be undone.`)) return;
-    try {
-      await deleteAlert.mutateAsync(alert.id);
-      toast.success("Alert deleted");
-    } catch (err) {
-      toast.error((err as Error).message);
-    }
+  function handleDelete(alert: Alert) {
+    confirm({
+      title: `Delete alert for "${alert.target}"?`,
+      description: "This cannot be undone.",
+      confirmLabel: "Delete",
+      onConfirm: async () => {
+        try {
+          await deleteAlert.mutateAsync(alert.id);
+          toast.success("Alert deleted");
+        } catch (err) {
+          toast.error((err as Error).message);
+        }
+      },
+    });
   }
 
   async function handleToggle(e: React.MouseEvent, alert: Alert) {
@@ -83,15 +91,7 @@ export default function AlertsPage() {
       key: "status",
       header: "Status",
       render: (alert) => (
-        <span
-          className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-            alert.enabled
-              ? "bg-emerald-500/10 text-emerald-500"
-              : "bg-muted text-muted-foreground"
-          }`}
-        >
-          {alert.enabled ? "Enabled" : "Disabled"}
-        </span>
+        <StatusBadge status={alert.enabled ? "active" : "inactive"} />
       ),
     },
     {
@@ -120,7 +120,7 @@ export default function AlertsPage() {
               }
             />
             <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive" onClick={(e) => handleDelete(e, alert)}>
+            <DropdownMenuItem variant="destructive" onSelect={() => handleDelete(alert)}>
               <IconTrashFilled className="h-4 w-4" /> Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -135,6 +135,7 @@ export default function AlertsPage() {
         <AlertDialog projectId={projectId} />
       </PageHeader>
       <div className="p-6">
+        {ConfirmDialog}
         <DataTable
           columns={columns}
           data={alerts}

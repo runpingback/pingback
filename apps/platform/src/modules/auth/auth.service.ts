@@ -53,12 +53,16 @@ export class AuthService {
     return this.generateTokens(user);
   }
 
-  async refreshTokens(userId: string, refreshToken: string) {
+  async refreshTokens(refreshToken: string) {
+    let payload: any;
     try {
-      this.jwtService.verify(refreshToken);
+      payload = this.jwtService.verify(refreshToken);
     } catch {
       throw new UnauthorizedException('Invalid refresh token');
     }
+
+    const userId = payload.sub;
+    if (!userId) throw new UnauthorizedException('Invalid refresh token');
 
     const user = await this.userRepo.findOne({ where: { id: userId } });
     if (!user || !user.refreshToken) {

@@ -12,11 +12,12 @@ import {
   IconSettingsFilled,
   IconPlayerTrackNextFilled,
   IconLayoutListFilled,
-  IconTerminal,
 } from "@tabler/icons-react";
 import { ProjectSwitcher } from "./project-switcher";
 import { UserMenu } from "./user-menu";
 import { cn } from "@/lib/utils";
+
+const ACTIVE_COLOR = "#d4a574";
 
 const projectNav = [
   { name: "Runs", href: "runs", icon: IconPlayerTrackNextFilled },
@@ -31,6 +32,101 @@ const projectNav = [
 const accountNav = [
   { name: "Projects", href: "/projects", icon: IconFolderFilled },
 ];
+
+function NavItem({
+  href,
+  name,
+  icon: Icon,
+  isActive,
+}: {
+  href: string;
+  name: string;
+  icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
+  isActive: boolean;
+}) {
+  if (isActive) {
+    return (
+      <Link
+        href={href}
+        className="flex items-center rounded-md text-sm transition-colors overflow-hidden"
+        style={{
+          backgroundColor: ACTIVE_COLOR,
+          color: "#2a1f0a",
+          fontWeight: 600,
+          height: "28px",
+        }}
+      >
+        <span className="flex items-center gap-2 px-3 py-1.5">
+          {name}
+        </span>
+        <span
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            alignSelf: "stretch",
+            width: "6px",
+            marginLeft: "auto",
+          }}
+        >
+          <span
+            style={{
+              width: "6px",
+              height: "3px",
+              borderRadius: "0 0 3px 3px",
+              backgroundColor: "var(--background)",
+              display: "block",
+            }}
+          />
+          <span
+            style={{
+              width: "6px",
+              height: "3px",
+              borderRadius: "3px 3px 0 0",
+              backgroundColor: "var(--background)",
+              display: "block",
+            }}
+          />
+        </span>
+        <span
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "24px",
+          }}
+        >
+          <span
+            style={{
+              width: "14px",
+              height: "14px",
+              borderRadius: "50%",
+              backgroundColor: "#2a1f0a",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Icon
+              className="h-2.5 w-2.5"
+              style={{ color: ACTIVE_COLOR }}
+            />
+          </span>
+        </span>
+      </Link>
+    );
+  }
+
+  return (
+    <Link
+      href={href}
+      className="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm transition-colors text-muted-foreground hover:text-foreground hover:bg-secondary"
+    >
+      <Icon className="h-4 w-4" />
+      {name}
+    </Link>
+  );
+}
 
 export function Sidebar() {
   const params = useParams();
@@ -53,23 +149,14 @@ export function Sidebar() {
             </p>
             {projectNav.map((item) => {
               const href = `/${projectId}/${item.href}`;
-              const isActive = pathname === href;
               return (
-                <Link
+                <NavItem
                   key={item.name}
                   href={href}
-                  className={cn(
-                    "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm transition-colors",
-                    isActive
-                      ? "text-foreground bg-secondary border-l-2 border-primary"
-                      : "text-muted-foreground hover:text-foreground hover:bg-secondary",
-                  )}
-                >
-                  <item.icon
-                    className={`h-4 w-4 ${isActive ? "text-amber-400" : ""}`}
-                  />
-                  {item.name}
-                </Link>
+                  name={item.name}
+                  icon={item.icon}
+                  isActive={pathname === href}
+                />
               );
             })}
           </div>
@@ -79,26 +166,15 @@ export function Sidebar() {
           <p className="px-3 mb-1 text-[11px] font-semibold text-muted-foreground">
             Account
           </p>
-          {accountNav.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={cn(
-                  "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm transition-colors",
-                  isActive
-                    ? "text-foreground bg-secondary border-l-2 border-primary"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary",
-                )}
-              >
-                <item.icon
-                  className={`h-4 w-4 ${isActive ? "text-amber-400" : ""}`}
-                />
-                {item.name}
-              </Link>
-            );
-          })}
+          {accountNav.map((item) => (
+            <NavItem
+              key={item.name}
+              href={item.href}
+              name={item.name}
+              icon={item.icon}
+              isActive={pathname === item.href}
+            />
+          ))}
         </div>
       </nav>
 

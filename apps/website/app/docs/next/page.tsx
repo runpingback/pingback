@@ -13,6 +13,18 @@ export default function NextJsPage() {
       <h2 className="text-xl font-semibold mt-10 mb-3">Installation</h2>
       <DocsCode code="npm install @usepingback/next" lang="bash" />
 
+      <h2 className="text-xl font-semibold mt-10 mb-3">CLI</h2>
+      <p className="text-sm text-muted-foreground mb-2">
+        Use <InlineCode>npx pingback init</InlineCode> to scaffold your project with the
+        recommended config, route handler, and file structure:
+      </p>
+      <DocsCode code="npx pingback init" lang="bash" />
+      <p className="text-sm text-muted-foreground mt-2 mb-2">
+        For local development, use <InlineCode>npx pingback dev</InlineCode> to create a
+        tunnel so the platform can reach your local server:
+      </p>
+      <DocsCode code="npx pingback dev" lang="bash" />
+
       <h2 className="text-xl font-semibold mt-10 mb-3">Configuration</h2>
       <p className="text-sm text-muted-foreground mb-2">
         Create <InlineCode>pingback.config.ts</InlineCode> in your project root:
@@ -37,12 +49,12 @@ export default withPingback({
 
       <h2 className="text-xl font-semibold mt-10 mb-3">Route Handler</h2>
       <p className="text-sm text-muted-foreground mb-2">
-        Create <InlineCode>app/api/__pingback/route.ts</InlineCode> to receive execution
+        Create <InlineCode>app/api/pingback/route.ts</InlineCode> to receive execution
         requests from the platform:
       </p>
-      <DocsCode code={`import { createRouteHandler } from "@usepingback/next";
+      <DocsCode code={`import { createRouteHandler } from "@usepingback/next/handler";
 
-export const { POST } = createRouteHandler();`} />
+export const POST = createRouteHandler();`} />
       <p className="text-sm text-muted-foreground mt-2">
         The handler validates the HMAC signature using your <InlineCode>PINGBACK_CRON_SECRET</InlineCode>,
         looks up the requested function, executes it, and returns the result with logs.
@@ -108,6 +120,19 @@ PINGBACK_CRON_SECRET=your_cron_secret_here`} lang="bash" />
       <p className="text-sm text-muted-foreground">
         Deploy your app. Pingback discovers your functions at build time, registers them
         with the platform, and starts scheduling. Monitor executions in the dashboard.
+      </p>
+
+      <h2 className="text-xl font-semibold mt-10 mb-3">Local Development</h2>
+      <p className="text-sm text-muted-foreground mb-2">
+        Use <InlineCode>npx pingback dev [port]</InlineCode> to test your cron jobs and
+        tasks locally against the production Pingback platform. The CLI creates a secure
+        tunnel to your local Next.js dev server so the platform can invoke your route handler:
+      </p>
+      <DocsCode code={`# Start your Next.js dev server, then in another terminal:
+npx pingback dev 3000`} lang="bash" />
+      <p className="text-sm text-muted-foreground mt-2">
+        Executions triggered from the dashboard or by schedule will be routed to your
+        local machine, letting you debug with full access to local logs and breakpoints.
       </p>
     </>
   );

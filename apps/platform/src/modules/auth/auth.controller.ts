@@ -43,15 +43,12 @@ export class AuthController {
     return this.authService.login(dto);
   }
 
-  @ApiBearerAuth('jwt')
-  @UseGuards(JwtAuthGuard)
   @Post('refresh')
   @ApiOperation({ summary: 'Refresh access and refresh tokens' })
   @ApiResponse({ status: 200, description: 'Tokens refreshed successfully', type: AuthTokensResponse })
   @ApiResponse({ status: 401, description: 'Invalid or expired refresh token' })
-  refresh(@Req() req: Request, @Body() dto: RefreshDto) {
-    const user = req.user as { id: string };
-    return this.authService.refreshTokens(user.id, dto.refreshToken);
+  refresh(@Body() dto: RefreshDto) {
+    return this.authService.refreshTokens(dto.refreshToken);
   }
 
   @UseGuards(AuthGuard('github'))
