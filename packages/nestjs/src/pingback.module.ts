@@ -57,14 +57,29 @@ export class PingbackModule implements OnModuleInit {
 
     for (const wrapper of providers) {
       const instance = wrapper.instance;
-      if (!instance || !instance.constructor) continue;
+      if (!instance || typeof instance !== 'object') continue;
 
-      const proto = Object.getPrototypeOf(instance);
-      if (!proto) continue;
+      let proto: any;
+      try {
+        proto = Object.getPrototypeOf(instance);
+      } catch {
+        continue;
+      }
+      if (!proto || proto === Object.prototype) continue;
 
-      const methodNames = Object.getOwnPropertyNames(proto).filter(
-        (name) => name !== 'constructor' && typeof proto[name] === 'function',
-      );
+      let methodNames: string[];
+      try {
+        methodNames = Object.getOwnPropertyNames(proto).filter((name) => {
+          if (name === 'constructor') return false;
+          try {
+            return typeof proto[name] === 'function';
+          } catch {
+            return false;
+          }
+        });
+      } catch {
+        continue;
+      }
 
       for (const methodName of methodNames) {
         const meta: PingbackFunctionMetadata | undefined =
