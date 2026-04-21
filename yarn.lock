@@ -888,7 +888,7 @@
     outvariant "^1.4.3"
     strict-event-emitter "^0.5.1"
 
-"@nestjs/cli@^10.4.0":
+"@nestjs/cli@^10.0.0", "@nestjs/cli@^10.4.0":
   version "10.4.9"
   resolved "https://registry.npmjs.org/@nestjs/cli/-/cli-10.4.9.tgz"
   integrity sha512-s8qYd97bggqeK7Op3iD49X2MpFtW4LVNLAwXFkfbRxKME6IYT7X0muNTJ2+QfI8hpbNx9isWkrLWIp+g5FOhiA==
@@ -996,7 +996,7 @@
     path-to-regexp "3.3.0"
     swagger-ui-dist "5.17.14"
 
-"@nestjs/testing@^10.4.0":
+"@nestjs/testing@^10.0.0", "@nestjs/testing@^10.4.0":
   version "10.4.22"
   resolved "https://registry.npmjs.org/@nestjs/testing/-/testing-10.4.22.tgz"
   integrity sha512-HO9aPus3bAedAC+jKVAA8jTdaj4fs5M9fing4giHrcYV2txe9CvC1l1WAjwQ9RDhEHdugjY4y+FZA/U/YqPZrA==
@@ -1817,16 +1817,36 @@
   resolved "https://registry.npmjs.org/@ungap/structured-clone/-/structured-clone-1.3.0.tgz"
   integrity sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==
 
-"@usepingback/core@0.1.1", "@usepingback/core@file:/Users/cirx/Desktop/projects/personal/pingback/packages/core":
-  version "0.1.1"
+"@usepingback/core@0.1.0":
+  version "0.1.0"
+  resolved "https://registry.npmjs.org/@usepingback/core/-/core-0.1.0.tgz"
+  integrity sha512-a+ksdlths0LitO9DZX9PIhAYXWyeYfXQZdEBUH6D3LsNtwPgo3zGrAwCk6ZbGaa+QieVrwHqYI0555Nno257Bg==
+
+"@usepingback/core@0.2.0", "@usepingback/core@file:/Users/cirx/Desktop/projects/personal/pingback/packages/core":
+  version "0.2.0"
   resolved "file:packages/core"
 
-"@usepingback/next@0.1.0", "@usepingback/next@file:/Users/cirx/Desktop/projects/personal/pingback/packages/next":
-  version "0.1.1"
-  resolved "file:packages/next"
+"@usepingback/nestjs@0.1.0", "@usepingback/nestjs@file:/Users/cirx/Desktop/projects/personal/pingback/packages/nestjs":
+  version "0.1.0"
+  resolved "file:packages/nestjs"
+  dependencies:
+    "@usepingback/core" "0.2.0"
+
+"@usepingback/next@0.1.0":
+  version "0.1.0"
+  resolved "https://registry.npmjs.org/@usepingback/next/-/next-0.1.0.tgz"
+  integrity sha512-ycTV+/sRugfCd6e7cvkyLZXpfVNqi2m6qt8NR3gAMs6pQShfSDVCMI8xyOBeErf31xnbkynN6c5gWjI3OecZfQ==
   dependencies:
     "@usepingback/core" "0.1.0"
     glob "^11.0.0"
+
+"@usepingback/next@file:/Users/cirx/Desktop/projects/personal/pingback/packages/next":
+  version "0.2.0"
+  resolved "file:packages/next"
+  dependencies:
+    "@usepingback/core" "0.2.0"
+    glob "^11.0.0"
+    localtunnel "^2.0.2"
 
 "@webassemblyjs/ast@^1.14.1", "@webassemblyjs/ast@1.14.1":
   version "1.14.1"
@@ -5402,7 +5422,7 @@ neo-async@^2.6.2:
   resolved "https://registry.npmjs.org/neo-async/-/neo-async-2.6.2.tgz"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
-next@^15.0.0:
+next@^15.0.0, next@>=14:
   version "15.5.15"
   resolved "https://registry.npmjs.org/next/-/next-15.5.15.tgz"
   integrity sha512-VSqCrJwtLVGwAVE0Sb/yikrQfkwkZW9p+lL/J4+xe+G3ZA+QnWPqgcfH1tDUEuk9y+pthzzVFp4L/U8JerMfMQ==
@@ -5920,6 +5940,17 @@ picomatch@^4.0.2:
   version "4.0.4"
   resolved "https://registry.npmjs.org/picomatch/-/picomatch-4.0.4.tgz"
   integrity sha512-QP88BAKvMam/3NxH6vj2o21R6MjxZUAd6nlwAS/pnGvN9IVLocLHxGYIzFhg6fUQ+5th6P4dv4eW9jX3DSIj7A==
+
+"pingback-nestjs-example@file:/Users/cirx/Desktop/projects/personal/pingback/examples/nestjs":
+  version "0.0.1"
+  resolved "file:examples/nestjs"
+  dependencies:
+    "@nestjs/common" "^10.0.0"
+    "@nestjs/core" "^10.0.0"
+    "@nestjs/platform-express" "^10.0.0"
+    "@usepingback/nestjs" "0.1.0"
+    reflect-metadata "^0.2.0"
+    rxjs "^7.8.0"
 
 "pingback-nextjs-example@file:/Users/cirx/Desktop/projects/personal/pingback/examples/nextjs":
   version "0.0.1"
