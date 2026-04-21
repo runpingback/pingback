@@ -62,6 +62,11 @@ export const dailyCleanup = cron(
               <td className="p-3">Available</td>
             </tr>
             <tr className="border-b">
+              <td className="p-3"><Link href="/docs/nestjs" className="text-accent hover:underline">NestJS</Link></td>
+              <td className="p-3 font-mono">@usepingback/nestjs</td>
+              <td className="p-3">Available</td>
+            </tr>
+            <tr className="border-b">
               <td className="p-3">Nuxt</td>
               <td className="p-3 font-mono">@usepingback/nuxt</td>
               <td className="p-3">Coming soon</td>

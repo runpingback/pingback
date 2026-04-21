@@ -14,6 +14,7 @@ const sections = [
     title: "Adapters",
     items: [
       { href: "/docs/next", label: "Next.js" },
+      { href: "/docs/nestjs", label: "NestJS" },
     ],
   },
   {
