@@ -4,6 +4,9 @@
   "description": "NestJS adapter for Pingback — reliable cron jobs and background tasks",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "pingback-nest": "dist/cli.js"
+  },
   "files": ["dist", "README.md", "LICENSE"],
   "scripts": {
     "build": "tsc",
@@ -17,7 +20,8 @@
   "homepage": "https://pingback.lol/docs/nestjs",
   "bugs": { "url": "https://github.com/champ3oy/pingback/issues" },
   "dependencies": {
-    "@usepingback/core": "0.2.0"
+    "@usepingback/core": "0.2.0",
+    "localtunnel": "^2.0.2"
   },
   "peerDependencies": {
     "@nestjs/common": ">=10",
