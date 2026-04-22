@@ -7,7 +7,7 @@ const links = {
     { label: "Pricing", href: "#pricing" },
   ],
   Developers: [
-    { label: "Documentation", href: "https://docs.pingback.dev" },
+    { label: "Documentation", href: "/docs" },
     { label: "GitHub", href: "https://github.com/pingback" },
   ],
   Company: [
@@ -28,7 +28,7 @@ export function Footer() {
           <div className="p-8 col-span-2 md:col-span-1 md:border-r border-b md:border-b-0">
             <p className="text-xl mb-2 font-display font-light">pingback</p>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Reliable cron jobs and background tasks for modern web apps.
+              Background tasks with logs, monitoring, and control.
             </p>
           </div>
           {Object.entries(links).map(([category, items], i) => (

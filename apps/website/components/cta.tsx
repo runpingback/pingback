@@ -5,7 +5,7 @@ export function CTA() {
   return (
     <GridSection className="py-24 px-6 text-center">
         <h2 className="text-3xl font-bold tracking-tight mb-3">
-          Start running crons in under 10 minutes.
+          Your background jobs deserve a dashboard.
         </h2>
         <p className="text-muted-foreground mb-8">No credit card required.</p>
         <Link

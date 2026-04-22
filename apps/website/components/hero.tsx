@@ -7,13 +7,13 @@ export function Hero() {
     <GridSection>
         <div className="py-24 px-6 text-center">
           <h1 className="text-5xl font-extrabold tracking-tight leading-[1.1] mb-4 font-display">
-            Reliable cron jobs for
+            Background tasks you can
             <br />
-            modern web apps.
+            see and control.
           </h1>
           <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-8">
-            Define scheduled functions directly in your codebase. Pingback handles
-            scheduling, retries, and monitoring. Starting with Next.js.
+            Cron jobs, queues, and scheduled tasks — with structured logs,
+            real-time monitoring, and automatic retries. Any framework, any language.
           </p>
           <div className="flex items-center justify-center gap-3">
             <Link
@@ -23,7 +23,7 @@ export function Hero() {
               Get Started
             </Link>
             <Link
-              href="https://docs.pingback.dev"
+              href="/docs"
               className="bg-muted px-6 py-2.5 rounded-full text-sm font-medium hover:bg-muted/70 transition-colors"
             >
               Documentation

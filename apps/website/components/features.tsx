@@ -1,29 +1,30 @@
 import { GridSection, GridDot } from "./grid-section";
+import { StatusBadge } from "./status-badge";
 
 const features = [
   {
-    title: "Automatic Retries",
+    title: "Structured Logs",
+    badge: { label: "Observability", bg: "#a8b545", text: "#2a1f0a", icon: "M4 7h16M4 12h16M4 17h10" },
     description:
-      "Configurable retry policies with exponential backoff. Jobs recover from transient failures without intervention.",
-    color: "#3b82f6",
-  },
-  {
-    title: "Execution Logs",
-    description:
-      "Structured logging via ctx.log(). Search and filter logs across all jobs in the dashboard.",
-    color: "#22c55e",
-  },
-  {
-    title: "Fan-Out Tasks",
-    description:
-      "Spawn independent sub-tasks with ctx.task(). Each runs with its own retries, timeout, and tracking.",
-    color: "#f59e0b",
+      "Every job emits logs via ctx.log(). Search, filter, and trace across executions in one dashboard.",
   },
   {
     title: "Real-Time Monitoring",
+    badge: { label: "Dashboard", bg: "#5bb8a9", text: "#2a1f0a", icon: "M12 6v6l4 2" },
     description:
-      "Live execution status, duration tracking, and email alerts on failures. See every run in your dashboard.",
-    color: "#8b5cf6",
+      "See every execution as it happens — status, duration, response, and errors. Get alerts when things break.",
+  },
+  {
+    title: "Automatic Retries",
+    badge: { label: "Reliability", bg: "#e8b44a", text: "#2a1f0a", icon: "M5 13l4 4L19 7" },
+    description:
+      "Configurable retry policies with exponential backoff. Failed jobs recover without you waking up at 3 AM.",
+  },
+  {
+    title: "Fan-Out Tasks",
+    badge: { label: "Execution", bg: "#d4734a", text: "#2a1f0a", icon: "M5 12h14" },
+    description:
+      "Spawn independent sub-tasks from any job. Each runs with its own retries, timeout, and tracking.",
   },
 ];
 
@@ -32,10 +33,10 @@ export function Features() {
     <GridSection>
         <div className="py-20 px-6 text-center">
           <h2 className="text-3xl font-bold tracking-tight mb-3">
-            Everything you need for reliable background jobs
+            Monitor every job. Debug every failure.
           </h2>
           <p className="text-muted-foreground max-w-lg mx-auto">
-            Built for developers who need more than a basic cron scheduler.
+            Logs, retries, and alerts — so you know what ran, what failed, and why.
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 border-t relative">
@@ -56,7 +57,9 @@ export function Features() {
               {i === 1 && (
                 <GridDot className="-bottom-[5px] -right-[5px]" />
               )}
-              <div className="w-2 h-2 rounded-full mb-3" style={{ backgroundColor: feature.color }} />
+              <div className="mb-3">
+                <StatusBadge {...feature.badge} />
+              </div>
               <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 {feature.description}
