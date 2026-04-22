@@ -15,6 +15,8 @@ const sections = [
     items: [
       { href: "/docs/next", label: "Next.js" },
       { href: "/docs/nestjs", label: "NestJS" },
+      { href: "/docs/go", label: "Go" },
+      { href: "/docs/python", label: "Python" },
     ],
   },
   {

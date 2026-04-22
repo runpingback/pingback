@@ -24,10 +24,10 @@ export const cleanup = cron(
     name: "NestJS",
     lang: "typescript",
     install: "npm install @usepingback/nestjs",
-    code: `import { Cron, PingbackService } from "@usepingback/nestjs";
+    code: `import { Cron, PingbackContext } from "@usepingback/nestjs";
 
 @Cron("cleanup", "0 3 * * *", { retries: 2 })
-async handleCleanup(ctx) {
+async handleCleanup(ctx: PingbackContext) {
   const expired = await this.sessionService.removeExpired();
   ctx.log(\`Removed \${expired} sessions\`);
 }`,
@@ -35,18 +35,30 @@ async handleCleanup(ctx) {
   {
     name: "Go",
     lang: "go",
-    install: "go get github.com/usepingback/pingback-go",
-    code: `import "github.com/usepingback/pingback-go"
+    install: "go get github.com/champ3oy/pingback-go",
+    code: `pb := pingback.New(os.Getenv("PINGBACK_API_KEY"), os.Getenv("PINGBACK_CRON_SECRET"))
 
-func main() {
-    pb := pingback.New(os.Getenv("PINGBACK_API_KEY"))
+pb.Cron("cleanup", "0 3 * * *", func(ctx *pingback.Context) (any, error) {
+    expired, err := removeExpiredSessions()
+    ctx.Log("Removed sessions", "count", expired)
+    return map[string]int{"removed": expired}, err
+}, pingback.WithRetries(2))
 
-    pb.Cron("cleanup", "0 3 * * *", func(ctx *pingback.Context) error {
-        expired, err := removeExpiredSessions()
-        ctx.Log("Removed %d sessions", expired)
-        return err
-    }, pingback.WithRetries(2))
-}`,
+http.Handle("/api/pingback", pb.Handler())`,
+  },
+  {
+    name: "Python",
+    lang: "python",
+    install: "pip install pingback-py",
+    code: `from pingback import Pingback
+
+pb = Pingback(api_key=os.environ["PINGBACK_API_KEY"], cron_secret=os.environ["PINGBACK_CRON_SECRET"])
+
+@pb.cron("cleanup", "0 3 * * *", retries=2)
+def cleanup(ctx):
+    expired = remove_expired_sessions()
+    ctx.log("Removed sessions", count=expired)
+    return {"removed": expired}`,
   },
 ];
 
