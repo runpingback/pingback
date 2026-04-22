@@ -67,9 +67,10 @@ export class LogsService {
   }
 
   async getHistogram(projectId: string, hours = 24, buckets = 144) {
-    const now = new Date();
-    const from = new Date(now.getTime() - hours * 60 * 60 * 1000);
     const intervalMs = (hours * 60 * 60 * 1000) / buckets;
+    const now = new Date();
+    const fromRaw = now.getTime() - hours * 60 * 60 * 1000;
+    const from = new Date(Math.floor(fromRaw / intervalMs) * intervalMs);
 
     const rows = await this.execRepo
       .createQueryBuilder('exec')
