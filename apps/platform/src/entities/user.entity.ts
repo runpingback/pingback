@@ -29,6 +29,21 @@ export class User {
   @Column({ type: 'text', nullable: true, name: 'refresh_token' })
   refreshToken: string;
 
+  @Column({ type: 'text', default: 'free' })
+  plan: 'free' | 'pro' | 'team';
+
+  @Column({ type: 'text', nullable: true, name: 'polar_customer_id' })
+  polarCustomerId: string;
+
+  @Column({ type: 'text', nullable: true, name: 'polar_subscription_id' })
+  polarSubscriptionId: string;
+
+  @Column({ type: 'int', default: 0, name: 'executions_this_month' })
+  executionsThisMonth: number;
+
+  @Column({ type: 'timestamp', nullable: true, name: 'executions_reset_at' })
+  executionsResetAt: Date;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
