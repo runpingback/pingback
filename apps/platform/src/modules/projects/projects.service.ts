@@ -1,17 +1,29 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { randomBytes } from 'crypto';
 import { Project } from './project.entity';
 import { CreateProjectDto } from './dto/create-project.dto';
+import { PlanLimitsService } from '../subscription/plan-limits.service';
+import { User } from '../../entities/user.entity';
 
 @Injectable()
 export class ProjectsService {
   constructor(
     @InjectRepository(Project) private projectRepo: Repository<Project>,
+    @InjectRepository(User) private userRepo: Repository<User>,
+    private planLimitsService: PlanLimitsService,
   ) {}
 
   async create(userId: string, dto: CreateProjectDto) {
+    const user = await this.userRepo.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
+
+    const check = await this.planLimitsService.canCreateProject(user);
+    if (!check.allowed) {
+      throw new ForbiddenException(check.message);
+    }
+
     const cronSecret = randomBytes(32).toString('hex');
     const project = this.projectRepo.create({
       userId,

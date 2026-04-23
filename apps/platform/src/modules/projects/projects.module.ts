@@ -12,11 +12,14 @@ import { TriggerController } from './trigger.controller';
 import { ApiKeysService } from '../api-keys/api-keys.service';
 import { ApiKeysController } from '../api-keys/api-keys.controller';
 import { AuthModule } from '../auth/auth.module';
+import { SubscriptionModule } from '../subscription/subscription.module';
+import { User } from '../../entities/user.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Project, Job, ApiKey, Execution]),
+    TypeOrmModule.forFeature([Project, Job, ApiKey, Execution, User]),
     forwardRef(() => AuthModule),
+    SubscriptionModule,
   ],
   controllers: [ProjectsController, RegistrationController, TriggerController, ApiKeysController],
   providers: [ProjectsService, RegistrationService, ApiKeysService],
