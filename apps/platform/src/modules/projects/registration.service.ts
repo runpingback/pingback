@@ -1,9 +1,11 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { parseExpression } from 'cron-parser';
 import { Job } from '../jobs/job.entity';
 import { Project } from './project.entity';
+import { PlanLimitsService } from '../subscription/plan-limits.service';
+import { User } from '../../entities/user.entity';
 
 interface FunctionMetadata {
   name: string;
@@ -21,10 +23,17 @@ export class RegistrationService {
   constructor(
     @InjectRepository(Job) private jobRepo: Repository<Job>,
     @InjectRepository(Project) private projectRepo: Repository<Project>,
+    @InjectRepository(User) private userRepo: Repository<User>,
+    private planLimitsService: PlanLimitsService,
   ) {}
 
   async register(projectId: string, functions: FunctionMetadata[], endpointUrl?: string) {
     const results: Array<{ name: string; status: string }> = [];
+
+    const project = await this.projectRepo.findOne({ where: { id: projectId } });
+    const user = project
+      ? await this.userRepo.findOne({ where: { id: project.userId } })
+      : null;
 
     if (endpointUrl) {
       await this.projectRepo.update(projectId, { endpointUrl });
@@ -34,6 +43,13 @@ export class RegistrationService {
       const existing = await this.jobRepo.findOne({
         where: { projectId, name: fn.name },
       });
+
+      if (!existing && user) {
+        const jobCheck = await this.planLimitsService.canCreateJob(user, projectId);
+        if (!jobCheck.allowed) {
+          throw new ForbiddenException(jobCheck.message);
+        }
+      }
 
       const timeoutStr = fn.options?.timeout;
       const timeoutSeconds = timeoutStr
@@ -51,6 +67,11 @@ export class RegistrationService {
         }
       }
 
+      let retries = fn.options?.retries ?? (existing?.retries ?? 0);
+      if (user) {
+        retries = this.planLimitsService.capRetries(user, retries);
+      }
+
       const jobData: Partial<Job> = {
         projectId,
         name: fn.name,
@@ -58,7 +79,7 @@ export class RegistrationService {
         schedule: (fn.type === 'cron' ? fn.schedule : null) as string,
         source: 'sdk' as const,
         status: 'active' as const,
-        retries: fn.options?.retries ?? (existing?.retries ?? 0),
+        retries,
         timeoutSeconds,
         concurrency: fn.options?.concurrency ?? (existing?.concurrency ?? 1),
       };

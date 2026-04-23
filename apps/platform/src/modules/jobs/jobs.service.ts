@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -9,11 +10,15 @@ import { parseExpression } from 'cron-parser';
 import { Job } from './job.entity';
 import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
+import { PlanLimitsService } from '../subscription/plan-limits.service';
+import { User } from '../../entities/user.entity';
 
 @Injectable()
 export class JobsService {
   constructor(
     @InjectRepository(Job) private jobRepo: Repository<Job>,
+    @InjectRepository(User) private userRepo: Repository<User>,
+    private planLimitsService: PlanLimitsService,
   ) {}
 
   computeNextRunAt(schedule: string): Date {
@@ -25,7 +30,20 @@ export class JobsService {
     }
   }
 
-  async create(projectId: string, dto: CreateJobDto) {
+  async create(projectId: string, dto: CreateJobDto, userId?: string) {
+    if (userId) {
+      const user = await this.userRepo.findOne({ where: { id: userId } });
+      if (user) {
+        const jobCheck = await this.planLimitsService.canCreateJob(user, projectId);
+        if (!jobCheck.allowed) {
+          throw new ForbiddenException(jobCheck.message);
+        }
+        if (dto.retries !== undefined) {
+          dto.retries = this.planLimitsService.capRetries(user, dto.retries);
+        }
+      }
+    }
+
     const nextRunAt = this.computeNextRunAt(dto.schedule);
     const job = this.jobRepo.create({
       projectId,
