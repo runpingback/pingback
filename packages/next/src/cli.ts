@@ -2,8 +2,13 @@
 
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
+import { config as loadEnv } from 'dotenv';
 
 const cwd = process.cwd();
+
+// Load .env.local first (higher priority), then .env
+loadEnv({ path: join(cwd, '.env.local') });
+loadEnv({ path: join(cwd, '.env') });
 const command = process.argv[2];
 
 function success(msg: string) {
@@ -234,12 +239,14 @@ async function runDev() {
     const { registry } = await import('./functions');
     // Import user function files to populate the registry
     const { glob } = await import('glob');
+    const { createJiti } = await import('jiti');
+    const jiti = createJiti(cwd);
     const files = await glob(config.functionsDir, { cwd });
     for (const file of files) {
       try {
-        await import(join(cwd, file));
+        await jiti.import(join(cwd, file), { default: true });
       } catch {
-        // Ignore import errors — TS files may not be directly importable
+        // Ignore import errors for files that can't be loaded
       }
     }
 

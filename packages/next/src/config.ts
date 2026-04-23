@@ -1,5 +1,6 @@
 import { existsSync } from 'fs';
 import { join } from 'path';
+import { createJiti } from 'jiti';
 
 export interface PingbackConfig {
   apiKey: string;
@@ -43,7 +44,8 @@ export async function loadConfig(projectRoot: string): Promise<PingbackConfig> {
   ];
   for (const configPath of candidates) {
     if (existsSync(configPath)) {
-      const mod = await import(configPath);
+      const jiti = createJiti(projectRoot);
+      const mod = await jiti.import(configPath, { default: true }) as any;
       return mod.default || mod;
     }
   }
