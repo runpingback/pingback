@@ -23,4 +23,13 @@ export default () => ({
     baseUrl: process.env.PINGBACK_BASE_URL,
     platformUrl: process.env.PINGBACK_PLATFORM_URL || 'https://api.pingback.lol',
   },
+  polar: {
+    accessToken: process.env.POLAR_ACCESS_TOKEN,
+    webhookSecret: process.env.POLAR_WEBHOOK_SECRET,
+    products: {
+      free: process.env.POLAR_FREE_PRODUCT_ID,
+      pro: process.env.POLAR_PRO_PRODUCT_ID,
+      team: process.env.POLAR_TEAM_PRODUCT_ID,
+    },
+  },
 });
