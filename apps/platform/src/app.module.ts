@@ -18,6 +18,7 @@ import { QueueModule } from "./modules/queue/queue.module";
 import { SchedulerModule } from "./modules/scheduler/scheduler.module";
 import { WorkerModule } from "./modules/worker/worker.module";
 import { OnboardingModule } from "./modules/onboarding/onboarding.module";
+import { SubscriptionModule } from "./modules/subscription/subscription.module";
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { OnboardingModule } from "./modules/onboarding/onboarding.module";
     SchedulerModule,
     WorkerModule,
     OnboardingModule,
+    SubscriptionModule,
   ],
 })
 export class AppModule {}
