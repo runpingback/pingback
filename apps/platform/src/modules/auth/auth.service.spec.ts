@@ -5,6 +5,8 @@ import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { AuthService } from './auth.service';
 import { User } from '../../entities/user.entity';
+import { SubscriptionService } from '../subscription/subscription.service';
+import { PingbackClient } from '@usepingback/nestjs';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -21,12 +23,20 @@ describe('AuthService', () => {
       sign: jest.fn().mockReturnValue('mock-token'),
       verify: jest.fn().mockReturnValue({ sub: 'user-1' }),
     };
+    const pingbackClient = {
+      trigger: jest.fn().mockResolvedValue(undefined),
+    };
+    const subscriptionService = {
+      createFreeSubscription: jest.fn().mockResolvedValue(undefined),
+    };
 
     const module = await Test.createTestingModule({
       providers: [
         AuthService,
         { provide: getRepositoryToken(User), useValue: userRepo },
         { provide: JwtService, useValue: jwtService },
+        { provide: PingbackClient, useValue: pingbackClient },
+        { provide: SubscriptionService, useValue: subscriptionService },
       ],
     }).compile();
 

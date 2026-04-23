@@ -14,6 +14,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { PingbackClient } from '@usepingback/nestjs';
+import { SubscriptionService } from '../subscription/subscription.service';
 
 @Injectable()
 export class AuthService {
@@ -21,6 +22,7 @@ export class AuthService {
     @InjectRepository(User) private userRepo: Repository<User>,
     private jwtService: JwtService,
     private pingback: PingbackClient,
+    private subscriptionService: SubscriptionService,
   ) {}
 
   async register(dto: RegisterDto) {
@@ -38,6 +40,8 @@ export class AuthService {
       name: dto.name,
     });
     await this.userRepo.save(user);
+
+    this.subscriptionService.createFreeSubscription(user).catch(() => {});
 
     this.pingback
       .trigger('send-onboarding-email', { email: user.email, name: user.name })
@@ -155,6 +159,8 @@ export class AuthService {
       avatarUrl: profile.avatarUrl,
     });
     const saved = await this.userRepo.save(user);
+
+    this.subscriptionService.createFreeSubscription(saved).catch(() => {});
 
     this.pingback
       .trigger('send-onboarding-email', { email: saved.email, name: saved.name })

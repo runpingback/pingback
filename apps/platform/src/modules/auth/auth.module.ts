@@ -12,6 +12,7 @@ import { JwtAuthGuard } from './jwt-auth.guard';
 import { GithubStrategy } from './github.strategy';
 import { ApiKeyStrategy } from './api-key.strategy';
 import { ApiKeyGuard } from './api-key.guard';
+import { SubscriptionModule } from '../subscription/subscription.module';
 
 const githubProvider = {
   provide: GithubStrategy,
@@ -27,6 +28,7 @@ const githubProvider = {
   imports: [
     TypeOrmModule.forFeature([User, ApiKey]),
     PassportModule,
+    SubscriptionModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
