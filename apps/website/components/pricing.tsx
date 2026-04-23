@@ -15,6 +15,8 @@ const tiers = [
       "Email alerts",
     ],
     highlight: false,
+    cta: "Get Started",
+    href: "https://app.pingback.lol/register",
   },
   {
     name: "Pro",
@@ -29,6 +31,8 @@ const tiers = [
       "Email + webhook alerts",
     ],
     highlight: true,
+    cta: "Upgrade to Pro",
+    href: "https://app.pingback.lol/register?plan=pro",
   },
   {
     name: "Team",
@@ -45,6 +49,8 @@ const tiers = [
       "Priority support",
     ],
     highlight: false,
+    cta: "Upgrade to Team",
+    href: "https://app.pingback.lol/register?plan=team",
   },
 ];
 
@@ -112,14 +118,14 @@ export function Pricing() {
                 ))}
               </ul>
               <Link
-                href="https://app.pingback.lol/register"
+                href={tier.href}
                 className={`text-sm font-medium text-center py-2.5 rounded-full transition-opacity ${
                   tier.highlight
                     ? "bg-accent text-accent-foreground hover:opacity-90"
                     : "border hover:bg-muted"
                 }`}
               >
-                Get Started
+                {tier.cta}
               </Link>
             </div>
           ))}
