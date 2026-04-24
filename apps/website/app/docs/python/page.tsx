@@ -46,6 +46,72 @@ def send_email(ctx):
     ctx.log("Sent email", id=email_id)
     return {"sent": email_id}`} lang="python" />
 
+      <h2 className="text-xl font-semibold mt-10 mb-3">Typed Payloads</h2>
+      <p className="text-sm text-muted-foreground mb-2">
+        Task handlers can accept a typed second parameter for autocomplete and validation.
+        Works with dataclasses and Pydantic models:
+      </p>
+      <DocsCode code={`from dataclasses import dataclass
+
+@dataclass
+class EmailPayload:
+    to: str
+    subject: str
+    priority: int = 1
+
+@pb.task("send-email", retries=3)
+def send_email(ctx, payload: EmailPayload):
+    # payload.to, payload.subject — full autocomplete
+    send_mail(payload.to, payload.subject)
+    ctx.log("Sent", to=payload.to)`} lang="python" />
+
+      <p className="text-sm text-muted-foreground mt-4 mb-2">
+        With Pydantic:
+      </p>
+      <DocsCode code={`from pydantic import BaseModel
+
+class OrderPayload(BaseModel):
+    order_id: str
+    amount: float
+    email: str
+
+@pb.task("process-order")
+def process_order(ctx, payload: OrderPayload):
+    # validated, with defaults and type coercion
+    ctx.log("Processing", order_id=payload.order_id)`} lang="python" />
+
+      <p className="text-sm text-muted-foreground mt-4 mb-2">
+        All three styles are supported — existing handlers still work:
+      </p>
+      <div className="rounded-lg border overflow-hidden my-4">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b bg-muted/30">
+              <th className="text-left p-3 font-medium">Style</th>
+              <th className="text-left p-3 font-medium">Signature</th>
+              <th className="text-left p-3 font-medium">Payload access</th>
+            </tr>
+          </thead>
+          <tbody className="text-muted-foreground">
+            <tr className="border-b">
+              <td className="p-3">No param</td>
+              <td className="p-3"><InlineCode>def job(ctx)</InlineCode></td>
+              <td className="p-3"><InlineCode>ctx.payload["key"]</InlineCode></td>
+            </tr>
+            <tr className="border-b">
+              <td className="p-3">Raw dict</td>
+              <td className="p-3"><InlineCode>def job(ctx, payload)</InlineCode></td>
+              <td className="p-3"><InlineCode>payload["key"]</InlineCode></td>
+            </tr>
+            <tr>
+              <td className="p-3">Typed</td>
+              <td className="p-3"><InlineCode>def job(ctx, payload: MyType)</InlineCode></td>
+              <td className="p-3"><InlineCode>payload.key</InlineCode></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
       <h2 className="text-xl font-semibold mt-10 mb-3">Framework Integration</h2>
 
       <h3 className="text-lg font-semibold mt-6 mb-3">Flask</h3>
