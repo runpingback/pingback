@@ -6,11 +6,9 @@ import { StatusBadge } from "@/components/status-badge";
 import { formatDuration } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 
-const statusDotColor: Record<string, string> = {
-  success: "#a8b545",
-  failed: "#d4734a",
-  running: "#e8b44a",
-  pending: "#e8b44a",
+const typeDotColor: Record<string, string> = {
+  cron: "#5b9bd5",
+  task: "#d4a574",
 };
 
 export interface WorkflowNodeData {
@@ -32,10 +30,11 @@ export interface WorkflowNodeData {
 function WorkflowNodeComponent({ data }: NodeProps) {
   const d = data as unknown as WorkflowNodeData;
   const maxAttempts = d.maxRetries + 1;
+  const typeColor = typeDotColor[d.type] || "#8a8a80";
 
   return (
     <div
-      className="rounded-lg px-3 py-2.5 min-w-[200px] max-w-[240px]"
+      className="rounded-lg min-w-[210px] max-w-[240px] overflow-hidden"
       style={{
         backgroundColor: "#1e1e1a",
         border: d.isCurrent
@@ -48,45 +47,58 @@ function WorkflowNodeComponent({ data }: NodeProps) {
     >
       <Handle type="target" position={Position.Left} style={{ background: "#3a3a35", border: "none", width: 6, height: 6 }} />
 
-      {/* Header: status dot + function name */}
-      <div className="flex items-center gap-1.5 mb-2">
+      {/* Header bar with type color accent */}
+      <div
+        className="flex items-center justify-between px-3 py-1.5"
+        style={{ borderBottom: "1px solid #3a3a35" }}
+      >
+        <div className="flex items-center gap-1.5">
+          <span
+            className="h-2.5 w-2.5 rounded-sm shrink-0"
+            style={{ backgroundColor: typeColor }}
+          />
+          <span className="text-xs font-semibold text-foreground truncate">
+            {d.functionName}
+          </span>
+        </div>
         <span
-          className="h-2 w-2 rounded-full shrink-0"
-          style={{ backgroundColor: statusDotColor[d.status] || "#8a8a80" }}
-        />
-        <span className="text-xs font-medium text-foreground truncate">
-          {d.functionName}
+          className="text-[9px] font-mono px-1.5 py-0.5 rounded"
+          style={{ backgroundColor: `${typeColor}15`, color: typeColor }}
+        >
+          {d.type}
         </span>
       </div>
 
-      {/* Status + duration */}
-      <div className="flex items-center justify-between mb-1">
-        <StatusBadge status={d.status} />
-        <span className="text-[10px] text-muted-foreground">
-          {formatDuration(d.durationMs)}
-        </span>
-      </div>
+      {/* Body */}
+      <div className="px-3 py-2 space-y-1.5">
+        {/* Status + duration */}
+        <div className="flex items-center justify-between">
+          <StatusBadge status={d.status} />
+          <span className="text-[10px] text-muted-foreground tabular-nums">
+            {formatDuration(d.durationMs)}
+          </span>
+        </div>
 
-      {/* Attempt */}
-      <div className="flex items-center justify-between">
-        <span className="text-[10px] text-muted-foreground">
-          Attempt {d.attempt}/{maxAttempts}
-        </span>
+        {/* Attempt + retry */}
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] text-muted-foreground">
+            Attempt {d.attempt}/{maxAttempts}
+          </span>
 
-        {/* Retry button — only on failed nodes */}
-        {d.status === "failed" && d.onRetry && (
-          <Button
-            variant="outline"
-            size="xs"
-            className="h-5 text-[10px] px-1.5"
-            onClick={(e) => {
-              e.stopPropagation();
-              d.onRetry!(d.jobId, d.payload);
-            }}
-          >
-            Retry
-          </Button>
-        )}
+          {d.status === "failed" && d.onRetry && (
+            <Button
+              variant="outline"
+              size="xs"
+              className="h-5 text-[10px] px-1.5"
+              onClick={(e) => {
+                e.stopPropagation();
+                d.onRetry!(d.jobId, d.payload);
+              }}
+            >
+              Retry
+            </Button>
+          )}
+        </div>
       </div>
 
       <Handle type="source" position={Position.Right} style={{ background: "#3a3a35", border: "none", width: 6, height: 6 }} />
