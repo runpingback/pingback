@@ -6,9 +6,8 @@ Pingback is a platform with framework-specific SDKs that let you define schedule
 
 ![Pingback Dashboard](apps/website/public/dashboard.png)
 
-- **Platform:** https://api.pingback.lol
-- **Dashboard:** https://app.pingback.lol
-- **Website:** https://pingback.lol
+- **Website:** https://pingback.run
+
 
 ## SDKs
 
