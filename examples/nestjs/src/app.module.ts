@@ -3,6 +3,7 @@ import { PingbackModule } from '@usepingback/nestjs';
 import { HealthCheckService } from './jobs/health-check.service';
 import { EmailService } from './jobs/email.service';
 import { ReportService } from './jobs/report.service';
+import { OrderService } from './jobs/order.service';
 
 @Module({
   imports: [
@@ -13,6 +14,6 @@ import { ReportService } from './jobs/report.service';
       platformUrl: process.env.PINGBACK_PLATFORM_URL,
     }),
   ],
-  providers: [HealthCheckService, EmailService, ReportService],
+  providers: [HealthCheckService, EmailService, ReportService, OrderService],
 })
 export class AppModule {}
