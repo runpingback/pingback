@@ -11,13 +11,15 @@ import {
   IconClockFilled,
   IconLoader2,
   IconSearch,
+  IconGitBranch,
 } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/empty-state";
 import { StatusBadge } from "@/components/status-badge";
 import { CodeBlock } from "@/components/code-block";
 import { DataTable, type Column } from "@/components/data-table";
-import { useExecutions, useChildExecutions, type Execution } from "@/lib/hooks/use-executions";
+import { useExecutions, useChildExecutions, useWorkflowTree, type Execution } from "@/lib/hooks/use-executions";
+import { WorkflowGraph } from "@/components/workflow-graph";
 import { formatDateTime, formatDuration } from "@/lib/format";
 import { PageHeader } from "@/components/page-header";
 import { ExecutionChart } from "@/components/execution-chart";
@@ -261,6 +263,10 @@ function TraceTimeline({ exec }: { exec: Execution }) {
 }
 
 function RunDetail({ exec, projectId }: { exec: Execution; projectId: string }) {
+  const [showWorkflow, setShowWorkflow] = useState(false);
+  const isPartOfChain = !!exec.parentId || !!exec.hasChildren;
+  const { data: workflowTree } = useWorkflowTree(projectId, exec.id, showWorkflow && isPartOfChain);
+
   const formattedPayload = (() => {
     if (!exec.payload) return null;
     try {
@@ -283,6 +289,26 @@ function RunDetail({ exec, projectId }: { exec: Execution; projectId: string }) 
 
   return (
     <div className="border-t border-border bg-background">
+      {isPartOfChain && (
+        <div className="flex items-center justify-end px-4 pt-2">
+          <button
+            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            onClick={() => setShowWorkflow(!showWorkflow)}
+          >
+            <IconGitBranch className="h-3.5 w-3.5" />
+            <span>{showWorkflow ? "Hide" : "View"} workflow</span>
+          </button>
+        </div>
+      )}
+      {showWorkflow && workflowTree && (
+        <div className="border-t border-border p-4">
+          <WorkflowGraph
+            workflowNodes={workflowTree.nodes}
+            currentExecutionId={exec.id}
+            projectId={projectId}
+          />
+        </div>
+      )}
       {exec.parentId && (
         <div className="px-4 pt-3 pb-0 flex items-center gap-2">
           <span
