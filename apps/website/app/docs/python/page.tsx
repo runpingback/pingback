@@ -127,20 +127,41 @@ app = FastAPI()
 app.post("/api/pingback")(pb.fastapi_handler())`} lang="python" />
 
       <h3 className="text-lg font-semibold mt-6 mb-3">Django</h3>
-      <DocsCode code={`from django.http import JsonResponse
+      <DocsCode code={`# views.py
+from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from myapp.jobs import pb
 
 @csrf_exempt
 def pingback_handler(request):
     result = pb.handle(request.body, dict(request.headers))
     status = result.pop("_status", 200)
     return JsonResponse(result, status=status)`} lang="python" />
+      <p className="text-sm text-muted-foreground mt-3 mb-2">
+        Register on startup in your <InlineCode>AppConfig</InlineCode>:
+      </p>
+      <DocsCode code={`# apps.py
+from django.apps import AppConfig
+
+class MyAppConfig(AppConfig):
+    name = "myapp"
+
+    def ready(self):
+        from myapp.jobs import pb
+        pb.register()`} lang="python" />
 
       <h3 className="text-lg font-semibold mt-6 mb-3">Any Framework</h3>
       <p className="text-sm text-muted-foreground mb-2">
-        Use the raw <InlineCode>handle()</InlineCode> method with any framework:
+        Use the raw <InlineCode>handle()</InlineCode> method with any framework.
+        Call <InlineCode>pb.register()</InlineCode> after all functions are defined:
       </p>
-      <DocsCode code="result = pb.handle(body=request_body_bytes, headers=request_headers_dict)" lang="python" />
+      <DocsCode code={`pb.register()  # register functions with platform on startup
+result = pb.handle(body=request_body_bytes, headers=request_headers_dict)`} lang="python" />
+
+      <p className="text-sm text-muted-foreground mt-3">
+        <strong>Note:</strong> <InlineCode>flask_handler()</InlineCode> and <InlineCode>fastapi_handler()</InlineCode> call <InlineCode>register()</InlineCode> automatically.
+        For Django or other frameworks, call it explicitly. Registration only runs once.
+      </p>
 
       <h2 className="text-xl font-semibold mt-10 mb-3">Structured Logging</h2>
       <p className="text-sm text-muted-foreground mb-2">
