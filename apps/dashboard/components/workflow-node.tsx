@@ -54,6 +54,7 @@ export interface WorkflowNodeData {
   isCurrent: boolean;
   isExpanded: boolean;
   onRetry?: (jobId: string, payload?: any) => void;
+  onNavigate?: (executionId: string) => void;
   payload?: any;
   errorMessage?: string | null;
   responseBody?: string | null;
@@ -95,7 +96,13 @@ function WorkflowNodeComponent({ data }: NodeProps) {
             className="h-3 w-3 rounded shrink-0"
             style={{ backgroundColor: typeColor }}
           />
-          <span className="text-xs font-semibold text-foreground truncate">
+          <span
+            className="text-xs font-semibold text-foreground truncate hover:underline cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              d.onNavigate?.(d.id);
+            }}
+          >
             {d.functionName}
           </span>
         </div>

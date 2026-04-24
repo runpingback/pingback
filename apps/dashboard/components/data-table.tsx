@@ -140,6 +140,7 @@ export function DataTable<T>({
             return (
               <tbody key={id}>
                 <tr
+                  data-row-id={id}
                   className={`border-b transition-colors ${isClickable ? "cursor-pointer hover:bg-secondary/50" : ""} ${isExpanded ? "bg-secondary/30" : ""} ${isSelected ? "bg-secondary/20" : ""}`}
                   onClick={() => handleRowClick(item)}
                 >

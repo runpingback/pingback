@@ -90,6 +90,14 @@ export function WorkflowGraph({
     setExpandedNodeId((prev) => (prev === node.id ? null : node.id));
   }, []);
 
+  const handleNavigate = useCallback((executionId: string) => {
+    const row = document.querySelector(`tr[data-row-id="${executionId}"]`);
+    if (row) {
+      (row as HTMLElement).click();
+      row.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, []);
+
   const { nodes: initialNodes, edges: initialEdges } = useMemo(() => {
     const rfNodes: Node[] = workflowNodes.map((node) => ({
       id: node.id,
@@ -100,6 +108,7 @@ export function WorkflowGraph({
         isCurrent: node.id === currentExecutionId,
         isExpanded: node.id === expandedNodeId,
         onRetry: handleRetry,
+        onNavigate: handleNavigate,
       } as WorkflowNodeData,
     }));
 
@@ -117,7 +126,7 @@ export function WorkflowGraph({
       }));
 
     return getLayoutedElements(rfNodes, rfEdges);
-  }, [workflowNodes, currentExecutionId, expandedNodeId, handleRetry]);
+  }, [workflowNodes, currentExecutionId, expandedNodeId, handleRetry, handleNavigate]);
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
