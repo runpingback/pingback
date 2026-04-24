@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { Suspense, useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,14 @@ import { useConfirm } from "@/components/confirm-dialog";
 import { IconFolderFilled, IconClockFilled, IconPlayerPlayFilled } from "@tabler/icons-react";
 
 export default function AccountPage() {
+  return (
+    <Suspense>
+      <AccountContent />
+    </Suspense>
+  );
+}
+
+function AccountContent() {
   const { data: profile, isLoading } = useProfile();
   const updateProfile = useUpdateProfile();
   const { confirm, ConfirmDialog } = useConfirm();

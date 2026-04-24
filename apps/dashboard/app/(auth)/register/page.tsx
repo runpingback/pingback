@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,14 @@ import { registerWithCredentials, getGithubAuthUrl } from "@/lib/auth";
 import { setTokens, apiClient } from "@/lib/api";
 
 export default function RegisterPage() {
+  return (
+    <Suspense>
+      <RegisterContent />
+    </Suspense>
+  );
+}
+
+function RegisterContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const plan = searchParams.get("plan");
