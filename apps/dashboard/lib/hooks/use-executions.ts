@@ -136,5 +136,11 @@ export function useWorkflowTree(projectId: string, executionId: string, enabled:
         `/api/v1/projects/${projectId}/executions/${executionId}/workflow`
       ),
     enabled: !!projectId && !!executionId && enabled,
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      if (!data) return false;
+      const hasActive = data.nodes.some((n) => n.status === "pending" || n.status === "running");
+      return hasActive ? 2000 : false;
+    },
   });
 }
