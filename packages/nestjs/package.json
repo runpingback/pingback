@@ -16,9 +16,9 @@
   "keywords": ["pingback", "nestjs", "cron", "scheduled-jobs", "background-tasks"],
   "author": "Pingback",
   "license": "MIT",
-  "repository": { "type": "git", "url": "https://github.com/champ3oy/pingback", "directory": "packages/nestjs" },
+  "repository": { "type": "git", "url": "https://github.com/runpingback/pingback", "directory": "packages/nestjs" },
   "homepage": "https://pingback.lol/docs/nestjs",
-  "bugs": { "url": "https://github.com/champ3oy/pingback/issues" },
+  "bugs": { "url": "https://github.com/runpingback/pingback/issues" },
   "dependencies": {
     "@usepingback/core": "0.2.0",
     "localtunnel": "^2.0.2"

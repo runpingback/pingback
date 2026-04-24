@@ -25,12 +25,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/champ3oy/pingback",
+    "url": "https://github.com/runpingback/pingback",
     "directory": "packages/core"
   },
   "homepage": "https://pingback.lol",
   "bugs": {
-    "url": "https://github.com/champ3oy/pingback/issues"
+    "url": "https://github.com/runpingback/pingback/issues"
   },
   "devDependencies": {
     "jest": "^29.7.0",

@@ -58,7 +58,7 @@ async validateOrder(ctx: PingbackContext, payload) {
   {
     name: "Go",
     lang: "go",
-    install: "go get github.com/champ3oy/pingback-go",
+    install: "go get github.com/runpingback/pingback-go",
     code: `pb := pingback.New(apiKey, cronSecret)
 
 pb.Cron("process-orders", "*/10 * * * *", func(ctx *pingback.Context) (any, error) {

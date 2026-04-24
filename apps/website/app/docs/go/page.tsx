@@ -11,7 +11,7 @@ export default function GoPage() {
       </p>
 
       <h2 className="text-xl font-semibold mt-10 mb-3">Installation</h2>
-      <DocsCode code="go get github.com/champ3oy/pingback-go" lang="bash" />
+      <DocsCode code="go get github.com/runpingback/pingback-go" lang="bash" />
 
       <h2 className="text-xl font-semibold mt-10 mb-3">Setup</h2>
       <p className="text-sm text-muted-foreground mb-2">
@@ -23,7 +23,7 @@ import (
     "net/http"
     "os"
 
-    pingback "github.com/champ3oy/pingback-go"
+    pingback "github.com/runpingback/pingback-go"
 )
 
 func main() {
