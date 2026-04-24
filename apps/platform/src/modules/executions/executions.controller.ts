@@ -117,6 +117,22 @@ export class ExecutionsDashboardController {
     );
   }
 
+  @Get('executions/:id/workflow')
+  @ApiOperation({ summary: 'Get workflow tree for an execution (dashboard)' })
+  @ApiParam({ name: 'projectId', description: 'Project UUID' })
+  @ApiParam({ name: 'id', description: 'Execution UUID' })
+  @ApiResponse({ status: 200, description: 'Workflow tree with all nodes in the chain' })
+  @ApiResponse({ status: 404, description: 'Execution not found' })
+  async getWorkflowTree(
+    @Req() req: Request,
+    @Param('projectId') projectId: string,
+    @Param('id') id: string,
+  ) {
+    const user = req.user as { id: string };
+    await this.projectsService.findOneByUser(projectId, user.id);
+    return this.executionsService.getWorkflowTree(id);
+  }
+
   @Get('executions/:id')
   @ApiOperation({ summary: 'Get a single execution by ID (dashboard)' })
   @ApiParam({ name: 'projectId', description: 'Project UUID' })
