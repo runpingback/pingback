@@ -163,6 +163,7 @@ export class JobsDashboardController {
     @Req() req: Request,
     @Param('projectId') projectId: string,
     @Param('id') id: string,
+    @Body() body?: { payload?: any },
   ) {
     const user = req.user as { id: string };
     const project = await this.projectsService.findOneByUser(projectId, user.id);
@@ -172,6 +173,7 @@ export class JobsDashboardController {
       job.id,
       new Date(),
       1,
+      body?.payload !== undefined ? { payload: body.payload } : undefined,
     );
 
     await this.queueService.send('pingback-execution', {
@@ -185,6 +187,7 @@ export class JobsDashboardController {
       maxRetries: job.retries,
       timeoutSeconds: job.timeoutSeconds,
       scheduledAt: new Date().toISOString(),
+      ...(body?.payload !== undefined ? { payload: body.payload } : {}),
     });
 
     return { message: 'Run triggered', executionId: execution.id, jobId: job.id };
