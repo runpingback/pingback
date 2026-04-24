@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { IconLogout, IconSettingsFilled } from "@tabler/icons-react";
+import { IconLogout, IconSettingsFilled, IconUserFilled } from "@tabler/icons-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,6 +29,9 @@ export function UserMenu() {
         <span className="text-sm text-muted-foreground truncate">Account</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-48">
+        <DropdownMenuItem onClick={() => router.push("/account")}>
+          <IconUserFilled className="mr-2 h-4 w-4" /> Account
+        </DropdownMenuItem>
         {projectId && (
           <DropdownMenuItem onClick={() => router.push(`/${projectId}/settings`)}>
             <IconSettingsFilled className="mr-2 h-4 w-4" /> Settings

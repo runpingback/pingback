@@ -12,10 +12,10 @@ import {
   IconSettingsFilled,
   IconPlayerTrackNextFilled,
   IconLayoutListFilled,
-  IconUserFilled,
 } from "@tabler/icons-react";
 import { ProjectSwitcher } from "./project-switcher";
 import { UserMenu } from "./user-menu";
+import { UpgradeBanner } from "./upgrade-banner";
 import { cn } from "@/lib/utils";
 
 const ACTIVE_COLOR = "#d4a574";
@@ -32,7 +32,6 @@ const projectNav = [
 
 const accountNav = [
   { name: "Projects", href: "/projects", icon: IconFolderFilled, color: "#d4a574" },
-  { name: "Account", href: "/account", icon: IconUserFilled, color: "#8a8a80" },
 ];
 
 function NavItem({
@@ -59,6 +58,7 @@ function NavItem({
         }}
       >
         <span className="flex items-center gap-2 px-3 py-1.5">
+          <Icon className="h-4 w-4" style={{ color: "#2a1f0a" }} />
           {name}
         </span>
         <span
@@ -180,6 +180,7 @@ export function Sidebar() {
         </div>
       </nav>
 
+      <UpgradeBanner />
       <div className="border-t p-3 py-1">
         <UserMenu />
       </div>

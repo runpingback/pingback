@@ -10,6 +10,7 @@ import {
   IconCircleXFilled,
   IconClockFilled,
   IconLoader2,
+  IconSearch,
 } from "@tabler/icons-react";
 import { EmptyState } from "@/components/empty-state";
 import { StatusBadge } from "@/components/status-badge";
@@ -19,6 +20,7 @@ import { useExecutions, useChildExecutions, type Execution } from "@/lib/hooks/u
 import { formatDateTime, formatDuration } from "@/lib/format";
 import { PageHeader } from "@/components/page-header";
 import { ExecutionChart } from "@/components/execution-chart";
+import { Input } from "@/components/ui/input";
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
@@ -258,6 +260,15 @@ function TraceTimeline({ exec }: { exec: Execution }) {
 }
 
 function RunDetail({ exec, projectId }: { exec: Execution; projectId: string }) {
+  const formattedPayload = (() => {
+    if (!exec.payload) return null;
+    try {
+      return JSON.stringify(typeof exec.payload === "string" ? JSON.parse(exec.payload) : exec.payload, null, 2);
+    } catch {
+      return String(exec.payload);
+    }
+  })();
+
   const formattedOutput = (() => {
     if (!exec.responseBody) return null;
     try {
@@ -364,18 +375,31 @@ function RunDetail({ exec, projectId }: { exec: Execution; projectId: string }) 
         <div className="p-4">
           <TraceTimeline exec={exec} />
         </div>
-        <div className="p-4">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-sm font-medium">Output</p>
-            {formattedOutput && <CopyButton text={formattedOutput} />}
-          </div>
-          {formattedOutput ? (
-            <div className="overflow-auto max-h-[400px]">
-              <CodeBlock code={formattedOutput} lang="json" />
+        <div className="p-4 space-y-4">
+          {formattedPayload && (
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-sm font-medium">Payload</p>
+                <CopyButton text={formattedPayload} />
+              </div>
+              <div className="overflow-auto max-h-[200px]">
+                <CodeBlock code={formattedPayload} lang="json" />
+              </div>
             </div>
-          ) : (
-            <p className="text-xs text-muted-foreground">No output</p>
           )}
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-sm font-medium">Output</p>
+              {formattedOutput && <CopyButton text={formattedOutput} />}
+            </div>
+            {formattedOutput ? (
+              <div className="overflow-auto max-h-[400px]">
+                <CodeBlock code={formattedOutput} lang="json" />
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">No output</p>
+            )}
+          </div>
         </div>
       </div>
       <ChildTasks projectId={projectId} parentId={exec.id} />
@@ -387,7 +411,9 @@ export default function RunsPage() {
   const params = useParams();
   const projectId = params.projectId as string;
   const [page, setPage] = useState(1);
-  const { data, isLoading } = useExecutions(projectId, { page, limit: 20 });
+  const [query, setQuery] = useState("");
+  const [search, setSearch] = useState("");
+  const { data, isLoading } = useExecutions(projectId, { page, limit: 20, q: search || undefined });
 
   const columns: Column<Execution>[] = [
     {
@@ -479,6 +505,30 @@ export default function RunsPage() {
       <PageHeader title="Runs" />
       <div className="p-6">
         <ExecutionChart projectId={projectId} />
+        <form
+          className="mb-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            setSearch(query);
+            setPage(1);
+          }}
+        >
+          <div className="relative">
+            <IconSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              placeholder="Search runs..."
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                if (!e.target.value) {
+                  setSearch("");
+                  setPage(1);
+                }
+              }}
+              className="pl-8 h-8 text-xs"
+            />
+          </div>
+        </form>
         <DataTable
           columns={columns}
           data={data?.items}

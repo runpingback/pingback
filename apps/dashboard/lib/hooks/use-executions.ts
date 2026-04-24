@@ -42,11 +42,12 @@ interface PaginatedResponse<T> {
 
 export function useExecutions(
   projectId: string,
-  filters?: { status?: string; jobId?: string; page?: number; limit?: number }
+  filters?: { status?: string; jobId?: string; q?: string; page?: number; limit?: number }
 ) {
   const params = new URLSearchParams();
   if (filters?.status) params.set("status", filters.status);
   if (filters?.jobId) params.set("jobId", filters.jobId);
+  if (filters?.q) params.set("q", filters.q);
   if (filters?.page) params.set("page", String(filters.page));
   if (filters?.limit) params.set("limit", String(filters.limit));
   const query = params.toString();

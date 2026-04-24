@@ -87,6 +87,7 @@ export class ExecutionsService {
       parentId?: string;
       dateFrom?: string;
       dateTo?: string;
+      q?: string;
       page?: number;
       limit?: number;
     },
@@ -116,6 +117,12 @@ export class ExecutionsService {
     }
     if (filters?.dateTo) {
       qb.andWhere('exec.created_at <= :dateTo', { dateTo: filters.dateTo });
+    }
+    if (filters?.q) {
+      qb.andWhere(
+        `(exec.error_message ILIKE :q OR exec.response_body ILIKE :q OR job.name ILIKE :q OR EXISTS (SELECT 1 FROM jsonb_array_elements(exec.logs) AS log WHERE log->>'message' ILIKE :q))`,
+        { q: `%${filters.q}%` },
+      );
     }
 
     qb.orderBy('exec.createdAt', 'DESC')

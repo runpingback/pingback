@@ -46,28 +46,12 @@ export class SubscriptionService {
         name: user.name || undefined,
       });
 
-      const freeProductId = this.getProductForPlan('free');
-      if (!freeProductId) {
-        this.logger.warn(
-          'POLAR_FREE_PRODUCT_ID not configured, skipping free subscription',
-        );
-        user.polarCustomerId = customer.id;
-        await this.userRepo.save(user);
-        return;
-      }
-
-      const subscription = await this.polar.subscriptions.create({
-        customerId: customer.id,
-        productId: freeProductId,
-      });
-
       user.polarCustomerId = customer.id;
-      user.polarSubscriptionId = subscription.id;
       user.executionsResetAt = this.nextMonthReset();
       await this.userRepo.save(user);
     } catch (err) {
       this.logger.error(
-        `Failed to create Polar subscription for user ${user.id}: ${(err as Error).message}`,
+        `Failed to create Polar customer for user ${user.id}: ${(err as Error).message}`,
       );
     }
   }
@@ -83,8 +67,11 @@ export class SubscriptionService {
 
     const checkout = await this.polar.checkouts.create({
       products: [productId],
-      externalCustomerId: user.id,
-      successUrl: `${this.config.get<string>('dashboardUrl')}/settings?upgraded=true`,
+      ...(user.polarCustomerId
+        ? { customerId: user.polarCustomerId }
+        : { externalCustomerId: user.id }),
+      allowDiscountCodes: true,
+      successUrl: `${this.config.get<string>('dashboardUrl')}/account?upgraded=true`,
     });
 
     return { url: checkout.url };

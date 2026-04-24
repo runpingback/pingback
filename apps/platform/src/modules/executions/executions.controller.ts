@@ -67,6 +67,7 @@ export class ExecutionsDashboardController {
   @ApiQuery({ name: 'dateFrom', required: false, description: 'Start date filter (ISO 8601)' })
   @ApiQuery({ name: 'dateTo', required: false, description: 'End date filter (ISO 8601)' })
   @ApiQuery({ name: 'parentId', required: false, description: 'Filter by parent execution ID' })
+  @ApiQuery({ name: 'q', required: false, description: 'Full-text search (job name, error, response, logs)' })
   @ApiQuery({ name: 'page', required: false, description: 'Page number (default 1)' })
   @ApiQuery({ name: 'limit', required: false, description: 'Items per page (default 20)' })
   @ApiResponse({ status: 200, description: 'Paginated list of executions', type: PaginatedExecutionsResponse })
@@ -78,6 +79,7 @@ export class ExecutionsDashboardController {
     @Query('dateFrom') dateFrom?: string,
     @Query('dateTo') dateTo?: string,
     @Query('parentId') parentId?: string,
+    @Query('q') q?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
@@ -89,6 +91,7 @@ export class ExecutionsDashboardController {
       parentId,
       dateFrom,
       dateTo,
+      q,
       page: page ? parseInt(page) : 1,
       limit: limit ? parseInt(limit) : 20,
     });
