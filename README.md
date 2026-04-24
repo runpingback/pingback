@@ -1,20 +1,24 @@
 # Pingback
 
-Reliable cron jobs and background tasks for modern web apps. Starting with Next.js.
+Reliable cron jobs, background tasks, and workflows for modern web apps.
 
-Pingback is a platform with framework-specific SDKs that let you define scheduled functions and background tasks directly in your codebase. Pingback handles scheduling, execution, retries, fan-out, and provides a dashboard for monitoring.
+Pingback is a platform with framework-specific SDKs that let you define scheduled functions, background tasks, and multi-step workflows directly in your codebase. Pingback handles scheduling, execution, retries, task chaining, and provides a dashboard for monitoring.
+
+![Pingback Dashboard](apps/website/public/dashboard.png)
 
 - **Platform:** https://api.pingback.lol
 - **Dashboard:** https://app.pingback.lol
 - **Website:** https://pingback.lol
 
-## Packages
+## SDKs
 
-| Package | Description |
-|---------|-------------|
-| [`@usepingback/next`](packages/next) | Next.js SDK adapter |
-| [`@usepingback/nestjs`](packages/nestjs) | NestJS SDK adapter |
-| [`@usepingback/core`](packages/core) | Framework-agnostic core (used internally) |
+| Package | Install | Description |
+|---------|---------|-------------|
+| [`@usepingback/next`](packages/next) | `npm install @usepingback/next` | Next.js adapter |
+| [`@usepingback/nestjs`](packages/nestjs) | `npm install @usepingback/nestjs` | NestJS adapter |
+| [`pingback-go`](https://github.com/runpingback/pingback-go) | `go get github.com/runpingback/pingback-go` | Go SDK |
+| [`pingback-py`](https://github.com/runpingback/pingback-py) | `pip install pingback-py` | Python SDK |
+| [`@usepingback/core`](packages/core) | `npm install @usepingback/core` | Framework-agnostic core |
 
 ## Apps
 
