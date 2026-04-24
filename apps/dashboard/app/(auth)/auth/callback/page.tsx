@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { setTokens } from "@/lib/api";
+import { setTokens, apiClient } from "@/lib/api";
 
 function CallbackHandler() {
   const router = useRouter();
@@ -14,6 +14,21 @@ function CallbackHandler() {
 
     if (accessToken && refreshToken) {
       setTokens(accessToken, refreshToken);
+
+      const pendingPlan = localStorage.getItem("pingback_pending_plan");
+      if (pendingPlan === "pro" || pendingPlan === "team") {
+        localStorage.removeItem("pingback_pending_plan");
+        apiClient
+          .post<{ url: string }>("/api/v1/subscription/checkout", { plan: pendingPlan })
+          .then((result) => {
+            window.location.href = result.url;
+          })
+          .catch(() => {
+            router.push("/projects");
+          });
+        return;
+      }
+
       router.push("/projects");
     } else {
       router.push("/login");

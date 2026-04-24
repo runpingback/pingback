@@ -6,6 +6,10 @@ export function middleware(request: NextRequest) {
 
   if (pathname.startsWith("/login") || pathname.startsWith("/register")) {
     if (token) {
+      const plan = request.nextUrl.searchParams.get("plan");
+      if (plan === "pro" || plan === "team") {
+        return NextResponse.redirect(new URL(`/account?checkout=${plan}`, request.url));
+      }
       return NextResponse.redirect(new URL("/projects", request.url));
     }
     return NextResponse.next();
