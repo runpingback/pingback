@@ -6,8 +6,6 @@ import {
   Controls,
   type Node,
   type Edge,
-  useNodesState,
-  useEdgesState,
 } from "@xyflow/react";
 import dagre from "dagre";
 import "@xyflow/react/dist/style.css";
@@ -113,17 +111,14 @@ export function WorkflowGraph({
     return getLayoutedElements(rfNodes, rfEdges);
   }, [workflowNodes, currentExecutionId, handleRetry]);
 
-  const [nodes] = useNodesState(layoutedNodes);
-  const [edges] = useEdgesState(layoutedEdges);
-
   return (
     <div
       style={{ height: 300 }}
       className="w-full [&_.react-flow__background]:!bg-transparent [&_.react-flow__pane]:!bg-transparent [&_.react-flow__controls_button]:!bg-[#1e1e1a] [&_.react-flow__controls_button]:!border-[#3a3a35] [&_.react-flow__controls_button]:!fill-[#8a8a80] [&_.react-flow__controls_button:hover]:!fill-[#f5f5f0]"
     >
       <ReactFlow
-        nodes={nodes}
-        edges={edges}
+        nodes={layoutedNodes}
+        edges={layoutedEdges}
         nodeTypes={nodeTypes}
         fitView
         proOptions={{ hideAttribution: true }}
