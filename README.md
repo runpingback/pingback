@@ -23,9 +23,10 @@ Pingback is a platform with framework-specific SDKs that let you define schedule
 
 | App | Description |
 |-----|-------------|
-| [`platform`](apps/platform) | NestJS API server, scheduler, and worker |
+| [`platform`](apps/platform) | NestJS API server and scheduler |
 | [`dashboard`](apps/dashboard) | Next.js web UI for monitoring |
 | [`website`](apps/website) | Landing page and documentation |
+| [`worker`](https://github.com/runpingback/worker) | Go binary for execution processing |
 
 ## Quick Start (Next.js)
 
@@ -136,8 +137,8 @@ Your Next.js App                    Pingback Platform
 ┌──────────────────┐               ┌──────────────────────┐
 │  lib/pingback/   │               │  Scheduler (10s tick) │
 │    emails.ts     │               │         │             │
-│    sync.ts       │               │         ▼             │
-│                  │  ◄── POST ──  │  Worker (HTTP dispatch)│
+│    sync.ts       │               │         ▼ (pgboss)    │
+│                  │  ◄── POST ──  │  Worker (Go binary)   │
 │  /api/pingback   │               │         │             │
 │  (auto-generated)│  ── result ─► │  Executions DB        │
 └──────────────────┘               │  Dashboard API        │
@@ -178,7 +179,7 @@ npm run build && npm start  # http://localhost:3001
 ```
 pingback/
 ├── apps/
-│   ├── platform/          # NestJS API server + scheduler + worker
+│   ├── platform/          # NestJS API server + scheduler
 │   ├── dashboard/         # Next.js dashboard for monitoring
 │   └── website/           # Landing page + documentation
 ├── packages/
@@ -197,6 +198,7 @@ pingback/
 | Component | Technology |
 |-----------|-----------|
 | Platform | NestJS, PostgreSQL, pgboss (queue), TypeORM |
+| Worker | Go, pgx/v5 |
 | Dashboard | Next.js 15, React 19, Tailwind CSS 4, React Query |
 | Website | Next.js 15, Tailwind CSS 4, Shiki |
 | SDK Core | TypeScript |
