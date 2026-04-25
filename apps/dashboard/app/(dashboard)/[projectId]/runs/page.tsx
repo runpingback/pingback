@@ -12,13 +12,14 @@ import {
   IconLoader2,
   IconSearch,
   IconGitBranch,
+  IconRefresh,
 } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/empty-state";
 import { StatusBadge } from "@/components/status-badge";
 import { CodeBlock } from "@/components/code-block";
 import { DataTable, type Column } from "@/components/data-table";
-import { useExecutions, useChildExecutions, useWorkflowTree, type Execution } from "@/lib/hooks/use-executions";
+import { useExecutions, useChildExecutions, useWorkflowTree, useRetryExecution, type Execution } from "@/lib/hooks/use-executions";
 import { WorkflowGraph } from "@/components/workflow-graph";
 import { formatDateTime, formatDuration } from "@/lib/format";
 import { PageHeader } from "@/components/page-header";
@@ -266,6 +267,7 @@ function RunDetail({ exec, projectId }: { exec: Execution; projectId: string }) 
   const [showWorkflow, setShowWorkflow] = useState(false);
   const isPartOfChain = !!exec.parentId || !!exec.hasChildren;
   const { data: workflowTree } = useWorkflowTree(projectId, exec.id, showWorkflow && isPartOfChain);
+  const retryMutation = useRetryExecution(projectId);
 
   const formattedPayload = (() => {
     if (!exec.payload) return null;
@@ -392,7 +394,24 @@ function RunDetail({ exec, projectId }: { exec: Execution; projectId: string }) 
             </div>
             <div>
               <p className="text-[10px] text-muted-foreground mb-0.5">Status</p>
-              <StatusBadge status={exec.status} />
+              <div className="flex items-center gap-2">
+                <StatusBadge status={exec.status} />
+                {exec.status === "failed" && (
+                  <Button
+                    variant="outline"
+                    size="xs"
+                    onClick={() => retryMutation.mutate(exec.id)}
+                    disabled={retryMutation.isPending}
+                  >
+                    {retryMutation.isPending ? (
+                      <IconLoader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <IconRefresh className="h-3 w-3" />
+                    )}
+                    <span className="ml-1">Retry</span>
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         </div>

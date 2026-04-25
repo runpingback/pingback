@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
 
 export interface Execution {
@@ -141,6 +141,20 @@ export function useWorkflowTree(projectId: string, executionId: string, enabled:
       if (!data) return false;
       const hasActive = data.nodes.some((n) => n.status === "pending" || n.status === "running");
       return hasActive ? 2000 : false;
+    },
+  });
+}
+
+export function useRetryExecution(projectId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (executionId: string) =>
+      apiClient.post<{ message: string; executionId: string }>(
+        `/api/v1/projects/${projectId}/executions/${executionId}/retry`,
+        {}
+      ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["executions", projectId] });
     },
   });
 }
