@@ -28,7 +28,15 @@ function getYTicks(max: number): number[] {
   return [0, rounded, rounded * 2, Math.max(rounded * 3, max)];
 }
 
-export function ExecutionChart({ projectId }: { projectId: string }) {
+export function ExecutionChart({
+  projectId,
+  onBarClick,
+  selectedBucketIndex,
+}: {
+  projectId: string;
+  onBarClick?: (bucketTime: string, index: number) => void;
+  selectedBucketIndex?: number | null;
+}) {
   const { data: buckets, isLoading } = useExecutionHistogram(projectId);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
@@ -121,6 +129,8 @@ export function ExecutionChart({ projectId }: { projectId: string }) {
               const failedPx = yMax > 0 ? Math.round((bucket.failed / yMax) * CHART_HEIGHT) : 0;
               const isHovered = hoveredIndex === i;
 
+              const isSelected = selectedBucketIndex === i;
+
               return (
                 <div
                   key={i}
@@ -135,6 +145,7 @@ export function ExecutionChart({ projectId }: { projectId: string }) {
                   }}
                   onMouseEnter={() => setHoveredIndex(i)}
                   onMouseLeave={() => setHoveredIndex(null)}
+                  onClick={() => bucket.total > 0 && onBarClick?.(bucket.time, i)}
                 >
                   {bucket.failed > 0 && (
                     <div
@@ -143,7 +154,7 @@ export function ExecutionChart({ projectId }: { projectId: string }) {
                         backgroundColor: "#d4734a",
                         borderRadius: "1px 1px 0 0",
                         minHeight: "2px",
-                        opacity: isHovered ? 1 : 0.8,
+                        opacity: isSelected ? 1 : isHovered ? 1 : selectedBucketIndex != null ? 0.3 : 0.8,
                         transition: "opacity 0.15s",
                       }}
                     />
@@ -155,7 +166,7 @@ export function ExecutionChart({ projectId }: { projectId: string }) {
                         backgroundColor: "#a8b545",
                         borderRadius: bucket.failed > 0 ? "0" : "1px 1px 0 0",
                         minHeight: "2px",
-                        opacity: isHovered ? 1 : 0.8,
+                        opacity: isSelected ? 1 : isHovered ? 1 : selectedBucketIndex != null ? 0.3 : 0.8,
                         transition: "opacity 0.15s",
                       }}
                     />

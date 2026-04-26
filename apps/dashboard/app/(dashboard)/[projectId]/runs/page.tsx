@@ -459,7 +459,14 @@ export default function RunsPage() {
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState("");
   const [search, setSearch] = useState("");
-  const { data, isLoading } = useExecutions(projectId, { page, limit: 20, q: search || undefined });
+  const [selectedBucket, setSelectedBucket] = useState<{ index: number; dateFrom: string; dateTo: string } | null>(null);
+  const { data, isLoading } = useExecutions(projectId, {
+    page,
+    limit: 20,
+    q: search || undefined,
+    dateFrom: selectedBucket?.dateFrom,
+    dateTo: selectedBucket?.dateTo,
+  });
 
   const columns: Column<Execution>[] = [
     {
@@ -572,7 +579,20 @@ export default function RunsPage() {
         </form>
       </PageHeader>
       <div className="p-6">
-        <ExecutionChart projectId={projectId} />
+        <ExecutionChart
+          projectId={projectId}
+          selectedBucketIndex={selectedBucket?.index ?? null}
+          onBarClick={(bucketTime, index) => {
+            if (selectedBucket?.index === index) {
+              setSelectedBucket(null);
+            } else {
+              const from = new Date(bucketTime);
+              const to = new Date(from.getTime() + 10 * 60 * 1000);
+              setSelectedBucket({ index, dateFrom: from.toISOString(), dateTo: to.toISOString() });
+            }
+            setPage(1);
+          }}
+        />
         <DataTable
           columns={columns}
           data={data?.items}
