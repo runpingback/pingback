@@ -1,0 +1,33 @@
+export const metadata = { title: "Python Cron Jobs — Pingback Docs" };
+
+# Cron Jobs
+
+Define scheduled functions using the `@pb.cron()` decorator. The return value becomes the execution result.
+
+## Defining a Cron Job
+
+```python
+@pb.cron("daily-cleanup", "0 3 * * *", retries=3, timeout="60s")
+def cleanup(ctx):
+    expired = remove_expired_sessions()
+    ctx.log("Sessions cleaned up", count=expired)
+    return {"removed": expired}
+```
+
+## Options
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `retries` | 0 | Retry up to n times on failure. |
+| `timeout` | "30s" | Execution timeout (e.g. "30s", "5m"). |
+| `concurrency` | 1 | Max concurrent runs. |
+
+## Schedule Expressions
+
+| Expression | Description |
+|-----------|-------------|
+| `*/15 * * * *` | Every 15 minutes |
+| `0 3 * * *` | Daily at 3:00 AM UTC |
+| `0 */6 * * *` | Every 6 hours |
+| `0 9 * * 1` | Every Monday at 9:00 AM |
+| `0 0 1 * *` | First day of every month |

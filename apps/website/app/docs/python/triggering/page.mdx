@@ -1,0 +1,25 @@
+export const metadata = { title: "Python Triggering — Pingback Docs" };
+
+# Triggering
+
+Trigger tasks from anywhere in your code using `pb.trigger()`.
+
+## Usage
+
+```python
+exec_id = pb.trigger("send-email", {"to": "user@example.com"})
+```
+
+## API
+
+```python
+pb.trigger(task_name: str, payload=None, delay=None) -> str
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `task_name` | `str` | Name of a registered task in your project. |
+| `payload` | `any` | Optional data to pass to the task. |
+| `delay` | `int \| str` | Optional delay before execution (see [Delayed Triggers](/docs/python/delayed-triggers)). |
+
+Returns the execution ID. Raises `RuntimeError` if the task doesn't exist or the API key is invalid.

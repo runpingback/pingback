@@ -1,0 +1,28 @@
+export const metadata = { title: "Python Context & Logging — Pingback Docs" };
+
+# Context & Logging
+
+The `ctx` object is passed to every cron and task handler.
+
+## Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `ctx.execution_id` | `str` | Unique ID for this execution |
+| `ctx.attempt` | `int` | Current retry attempt (1-indexed) |
+| `ctx.scheduled_at` | `datetime` | When this run was scheduled |
+| `ctx.payload` | `dict` | Raw payload data (tasks only) |
+
+## Structured Logging
+
+Log with keyword arguments for structured metadata:
+
+```python
+ctx.log("message")                         # info
+ctx.log("message", key="value")            # info with metadata
+ctx.warn("slow query", ms=2500)            # warning
+ctx.error("failed", code="E001")           # error
+ctx.debug("cache stats", hits=847)         # debug
+```
+
+All log entries are visible in the Pingback dashboard.

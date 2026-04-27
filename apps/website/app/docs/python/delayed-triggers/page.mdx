@@ -1,0 +1,28 @@
+export const metadata = { title: "Python Delayed Triggers — Pingback Docs" };
+
+# Delayed Triggers
+
+Trigger a task with a delay — the execution will be scheduled to run after the specified time.
+
+## Usage
+
+```python
+# Delay with a human-readable string
+exec_id = pb.trigger("send-email", {"to": "user@example.com"}, delay="15m")
+
+# Delay in seconds
+exec_id = pb.trigger("send-email", {"to": "user@example.com"}, delay=900)
+```
+
+## Delay Formats
+
+| Format | Example | Description |
+|--------|---------|-------------|
+| Seconds (integer) | `900` | Delay by 900 seconds |
+| Seconds | `"30s"` | Delay by 30 seconds |
+| Minutes | `"15m"` | Delay by 15 minutes |
+| Hours | `"2h"` | Delay by 2 hours |
+| Days | `"1d"` | Delay by 1 day |
+| Combined | `"1d2h30m"` | Delay by 1 day, 2 hours, 30 minutes |
+
+Maximum delay: 30 days.

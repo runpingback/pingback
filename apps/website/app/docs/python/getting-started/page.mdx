@@ -1,0 +1,111 @@
+export const metadata = { title: "Python Getting Started — Pingback Docs" };
+
+# Python
+
+Set up Pingback in your Python app with the `pingback-py` SDK.
+
+## Installation
+
+```bash
+pip install pingback-py
+```
+
+## Setup
+
+Create a `Pingback` client and define your functions with decorators:
+
+```python
+import os
+from pingback import Pingback
+
+pb = Pingback(
+    api_key=os.environ["PINGBACK_API_KEY"],
+    cron_secret=os.environ["PINGBACK_CRON_SECRET"],
+)
+```
+
+## Framework Integration
+
+### Flask
+
+```python
+from flask import Flask
+
+app = Flask(__name__)
+app.route("/api/pingback", methods=["POST"])(pb.flask_handler())
+```
+
+### FastAPI
+
+```python
+from fastapi import FastAPI
+
+app = FastAPI()
+app.post("/api/pingback")(pb.fastapi_handler())
+```
+
+### Django
+
+```python
+# views.py
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from myapp.jobs import pb
+
+@csrf_exempt
+def pingback_handler(request):
+    result = pb.handle(request.body, dict(request.headers))
+    status = result.pop("_status", 200)
+    return JsonResponse(result, status=status)
+```
+
+Register on startup in your `AppConfig`:
+
+```python
+# apps.py
+from django.apps import AppConfig
+
+class MyAppConfig(AppConfig):
+    name = "myapp"
+
+    def ready(self):
+        from myapp.jobs import pb
+        pb.register()
+```
+
+### Any Framework
+
+Use the raw `handle()` method with any framework. Call `pb.register()` after all functions are defined:
+
+```python
+pb.register()  # register functions with platform on startup
+result = pb.handle(body=request_body_bytes, headers=request_headers_dict)
+```
+
+**Note:** `flask_handler()` and `fastapi_handler()` call `register()` automatically. For Django or other frameworks, call it explicitly. Registration only runs once.
+
+## Configuration
+
+```python
+pb = Pingback(
+    api_key="pb_live_...",
+    cron_secret="...",
+    platform_url="https://api.pingback.lol",  # default
+    base_url="https://myapp.com",              # your app's public URL
+)
+```
+
+## Environment Variables
+
+```bash
+PINGBACK_API_KEY=pb_live_your_api_key_here
+PINGBACK_CRON_SECRET=your_cron_secret_here
+```
+
+## How It Works
+
+1. Define functions with `@pb.cron()` and `@pb.task()` decorators.
+2. Mount the handler using your framework's routing (Flask, FastAPI, Django, or raw).
+3. On the first request, the SDK registers your functions with the Pingback platform.
+4. The platform sends HMAC-signed HTTP requests to your handler on schedule.
+5. The handler verifies the signature, executes the function, and returns results with logs.

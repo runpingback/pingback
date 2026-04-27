@@ -1,0 +1,63 @@
+export const metadata = { title: "Python Fan-Out — Pingback Docs" };
+
+# Fan-Out
+
+Dispatch background tasks from within a handler using `ctx.task()`. Each task runs independently with its own retries and timeout.
+
+## Basic Fan-Out
+
+```python
+@pb.cron("process-orders", "0 * * * *", retries=3, timeout="120s")
+def process_orders(ctx):
+    orders = get_unprocessed_orders()
+    for order in orders:
+        ctx.task("fulfill-order", {"order_id": order.id})
+    ctx.log("Dispatched orders", count=len(orders))
+    return {"dispatched": len(orders)}
+```
+
+## How Fan-Out Works
+
+1. The handler calls `ctx.task("task-name", payload)` which collects the task request in memory.
+2. When the handler finishes, the SDK returns the collected tasks in the response.
+3. The platform creates a child execution for each task, linked to the parent.
+4. Each child task is dispatched independently via the queue with its own retry policy.
+5. Child tasks appear nested under the parent execution in the dashboard.
+
+## Workflows (Task Chaining)
+
+Tasks can call `ctx.task()` to chain into multi-step workflows:
+
+```python
+from dataclasses import dataclass
+
+@dataclass
+class Order:
+    order_id: str
+    amount: float
+    email: str
+
+@pb.task("validate-order", retries=2)
+def validate_order(ctx, order: Order):
+    ctx.log("Validating", order_id=order.order_id)
+
+    if order.amount <= 0:
+        ctx.task("notify-failure", {"order_id": order.order_id, "reason": "Invalid amount"})
+        return {"valid": False}
+
+    ctx.task("charge-payment", {"order_id": order.order_id, "amount": order.amount, "email": order.email})
+    return {"valid": True}
+
+@pb.task("charge-payment", retries=3)
+def charge_payment(ctx, payload):
+    charge = stripe.Charge.create(amount=int(payload["amount"] * 100))
+    ctx.log("Charged", charge_id=charge.id)
+    ctx.task("send-confirmation", {"email": payload["email"], "order_id": payload["order_id"]})
+
+@pb.task("send-confirmation", retries=2)
+def send_confirmation(ctx, payload):
+    send_email(payload["email"], "Order confirmed")
+    ctx.log("Confirmation sent")
+```
+
+Each step runs as its own execution with independent retries and logging.
