@@ -1,0 +1,24 @@
+export const metadata = { title: "Fan-Out API — Pingback Docs" };
+
+# Fan-Out
+
+Dispatch child tasks from within a handler using `ctx.task()`. Each child runs as an independent execution with its own retry policy, timeout, and logging.
+
+## How It Works
+
+1. Inside a handler, call `ctx.task(name, payload)` one or more times.
+2. Task requests are collected in memory (not dispatched immediately).
+3. When the handler completes, the SDK returns the collected tasks in the response body.
+4. The platform creates a child execution for each task, linked to the parent via `parentId`.
+5. Each child is dispatched to the job queue independently.
+6. Child executions appear nested under the parent in the dashboard.
+
+## Limitations
+
+- Fan-out tasks are dispatched **after** the parent handler completes, not during.
+- The number of child tasks per execution may be capped by your plan (e.g. 10 for Pro).
+- Child tasks inherit no state from the parent — all data must be passed via the payload.
+
+## Workflows
+
+Fan-out enables multi-step workflows by chaining tasks. Each task can dispatch further tasks, creating a directed graph of executions. The dashboard visualizes the full workflow graph with parent-child relationships.

@@ -1,0 +1,60 @@
+export const metadata = { title: "Triggering API — Pingback Docs" };
+
+# Triggering
+
+Programmatically dispatch a task execution from your application code.
+
+## HTTP API
+
+```
+POST /api/v1/trigger
+Authorization: Bearer <PINGBACK_API_KEY>
+Content-Type: application/json
+```
+
+### Request Body
+
+```json
+{
+  "task": "send-email",
+  "payload": { "to": "user@example.com" },
+  "delay": "15m"
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `task` | string | Yes | Name of a registered task in your project. |
+| `payload` | any | No | JSON payload passed to the task handler. |
+| `delay` | number \| string | No | Delay before execution. See [Delayed Triggers](/docs/api-reference/delayed-triggers). |
+
+### Response
+
+```json
+{
+  "executionId": "550e8400-e29b-41d4-a716-446655440000",
+  "task": "send-email",
+  "scheduledAt": "2026-04-27T15:15:00.000Z"
+}
+```
+
+### Error Responses
+
+| Status | Description |
+|--------|-------------|
+| 400 | Invalid delay format or delay exceeds 30 days. |
+| 401 | Invalid or missing API key. |
+| 404 | Task name not found in your project. |
+
+## SDK Methods
+
+Each SDK wraps this API:
+
+| SDK | Method |
+|-----|--------|
+| Next.js | `pingback.trigger(taskName, payload?, options?)` |
+| NestJS | `this.pingback.trigger(taskName, payload?, options?)` |
+| Go | `pb.Trigger(ctx, taskName, payload, opts...)` |
+| Python | `pb.trigger(task_name, payload, delay)` |
+
+> **Note:** Tasks can also be triggered manually from the Pingback dashboard. Navigate to your task and click "Run" to dispatch it with a custom payload.

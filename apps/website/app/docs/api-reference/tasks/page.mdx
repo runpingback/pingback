@@ -1,0 +1,33 @@
+export const metadata = { title: "Tasks API — Pingback Docs" };
+
+# Tasks
+
+Background functions triggered via fan-out, programmatic triggers, or the dashboard. Unlike crons, tasks have no schedule — they run on demand.
+
+## Registration
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `name` | string | Yes | Unique identifier for this task. |
+| `handler` | function | Yes | Function to execute. Receives context and payload. |
+| `options` | object | No | Configuration (see below). |
+
+## Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `retries` | 0–10 | 0 | Retry attempts with exponential backoff. |
+| `timeout` | string | "30s" | Max execution time. |
+| `concurrency` | 1–10 | 1 | Max concurrent executions. |
+
+## Payload
+
+Tasks receive a payload — arbitrary JSON data passed when the task is triggered. The payload is available via the context object. SDKs may support typed payloads for automatic deserialization.
+
+## Execution Lifecycle
+
+1. A task is triggered (via fan-out, `trigger()`, or dashboard).
+2. A pending execution is created with the payload.
+3. The execution is dispatched to the job queue.
+4. Your handler runs with the context and payload.
+5. On failure, retried with exponential backoff if retries > 0.

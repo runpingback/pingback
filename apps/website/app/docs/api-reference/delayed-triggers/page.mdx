@@ -1,0 +1,41 @@
+export const metadata = { title: "Delayed Triggers API — Pingback Docs" };
+
+# Delayed Triggers
+
+Schedule a task to run after a specified delay instead of immediately.
+
+## How It Works
+
+When a `delay` is provided in a trigger request:
+
+1. The delay is parsed into seconds (see formats below).
+2. `scheduledAt` is set to `now + delay` instead of `now`.
+3. The job is queued with a `startAfter` delay in PgBoss.
+4. The execution appears as "pending" in the dashboard until the delay expires.
+5. After the delay, the task is dispatched normally.
+
+## Delay Formats
+
+| Format | Example | Seconds |
+|--------|---------|---------|
+| Integer | `900` | 900 |
+| Seconds | `"30s"` | 30 |
+| Minutes | `"15m"` | 900 |
+| Hours | `"2h"` | 7200 |
+| Days | `"1d"` | 86400 |
+| Combined | `"1d2h30m"` | 95400 |
+
+## Constraints
+
+- **Maximum delay:** 30 days (2,592,000 seconds). Requests exceeding this return `400 Bad Request`.
+- **Minimum delay:** 1 second. Zero or negative values return `400 Bad Request`.
+- **Precision:** Fractional seconds are floored to the nearest integer.
+
+## SDK Reference
+
+| SDK | Syntax |
+|-----|--------|
+| Next.js | `pingback.trigger("task", payload, { delay: "15m" })` |
+| NestJS | `this.pingback.trigger("task", payload, { delay: "15m" })` |
+| Go | `pb.Trigger(ctx, "task", payload, pingback.WithDelay("15m"))` |
+| Python | `pb.trigger("task", payload, delay="15m")` |

@@ -1,0 +1,40 @@
+export const metadata = { title: "Context API — Pingback Docs" };
+
+# Context Object
+
+Every handler receives a context object with execution metadata, logging, and task dispatch.
+
+## Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `executionId` | string | Unique UUID for this execution. |
+| `attempt` | number | Current retry attempt (1-indexed). First run is attempt 1. |
+| `scheduledAt` | Date/datetime | When this execution was originally scheduled. |
+| `payload` | any | The payload passed when the task was triggered (tasks only). |
+
+## Methods
+
+### log(message, meta?)
+
+Add a structured log entry at the `info` level. All log entries are captured and returned to the platform, visible in the dashboard.
+
+### log.warn(message, meta?) / log.error(message, meta?) / log.debug(message, meta?)
+
+Log at warning, error, or debug level respectively.
+
+| Level | Use for |
+|-------|---------|
+| info | Normal operations, progress updates |
+| warn | Unexpected but recoverable conditions |
+| error | Failures that affect the result |
+| debug | Verbose information for troubleshooting |
+
+### task(name, payload)
+
+Dispatch a child task for fan-out. The task is collected and dispatched after the handler completes. See [Fan-Out](/docs/api-reference/fan-out) for details.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `name` | string | Name of a registered task. |
+| `payload` | any | JSON-serializable data passed to the child task. |

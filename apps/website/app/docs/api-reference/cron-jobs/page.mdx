@@ -1,0 +1,50 @@
+export const metadata = { title: "Cron Jobs API — Pingback Docs" };
+
+# Cron Jobs
+
+Scheduled functions that run on a cron expression. The platform evaluates schedules every 10 seconds and dispatches executions via the job queue.
+
+## Registration
+
+Each SDK provides a way to register cron jobs — see the SDK-specific docs for syntax. All SDKs accept the same parameters:
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `name` | string | Yes | Unique identifier for this cron job. |
+| `schedule` | string | Yes | Standard 5-field cron expression. |
+| `handler` | function | Yes | Function to execute on each run. |
+| `options` | object | No | Configuration (see below). |
+
+## Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `retries` | 0–10 | 0 | Retry attempts with exponential backoff (2^attempt seconds, capped at 60s). |
+| `timeout` | string | "30s" | Max execution time. Formats: "30s", "5m", "1h". |
+| `concurrency` | 1–10 | 1 | Max concurrent executions. If a run is still active when the next is due, it's skipped. |
+
+## Schedule Expressions
+
+Standard 5-field cron expressions (minute, hour, day-of-month, month, day-of-week):
+
+| Expression | Description |
+|-----------|-------------|
+| `* * * * *` | Every minute |
+| `*/15 * * * *` | Every 15 minutes |
+| `0 * * * *` | Every hour |
+| `0 3 * * *` | Daily at 3:00 AM UTC |
+| `0 */6 * * *` | Every 6 hours |
+| `0 9 * * 1` | Every Monday at 9:00 AM |
+| `0 0 1 * *` | First day of every month |
+
+All times are UTC.
+
+## Execution Lifecycle
+
+1. The scheduler checks for due cron jobs every 10 seconds.
+2. A pending execution is created with `scheduledAt` set to the cron's next run time.
+3. The execution is dispatched to the job queue.
+4. The platform sends an HMAC-signed HTTP POST to your endpoint.
+5. Your handler runs and returns a result.
+6. On failure, the execution is retried with exponential backoff (if retries > 0).
+7. `nextRunAt` is updated based on the cron expression.
