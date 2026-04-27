@@ -131,7 +131,7 @@ export function DocsSidebar() {
     <nav className="w-56 shrink-0 py-8 px-4">
       {navigation.map((group) => (
         <div key={group.label} className="mb-6">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 px-2">
+          <p className="text-[10px] font-semibold text-muted-foreground/50 uppercase tracking-widest mb-2 px-2">
             {group.label}
           </p>
 
