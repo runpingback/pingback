@@ -1,0 +1,79 @@
+export const metadata = { title: "Next.js Fan-Out — Pingback Docs" };
+
+# Fan-Out
+
+Use `ctx.task()` inside a cron or task to dispatch independent sub-tasks. Each child task runs with its own retries, timeout, and tracking.
+
+## Basic Fan-Out
+
+```typescript
+import { cron, task } from "@usepingback/next";
+
+// Parent cron — runs every 15 minutes
+export const sendEmails = cron(
+  "send-emails",
+  "*/15 * * * *",
+  async (ctx) => {
+    const pending = await getPendingEmails();
+
+    for (const email of pending) {
+      await ctx.task("send-email", { id: email.id });
+    }
+
+    ctx.log("Dispatched emails", { count: pending.length });
+    return { dispatched: pending.length };
+  }
+);
+
+// Child task — runs independently per email
+export const sendEmail = task(
+  "send-email",
+  async (ctx, { id }: { id: string }) => {
+    const email = await getEmail(id);
+    await deliver(email);
+    ctx.log("Sent email", { to: email.to });
+  },
+  { retries: 2, timeout: "15s" }
+);
+```
+
+## How Fan-Out Works
+
+1. The handler calls `ctx.task("send-email", payload)` which collects the task request in memory.
+2. When the handler finishes, the SDK returns the collected tasks in the response.
+3. The platform creates a child execution for each task, linked to the parent.
+4. Each child task is dispatched independently via the queue with its own retry policy.
+5. Child tasks appear nested under the parent execution in the dashboard.
+
+## Workflows (Task Chaining)
+
+Tasks can call `ctx.task()` to chain into multi-step workflows with branching:
+
+```typescript
+import { task } from "@usepingback/next";
+
+export const validateOrder = task("validate-order", async (ctx, payload) => {
+  ctx.log("Validating", { orderId: payload.orderId });
+
+  if (payload.amount <= 0) {
+    await ctx.task("notify-failure", { orderId: payload.orderId, reason: "Invalid amount" });
+    return { valid: false };
+  }
+
+  await ctx.task("charge-payment", payload);
+  return { valid: true };
+}, { retries: 2 });
+
+export const chargePayment = task("charge-payment", async (ctx, payload) => {
+  const charge = await stripe.charges.create({ amount: payload.amount * 100 });
+  ctx.log("Charged", { chargeId: charge.id });
+  await ctx.task("send-confirmation", payload);
+}, { retries: 3 });
+
+export const sendConfirmation = task("send-confirmation", async (ctx, payload) => {
+  await mailer.send(payload.email, "Order confirmed");
+  ctx.log("Confirmation sent");
+}, { retries: 2 });
+```
+
+Each step runs as its own execution with independent retries and logging. The workflow graph in your dashboard visualizes the full chain.

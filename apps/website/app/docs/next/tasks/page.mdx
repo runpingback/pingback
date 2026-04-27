@@ -1,0 +1,33 @@
+export const metadata = { title: "Next.js Tasks — Pingback Docs" };
+
+# Tasks
+
+Define background tasks that are triggered via fan-out, programmatically from your code, or manually from the dashboard.
+
+## Defining a Task
+
+Tasks are defined the same way as crons, but without a schedule. They receive a payload as the second argument:
+
+```typescript
+import { task } from "@usepingback/next";
+
+export const sendEmail = task(
+  "send-email",
+  async (ctx, { id }: { id: string }) => {
+    const email = await getEmail(id);
+    await deliver(email);
+    ctx.log("Sent email", { to: email.to });
+  },
+  { retries: 2, timeout: "15s" }
+);
+```
+
+## Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `retries` | 0–10 | 0 | Retry attempts with exponential backoff |
+| `timeout` | string | "30s" | Max execution time (e.g. "30s", "5m") |
+| `concurrency` | 1–10 | 1 | Max concurrent executions |
+
+> **Note:** Tasks can also be triggered manually from the Pingback dashboard. Navigate to your task and click "Run" to dispatch it with a custom payload — useful for testing and one-off executions.

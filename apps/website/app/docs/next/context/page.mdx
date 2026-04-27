@@ -1,0 +1,75 @@
+export const metadata = { title: "Next.js Context & Logging — Pingback Docs" };
+
+# Context & Logging
+
+The `ctx` object is passed to every cron and task handler.
+
+## Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `ctx.executionId` | `string` | Unique ID for this execution |
+| `ctx.attempt` | `number` | Current retry attempt (1-indexed) |
+| `ctx.scheduledAt` | `Date` | When this run was scheduled |
+| `ctx.log(message, meta?)` | `Function` | Add a structured log entry |
+| `ctx.task(name, payload)` | `Function` | Dispatch a child task |
+
+## Execution ID
+
+A unique UUID for the current execution. Useful for correlating logs or building idempotency keys:
+
+```typescript
+export const processPayment = cron("process", "0 * * * *", async (ctx) => {
+  await processWithKey(ctx.executionId);
+});
+```
+
+## Attempt Number
+
+The current retry attempt, starting at 1. Use it to adjust behavior on retries:
+
+```typescript
+export const syncData = cron("sync", "0 */6 * * *", async (ctx) => {
+  if (ctx.attempt > 1) {
+    ctx.log("Retry attempt", { attempt: ctx.attempt });
+  }
+  await sync();
+}, { retries: 3 });
+```
+
+## Structured Logging
+
+`ctx.log()` logs at the `info` level. Use `.warn()`, `.error()`, and `.debug()` for other levels. All methods accept an optional metadata object.
+
+| Method | Level |
+|--------|-------|
+| `ctx.log(message, meta?)` | info (default) |
+| `ctx.log.warn(message, meta?)` | warning |
+| `ctx.log.error(message, meta?)` | error |
+| `ctx.log.debug(message, meta?)` | debug |
+
+```typescript
+export const syncData = cron("sync-data", "0 */6 * * *", async (ctx) => {
+  ctx.log("Starting sync", { source: "postgres" });
+  ctx.log.debug("Fetching records", { batchSize: 100 });
+
+  const records = await fetchRecords();
+  ctx.log("Fetched records", { count: records.length });
+
+  for (const record of records) {
+    try {
+      await sync(record);
+    } catch (err) {
+      ctx.log.error("Failed to sync record", { recordId: record.id });
+    }
+  }
+
+  if (records.length > 10000) {
+    ctx.log.warn("Large batch detected", { count: records.length });
+  }
+
+  ctx.log("Sync complete", { synced: records.length });
+});
+```
+
+All log entries are visible in the Pingback dashboard under the execution detail view.

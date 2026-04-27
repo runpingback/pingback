@@ -1,0 +1,90 @@
+export const metadata = { title: "Next.js Getting Started — Pingback Docs" };
+
+# Next.js
+
+Set up Pingback in your Next.js app with the `@usepingback/next` adapter.
+
+## Installation
+
+```bash
+npm install @usepingback/next
+```
+
+## CLI
+
+Use `npx pingback init` to scaffold your project with the recommended config, route handler, and file structure:
+
+```bash
+npx pingback init
+```
+
+For local development, use `npx pingback dev` to create a tunnel so the platform can reach your local server:
+
+```bash
+npx pingback dev
+```
+
+## Configuration
+
+Create `pingback.config.ts` in your project root:
+
+```typescript
+import { defineConfig } from "@usepingback/next";
+
+export default defineConfig({
+  apiKey: process.env.PINGBACK_API_KEY,
+});
+```
+
+## Next.js Plugin
+
+Wrap your Next.js config with `withPingback()`. At build time, it scans your project for `cron()` and `task()` calls, collects their metadata, and registers them with the Pingback platform:
+
+```typescript
+import { withPingback } from "@usepingback/next";
+
+export default withPingback({
+  // your existing Next.js config
+});
+```
+
+## Route Handler
+
+Create `app/api/pingback/route.ts` to receive execution requests from the platform:
+
+```typescript
+import { createRouteHandler } from "@usepingback/next/handler";
+
+export const POST = createRouteHandler();
+```
+
+The handler validates the HMAC signature using your `PINGBACK_CRON_SECRET`, looks up the requested function, executes it, and returns the result with logs.
+
+## Environment Variables
+
+Add these to your `.env.local`:
+
+```bash
+PINGBACK_API_KEY=pb_live_your_api_key_here
+PINGBACK_CRON_SECRET=your_cron_secret_here
+```
+
+| Variable | Description |
+|----------|-------------|
+| `PINGBACK_API_KEY` | Your project API key. Found in the dashboard under API Keys. |
+| `PINGBACK_CRON_SECRET` | Request signing secret. Found in the dashboard under project Settings. |
+
+## Deploy
+
+Deploy your app. Pingback discovers your functions at build time, registers them with the platform, and starts scheduling. Monitor executions in the dashboard.
+
+## Local Development
+
+Use `npx pingback dev [port]` to test your cron jobs and tasks locally against the production Pingback platform. The CLI creates a secure tunnel to your local Next.js dev server so the platform can invoke your route handler:
+
+```bash
+# Start your Next.js dev server, then in another terminal:
+npx pingback dev 3000
+```
+
+Executions triggered from the dashboard or by schedule will be routed to your local machine, letting you debug with full access to local logs and breakpoints.

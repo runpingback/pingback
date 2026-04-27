@@ -1,0 +1,40 @@
+export const metadata = { title: "Next.js Triggering — Pingback Docs" };
+
+# Triggering
+
+Use `PingbackClient` to trigger tasks from your own code — no cron schedule or fan-out required. This is useful for event-driven workflows like sending a welcome email after signup, processing a webhook, or kicking off a pipeline from an API route.
+
+## Setup
+
+```typescript
+import { PingbackClient } from "@usepingback/next";
+
+const pingback = new PingbackClient({
+  apiKey: process.env.PINGBACK_API_KEY!,
+});
+```
+
+## Triggering a Task
+
+```typescript
+const { executionId } = await pingback.trigger("send-email", {
+  to: "user@example.com",
+  subject: "Welcome!",
+});
+
+console.log("Triggered execution:", executionId);
+```
+
+## API
+
+```typescript
+const { executionId, scheduledAt } = await client.trigger(taskName, payload?, options?);
+```
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `taskName` | `string` | Name of a registered task in your project. |
+| `payload` | `any?` | Optional JSON payload passed to the task handler. |
+| `options.delay` | `number \| string?` | Optional delay before execution (see [Delayed Triggers](/docs/next/delayed-triggers)). |
+
+Returns `{ executionId: string, scheduledAt: string }`. Throws if the task name doesn't exist or the API key is invalid.

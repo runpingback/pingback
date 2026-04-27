@@ -1,0 +1,69 @@
+export const metadata = { title: "Next.js Cron Jobs — Pingback Docs" };
+
+# Cron Jobs
+
+Define scheduled functions that run on a cron expression.
+
+## Defining a Cron Job
+
+```typescript
+import { cron } from "@usepingback/next";
+
+export const dailyCleanup = cron(
+  "daily-cleanup",
+  "0 3 * * *",
+  async (ctx) => {
+    const expired = await removeExpiredSessions();
+    ctx.log("Sessions cleaned up", { removed: expired });
+    return { removed: expired };
+  },
+  { retries: 3, timeout: "60s" }
+);
+```
+
+## Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `retries` | 0–10 | 0 | Retry attempts with exponential backoff |
+| `timeout` | string | "30s" | Max execution time (e.g. "30s", "5m") |
+| `concurrency` | 1–10 | 1 | Max concurrent executions |
+
+## Schedule Expressions
+
+Standard 5-field cron expressions:
+
+| Expression | Description |
+|-----------|-------------|
+| `*/15 * * * *` | Every 15 minutes |
+| `0 3 * * *` | Daily at 3:00 AM UTC |
+| `0 */6 * * *` | Every 6 hours |
+| `0 9 * * 1` | Every Monday at 9:00 AM |
+| `0 0 1 * *` | First day of every month |
+
+## Full Example
+
+```typescript
+import { cron } from "@usepingback/next";
+
+export const syncData = cron(
+  "sync-data",
+  "0 */6 * * *",
+  async (ctx) => {
+    ctx.log("Starting data sync", { source: "postgres" });
+    const records = await fetchRecordsToSync();
+
+    for (const record of records) {
+      await syncRecord(record);
+    }
+
+    ctx.log("Synced records", { count: records.length });
+    return { synced: records.length };
+  },
+  {
+    retries: 3,
+    timeout: "5m",
+    concurrency: 1,
+  }
+);
+```
