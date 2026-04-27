@@ -50,7 +50,7 @@ export class TriggerController {
     try {
       delaySeconds = parseDelay(body.delay);
     } catch (err) {
-      throw new BadRequestException(err.message);
+      throw new BadRequestException((err as Error).message);
     }
     const scheduledAt = delaySeconds > 0
       ? new Date(Date.now() + delaySeconds * 1000)
