@@ -1,0 +1,53 @@
+export const metadata = { title: "Getting Started — Pingback Docs" };
+
+# Getting Started
+
+Pingback lets you define scheduled functions and background tasks directly in your codebase. The platform handles scheduling, retries, fan-out, and monitoring.
+
+## How it works
+
+1. Install a framework adapter (e.g. `@usepingback/next`).
+2. Define `cron()` and `task()` functions in your code.
+3. Deploy — Pingback discovers your functions at build time and registers them.
+4. The platform schedules and executes your functions, with retries and logging built in.
+5. Monitor everything in the Pingback dashboard.
+
+## Choose your framework
+
+Pingback provides framework-specific adapters built on a shared core. Each adapter handles route generation, build plugins, and framework conventions.
+
+| Framework | Package | Status |
+|-----------|---------|--------|
+| [Next.js](/docs/next/getting-started) | `@usepingback/next` | Available |
+| [NestJS](/docs/nestjs/getting-started) | `@usepingback/nestjs` | Available |
+| [Go](/docs/go/getting-started) | `pingback-go` | Available |
+| [Python](/docs/python/getting-started) | `pingback-py` | Available |
+
+## Environment variables
+
+All adapters require these environment variables:
+
+```bash
+PINGBACK_API_KEY=pb_live_your_api_key_here
+PINGBACK_CRON_SECRET=your_cron_secret_here
+```
+
+You can find both values in the Pingback dashboard under your project settings.
+
+## Scaffolding
+
+Use `npx pingback init` to scaffold a new project with the recommended file structure, config, and route handler:
+
+```bash
+npx pingback init
+```
+
+## Local Development
+
+Use `npx pingback dev` to start a tunnel-based local development session against the production Pingback platform. This lets you test cron and task executions locally without deploying:
+
+```bash
+npx pingback dev [port]
+```
+
+The CLI creates a secure tunnel to your local server so the platform can reach your route handler. Pass an optional port number to match your dev server (defaults to 3000).
