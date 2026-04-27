@@ -7,14 +7,26 @@ export class PingbackClient {
     this.platformUrl = options.platformUrl || 'https://api.pingback.lol';
   }
 
-  async trigger(taskName: string, payload?: any): Promise<{ executionId: string }> {
+  async trigger(
+    taskName: string,
+    payload?: any,
+    options?: { delay?: number | string },
+  ): Promise<{ executionId: string; scheduledAt: string }> {
+    const body: Record<string, any> = { task: taskName };
+    if (payload !== undefined) {
+      body.payload = payload;
+    }
+    if (options?.delay !== undefined) {
+      body.delay = options.delay;
+    }
+
     const response = await fetch(`${this.platformUrl}/api/v1/trigger`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${this.apiKey}`,
       },
-      body: JSON.stringify({ task: taskName, payload }),
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {
@@ -22,6 +34,6 @@ export class PingbackClient {
       throw new Error(`Failed to trigger task "${taskName}" (${response.status}): ${text}`);
     }
 
-    return response.json() as Promise<{ executionId: string }>;
+    return response.json() as Promise<{ executionId: string; scheduledAt: string }>;
   }
 }
