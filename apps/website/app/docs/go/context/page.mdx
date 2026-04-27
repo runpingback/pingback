@@ -1,0 +1,28 @@
+export const metadata = { title: "Go Context & Logging — Pingback Docs" };
+
+# Context & Logging
+
+The `*pingback.Context` object is passed to every cron and task handler.
+
+## Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `ctx.ExecutionID` | `string` | Unique ID for this execution |
+| `ctx.Attempt` | `int` | Current retry attempt (1-indexed) |
+| `ctx.ScheduledAt` | `time.Time` | When this run was scheduled |
+| `ctx.Payload` | `json.RawMessage` | Raw JSON payload (tasks only) |
+
+## Structured Logging
+
+The context provides structured logging with key-value metadata:
+
+```go
+ctx.Log("message")                         // info
+ctx.Log("message", "key", "value")         // info with metadata
+ctx.Warn("slow query", "ms", 2500)         // warning
+ctx.Error("failed", "code", "E001")        // error
+ctx.Debug("cache stats", "hits", 847)      // debug
+```
+
+All log entries are visible in the Pingback dashboard.

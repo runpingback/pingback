@@ -1,0 +1,65 @@
+export const metadata = { title: "Go Getting Started — Pingback Docs" };
+
+# Go
+
+Set up Pingback in your Go app with the `pingback-go` SDK.
+
+## Installation
+
+```bash
+go get github.com/runpingback/pingback-go
+```
+
+## Setup
+
+Create a `Pingback` client and mount the handler on your HTTP server:
+
+```go
+package main
+
+import (
+    "net/http"
+    "os"
+
+    pingback "github.com/runpingback/pingback-go"
+)
+
+func main() {
+    pb := pingback.New(
+        os.Getenv("PINGBACK_API_KEY"),
+        os.Getenv("PINGBACK_CRON_SECRET"),
+    )
+
+    // Define functions here...
+
+    pb.Register()
+    http.Handle("/api/pingback", pb.Handler())
+    http.ListenAndServe(":8080", nil)
+}
+```
+
+## Configuration
+
+```go
+pb := pingback.New(
+    apiKey,
+    cronSecret,
+    pingback.WithPlatformURL("https://api.pingback.lol"),  // default
+    pingback.WithBaseURL("https://myapp.com"),
+)
+```
+
+## Environment Variables
+
+```bash
+PINGBACK_API_KEY=pb_live_your_api_key_here
+PINGBACK_CRON_SECRET=your_cron_secret_here
+```
+
+## How It Works
+
+1. Register cron jobs and tasks with `pb.Cron()` and `pb.Task()`.
+2. Mount the handler with `http.Handle("/api/pingback", pb.Handler())`.
+3. On the first request, the SDK registers your functions with the Pingback platform.
+4. The platform sends HMAC-signed HTTP requests to your handler on schedule.
+5. The handler verifies the signature, executes the function, and returns results with logs.

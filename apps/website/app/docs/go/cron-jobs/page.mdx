@@ -1,0 +1,33 @@
+export const metadata = { title: "Go Cron Jobs — Pingback Docs" };
+
+# Cron Jobs
+
+Register cron jobs with `pb.Cron()`. Handlers return `(any, error)` — the return value becomes the execution result.
+
+## Defining a Cron Job
+
+```go
+pb.Cron("daily-cleanup", "0 3 * * *", func(ctx *pingback.Context) (any, error) {
+    expired := removeExpiredSessions()
+    ctx.Log("Sessions cleaned up", "removed", expired)
+    return map[string]int{"removed": expired}, nil
+}, pingback.WithRetries(3), pingback.WithTimeout("60s"))
+```
+
+## Function Options
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `WithRetries(n)` | 0 | Retry up to n times on failure. |
+| `WithTimeout("30s")` | 30s | Execution timeout. |
+| `WithConcurrency(n)` | 1 | Max concurrent runs. |
+
+## Schedule Expressions
+
+| Expression | Description |
+|-----------|-------------|
+| `*/15 * * * *` | Every 15 minutes |
+| `0 3 * * *` | Daily at 3:00 AM UTC |
+| `0 */6 * * *` | Every 6 hours |
+| `0 9 * * 1` | Every Monday at 9:00 AM |
+| `0 0 1 * *` | First day of every month |

@@ -1,0 +1,21 @@
+export const metadata = { title: "Go Triggering — Pingback Docs" };
+
+# Triggering
+
+Trigger tasks from anywhere in your code using `pb.Trigger()`.
+
+## Usage
+
+```go
+execID, err := pb.Trigger(context.Background(), "send-email", map[string]string{
+    "to": "user@example.com",
+})
+```
+
+## API
+
+```go
+func (p *Pingback) Trigger(ctx context.Context, taskName string, payload any, opts ...TriggerOption) (string, error)
+```
+
+Returns the execution ID. Throws if the task doesn't exist or the API key is invalid.

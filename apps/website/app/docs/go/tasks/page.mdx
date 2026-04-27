@@ -1,0 +1,36 @@
+export const metadata = { title: "Go Tasks — Pingback Docs" };
+
+# Tasks
+
+Register background tasks with `pb.Task()`. Tasks receive a payload via `ctx.Payload` (raw JSON) or use typed payloads with `pingback.TaskWith[T]()`.
+
+## Defining a Task
+
+```go
+pb.Task("send-email", func(ctx *pingback.Context) (any, error) {
+    var p struct{ ID string `json:"id"` }
+    json.Unmarshal(ctx.Payload, &p)
+    err := sendEmail(p.ID)
+    ctx.Log("Sent email", "id", p.ID)
+    return nil, err
+}, pingback.WithRetries(2), pingback.WithTimeout("15s"))
+```
+
+## Typed Payloads
+
+Use `pingback.TaskWith` to define handlers with a typed payload parameter. The SDK automatically unmarshals the JSON payload into your struct:
+
+```go
+type EmailPayload struct {
+    To      string `json:"to"`
+    Subject string `json:"subject"`
+}
+
+pingback.TaskWith(pb, "send-email", func(ctx *pingback.Context, payload EmailPayload) (any, error) {
+    ctx.Log("Sending email", "to", payload.To)
+    sendMail(payload.To, payload.Subject)
+    return map[string]bool{"sent": true}, nil
+}, pingback.WithRetries(3))
+```
+
+Both `pb.Task()` (untyped, manual unmarshal) and `pingback.TaskWith[T]()` (typed, automatic unmarshal) are supported. `pingback.CronWith[T]()` is also available for crons with payloads.
