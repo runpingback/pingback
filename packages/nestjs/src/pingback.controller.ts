@@ -1,4 +1,5 @@
-import { Controller, Post, Headers, Body, Inject, HttpCode } from '@nestjs/common';
+import { Controller, Post, Headers, Body, Inject, HttpCode, Req } from '@nestjs/common';
+import type { Request } from 'express';
 import { createHmac, timingSafeEqual } from 'crypto';
 import { createContext } from '@usepingback/core';
 import type { ContextWithInternals, ExecutionPayload } from '@usepingback/core';
@@ -58,11 +59,13 @@ export class PingbackController {
   async handleExecution(
     @Headers() headers: Record<string, string>,
     @Body() payload: ExecutionPayload,
-    rawBody?: string,
+    @Req() req: Request,
   ): Promise<any> {
     const signature = headers['x-pingback-signature'] || '';
     const timestamp = headers['x-pingback-timestamp'] || '';
-    const bodyStr = typeof rawBody === 'string' ? rawBody : JSON.stringify(payload);
+    const bodyStr = (req as any).rawBody
+      ? (req as any).rawBody.toString()
+      : JSON.stringify(payload);
 
     if (!verifySignature(bodyStr, signature, timestamp, this.options.cronSecret)) {
       return { status: 'error', error: 'Invalid signature', statusCode: 401 };

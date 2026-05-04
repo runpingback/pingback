@@ -1,24 +1,40 @@
 {
   "name": "@usepingback/nestjs",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "NestJS adapter for Pingback — reliable cron jobs and background tasks",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
     "pingback-nest": "dist/cli.js"
   },
-  "files": ["dist", "README.md", "LICENSE"],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
     "test": "jest"
   },
-  "keywords": ["pingback", "nestjs", "cron", "scheduled-jobs", "background-tasks"],
+  "keywords": [
+    "pingback",
+    "nestjs",
+    "cron",
+    "scheduled-jobs",
+    "background-tasks"
+  ],
   "author": "Pingback",
   "license": "MIT",
-  "repository": { "type": "git", "url": "https://github.com/runpingback/pingback", "directory": "packages/nestjs" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/runpingback/pingback",
+    "directory": "packages/nestjs"
+  },
   "homepage": "https://pingback.lol/docs/nestjs",
-  "bugs": { "url": "https://github.com/runpingback/pingback/issues" },
+  "bugs": {
+    "url": "https://github.com/runpingback/pingback/issues"
+  },
   "dependencies": {
     "@usepingback/core": "0.2.0",
     "localtunnel": "^2.0.2"

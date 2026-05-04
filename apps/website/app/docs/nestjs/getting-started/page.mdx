@@ -29,6 +29,24 @@ import { PingbackModule } from '@usepingback/nestjs';
 export class AppModule {}
 ```
 
+### Enable Raw Body
+
+Pingback verifies execution requests using an HMAC signature computed from the exact request body. You **must** enable `rawBody` in your bootstrap so the signature can be verified against the original bytes:
+
+```typescript
+// main.ts
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule, { rawBody: true });
+  await app.listen(3000);
+}
+bootstrap();
+```
+
+Without this option, signature verification may fail for requests where `JSON.stringify()` produces output that differs from the original payload (different key ordering, whitespace, or escaping).
+
 ## Configuration
 
 The full set of options accepted by `PingbackModule.register()`:

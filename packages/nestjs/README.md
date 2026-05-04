@@ -27,7 +27,16 @@ import { PingbackModule } from '@usepingback/nestjs';
 export class AppModule {}
 ```
 
-### 2. Define functions
+### 2. Enable raw body
+
+Pingback verifies requests with an HMAC signature over the raw body. Enable `rawBody` in your bootstrap so the signature check works correctly:
+
+```typescript
+// main.ts
+const app = await NestFactory.create(AppModule, { rawBody: true });
+```
+
+### 3. Define functions
 
 ```typescript
 import { Injectable } from '@nestjs/common';
@@ -47,7 +56,7 @@ export class EmailService {
 }
 ```
 
-### 3. Environment variables
+### 4. Environment variables
 
 ```
 PINGBACK_API_KEY=pb_live_...
