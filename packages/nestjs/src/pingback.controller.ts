@@ -1,5 +1,5 @@
-import { Controller, Post, Headers, Body, Inject, HttpCode, Req } from '@nestjs/common';
-import type { Request } from 'express';
+import { Controller, Post, Headers, Body, Inject, Req, Res } from '@nestjs/common';
+import type { Request, Response } from 'express';
 import { createHmac, timingSafeEqual } from 'crypto';
 import { createContext } from '@usepingback/core';
 import type { ContextWithInternals, ExecutionPayload } from '@usepingback/core';
@@ -55,12 +55,12 @@ export class PingbackController {
   ) {}
 
   @Post()
-  @HttpCode(200)
   async handleExecution(
     @Headers() headers: Record<string, string>,
     @Body() payload: ExecutionPayload,
     @Req() req: Request,
-  ): Promise<any> {
+    @Res() res: Response,
+  ): Promise<void> {
     const signature = headers['x-pingback-signature'] || '';
     const timestamp = headers['x-pingback-timestamp'] || '';
     const bodyStr = (req as any).rawBody
@@ -68,12 +68,14 @@ export class PingbackController {
       : JSON.stringify(payload);
 
     if (!verifySignature(bodyStr, signature, timestamp, this.options.cronSecret)) {
-      return { status: 'error', error: 'Invalid signature', statusCode: 401 };
+      res.status(401).json({ status: 'error', error: 'Invalid signature' });
+      return;
     }
 
     const entry = this.registry.get(payload.function);
     if (!entry) {
-      return { status: 'error', error: `Function "${payload.function}" not found`, statusCode: 404 };
+      res.status(404).json({ status: 'error', error: `Function "${payload.function}" not found` });
+      return;
     }
 
     const ctx = createContext(payload) as ContextWithInternals;
@@ -85,24 +87,23 @@ export class PingbackController {
         : await entry.instance[entry.methodName](ctx);
       const durationMs = Date.now() - start;
 
-      return {
+      res.status(200).json({
         status: 'success',
         result,
         logs: ctx._getLogs(),
         tasks: ctx._getTasks(),
         durationMs,
-      };
+      });
     } catch (err) {
       const durationMs = Date.now() - start;
 
-      return {
+      res.status(500).json({
         status: 'error',
         error: (err as Error).message,
         logs: ctx._getLogs(),
         tasks: ctx._getTasks(),
         durationMs,
-        statusCode: 500,
-      };
+      });
     }
   }
 }
